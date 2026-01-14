@@ -34,37 +34,6 @@ export default function AdminDashboard() {
           </p>
         </div>
 
-        {/* User Info Card */}
-        <div className="bg-white rounded-lg shadow-md p-6">
-          <h2 className="text-xl font-semibold text-gray-900 mb-4">
-            Account Information
-          </h2>
-          <div className="space-y-3">
-            <div className="flex items-center justify-between py-3 border-b border-gray-200">
-              <span className="text-sm font-medium text-gray-600">Email:</span>
-              <span className="text-sm text-gray-900">{user?.email}</span>
-            </div>
-            <div className="flex items-center justify-between py-3 border-b border-gray-200">
-              <span className="text-sm font-medium text-gray-600">Role:</span>
-              <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-purple-100 text-purple-800">
-                {user?.user_metadata?.role}
-              </span>
-            </div>
-            <div className="flex items-center justify-between py-3 border-b border-gray-200">
-              <span className="text-sm font-medium text-gray-600">Status:</span>
-              <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
-                {user?.user_metadata?.status}
-              </span>
-            </div>
-            <div className="flex items-center justify-between py-3">
-              <span className="text-sm font-medium text-gray-600">Phone:</span>
-              <span className="text-sm text-gray-900">
-                {user?.user_metadata?.phone || user?.phone || '-'}
-              </span>
-            </div>
-          </div>
-        </div>
-
         {/* Quick Stats */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           <div className="bg-white rounded-lg shadow-md p-6">

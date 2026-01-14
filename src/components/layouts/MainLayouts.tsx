@@ -39,7 +39,8 @@ const MainLayouts: React.FC<MainLayoutsProps> = ({
   };
 
   // Get user name from metadata
-  const userName = user?.user_metadata?.full_name || user?.email?.split('@')[0] || "User";
+  const userName =
+    user?.user_metadata?.full_name || user?.email?.split("@")[0] || "User";
 
   return (
     <div className="min-h-screen flex flex-col bg-gray-50">
@@ -71,10 +72,10 @@ const MainLayouts: React.FC<MainLayoutsProps> = ({
           <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
             {children}
           </div>
-          {/* Footer */}
-          {showFooter && <Footer />}
         </main>
       </div>
+      {/* Footer */}
+      {showFooter && <Footer />}
     </div>
   );
 };

@@ -1,30 +1,39 @@
-'use client';
+"use client";
 
-import React, { useState } from 'react';
-import Input from '@/components/ui/Input';
-import Button from '@/components/ui/Button';
-import { FaCamera, FaBriefcase, FaMapMarkerAlt, FaCalendarAlt } from 'react-icons/fa';
+import React, { useState } from "react";
+import Input from "@/components/ui/Input";
+import Button from "@/components/ui/Button";
+import {
+  FaCamera,
+  FaBriefcase,
+  FaMapMarkerAlt,
+  FaCalendarAlt,
+  FaGithub,
+  FaLinkedin,
+} from "react-icons/fa";
 
 const AdminProfile: React.FC = () => {
   const [isEditing, setIsEditing] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [formData, setFormData] = useState({
-    fullName: 'John Doe',
-    email: 'john.doe@admin.com',
-    phone: '+1 234 567 8900',
-    role: 'Admin',
-    department: 'Management',
-    location: 'New York, USA',
-    bio: 'Experienced administrator with a passion for efficient system management and team leadership.',
+    fullName: "John Doe",
+    email: "john.doe@admin.com",
+    phone: "+1 234 567 8900",
+    role: "Admin",
+    location: "New York, USA",
+    bio: "Experienced administrator with a passion for efficient system management and team leadership.",
+    linkedin: "linkedin.com/in/janedev",
   });
 
   const [passwordData, setPasswordData] = useState({
-    currentPassword: '',
-    newPassword: '',
-    confirmPassword: '',
+    currentPassword: "",
+    newPassword: "",
+    confirmPassword: "",
   });
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  const handleInputChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
@@ -40,7 +49,7 @@ const AdminProfile: React.FC = () => {
       await new Promise((resolve) => setTimeout(resolve, 1500));
       setIsEditing(false);
     } catch (error) {
-      console.error('Error saving profile:', error);
+      console.error("Error saving profile:", error);
     } finally {
       setIsLoading(false);
     }
@@ -51,9 +60,13 @@ const AdminProfile: React.FC = () => {
     setIsLoading(true);
     try {
       await new Promise((resolve) => setTimeout(resolve, 1500));
-      setPasswordData({ currentPassword: '', newPassword: '', confirmPassword: '' });
+      setPasswordData({
+        currentPassword: "",
+        newPassword: "",
+        confirmPassword: "",
+      });
     } catch (error) {
-      console.error('Error changing password:', error);
+      console.error("Error changing password:", error);
     } finally {
       setIsLoading(false);
     }
@@ -63,8 +76,12 @@ const AdminProfile: React.FC = () => {
     <div className="space-y-6">
       {/* Header */}
       <div>
-        <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">Profile Settings</h1>
-        <p className="text-gray-600 mt-1">Manage your account information and preferences.</p>
+        <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">
+          Profile Settings
+        </h1>
+        <p className="text-gray-600 mt-1">
+          Manage your account information and preferences.
+        </p>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -73,36 +90,44 @@ const AdminProfile: React.FC = () => {
           <div className="bg-white rounded-xl shadow-md p-6">
             <div className="flex flex-col items-center">
               <div className="relative">
-                <div className="w-32 h-32 bg-gradient-to-br from-blue-500 to-purple-500 rounded-full flex items-center justify-center shadow-lg">
+                <div className="w-32 h-32 bg-linear-to-br from-blue-500 to-purple-500 rounded-full flex items-center justify-center shadow-lg">
                   <span className="text-white font-bold text-4xl">
-                    {formData.fullName.split(' ').map(n => n[0]).join('')}
+                    {formData.fullName
+                      .split(" ")
+                      .map((n) => n[0])
+                      .join("")}
                   </span>
                 </div>
-                <button className="absolute bottom-0 right-0 w-10 h-10 bg-white rounded-full shadow-lg flex items-center justify-center hover:bg-gray-50 transition-colors duration-200">
-                  <FaCamera className="w-5 h-5 text-gray-600" />
-                </button>
-              </div>
-              
-              <h2 className="mt-4 text-xl font-bold text-gray-900">{formData.fullName}</h2>
-              <p className="text-sm text-gray-600">{formData.email}</p>
-              
-              <div className="mt-4 flex items-center gap-2 px-3 py-1.5 bg-blue-50 rounded-full">
-                <span className="w-2 h-2 bg-green-500 rounded-full"></span>
-                <span className="text-xs font-medium text-blue-700">Active</span>
               </div>
 
+              <h2 className="mt-4 text-xl font-bold text-gray-900">
+                {formData.fullName}
+              </h2>
+              <p className="text-sm text-gray-600">{formData.email}</p>
+
               <div className="w-full mt-6 pt-6 border-t border-gray-200 space-y-3">
-                <div className="flex items-center gap-3 text-sm">
+                <div className="flex items-center gap-2 text-sm">
                   <FaBriefcase className="w-5 h-5 text-gray-400" />
                   <span className="text-gray-700">{formData.role}</span>
                 </div>
-                <div className="flex items-center gap-3 text-sm">
-                  <FaMapMarkerAlt className="w-5 h-5 text-gray-400" />
-                  <span className="text-gray-700">{formData.location}</span>
-                </div>
-                <div className="flex items-center gap-3 text-sm">
+                <div className="flex items-center gap-2 text-sm">
                   <FaCalendarAlt className="w-5 h-5 text-gray-400" />
                   <span className="text-gray-700">Joined Jan 2024</span>
+                </div>
+              </div>
+
+              <div className="w-full mt-6 pt-6 border-t border-gray-200">
+                <h3 className="text-sm font-semibold text-gray-900 mb-3">
+                  Connect
+                </h3>
+                <div className="space-y-3">
+                  <a
+                    href=""
+                    className="flex items-center gap-2 text-sm text-gray-700 hover:text-purple-600 transition-colors"
+                  >
+                    <FaLinkedin className="w-5 h-5 text-gray-400" />
+                    LinkedIn
+                  </a>
                 </div>
               </div>
             </div>
@@ -114,7 +139,9 @@ const AdminProfile: React.FC = () => {
           {/* Personal Information */}
           <div className="bg-white rounded-xl shadow-md p-6">
             <div className="flex items-center justify-between mb-6">
-              <h2 className="text-lg font-semibold text-gray-900">Personal Information</h2>
+              <h2 className="text-lg font-semibold text-gray-900">
+                Personal Information
+              </h2>
               {!isEditing && (
                 <Button
                   onClick={() => setIsEditing(true)}
@@ -153,9 +180,9 @@ const AdminProfile: React.FC = () => {
                 fullWidth
               />
               <Input
-                label="Department"
-                name="department"
-                value={formData.department}
+                label="LinkedIn"
+                name="linkedin"
+                value={formData.linkedin}
                 onChange={handleInputChange}
                 disabled={!isEditing}
                 fullWidth
@@ -171,7 +198,9 @@ const AdminProfile: React.FC = () => {
                 />
               </div>
               <div className="md:col-span-2">
-                <label className="block text-sm font-medium text-gray-700 mb-1">Bio</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Bio
+                </label>
                 <textarea
                   name="bio"
                   value={formData.bio}
@@ -205,7 +234,9 @@ const AdminProfile: React.FC = () => {
 
           {/* Change Password */}
           <div className="bg-white rounded-xl shadow-md p-6">
-            <h2 className="text-lg font-semibold text-gray-900 mb-6">Change Password</h2>
+            <h2 className="text-lg font-semibold text-gray-900 mb-6">
+              Change Password
+            </h2>
             <form onSubmit={handleChangePassword} className="space-y-4">
               <Input
                 label="Current Password"
@@ -235,11 +266,7 @@ const AdminProfile: React.FC = () => {
                 required
                 fullWidth
               />
-              <Button
-                type="submit"
-                variant="primary"
-                isLoading={isLoading}
-              >
+              <Button type="submit" variant="primary" isLoading={isLoading}>
                 Update Password
               </Button>
             </form>

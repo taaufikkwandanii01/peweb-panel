@@ -1,12 +1,19 @@
-'use client';
+"use client";
 
-import React from 'react';
-import Link from 'next/link';
-import { usePathname } from 'next/navigation';
-import { FaHome, FaUser, FaUsers, FaTimes, FaChevronRight, FaBolt } from 'react-icons/fa';
+import React from "react";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+import {
+  FaHome,
+  FaUser,
+  FaUsers,
+  FaTimes,
+  FaChevronRight,
+  FaBolt,
+} from "react-icons/fa";
 
 interface SidebarProps {
-  userRole: 'admin' | 'developer';
+  userRole: "admin" | "developer";
   isOpen?: boolean;
   onClose?: () => void;
 }
@@ -18,30 +25,29 @@ interface MenuItem {
   adminOnly?: boolean;
 }
 
-const Sidebar: React.FC<SidebarProps> = ({ userRole, isOpen = true, onClose }) => {
+const Sidebar: React.FC<SidebarProps> = ({
+  userRole,
+  isOpen = true,
+  onClose,
+}) => {
   const pathname = usePathname();
 
   const menuItems: MenuItem[] = [
     {
-      name: 'Dashboard',
+      name: "Dashboard",
       href: `/${userRole}/dashboard`,
       icon: <FaHome className="w-5 h-5" />,
     },
     {
-      name: 'Profile',
-      href: `/${userRole}/profile`,
-      icon: <FaUser className="w-5 h-5" />,
-    },
-    {
-      name: 'Users',
-      href: '/admin/users',
+      name: "Users",
+      href: "/admin/users",
       icon: <FaUsers className="w-5 h-5" />,
       adminOnly: true,
     },
   ];
 
   const filteredMenuItems = menuItems.filter(
-    (item) => !item.adminOnly || userRole === 'admin'
+    (item) => !item.adminOnly || userRole === "admin"
   );
 
   const isActive = (href: string) => {
@@ -61,14 +67,16 @@ const Sidebar: React.FC<SidebarProps> = ({ userRole, isOpen = true, onClose }) =
       {/* Sidebar */}
       <aside
         className={`fixed top-16 left-0 h-[calc(100vh-4rem)] w-64 bg-white shadow-lg transform transition-transform duration-300 ease-in-out z-40 ${
-          isOpen ? 'translate-x-0' : '-translate-x-full'
+          isOpen ? "translate-x-0" : "-translate-x-full"
         } lg:translate-x-0`}
       >
         <div className="flex flex-col h-full">
           {/* Sidebar Header */}
           <div className="p-4 border-b border-gray-200">
             <div className="flex items-center justify-between">
-              <h2 className="text-lg font-semibold text-gray-800 capitalize">{userRole} Panel</h2>
+              <h2 className="text-lg font-semibold text-gray-800 capitalize">
+                {userRole} Panel
+              </h2>
               <button
                 onClick={onClose}
                 className="lg:hidden p-1 rounded-md text-gray-600 hover:text-gray-900 hover:bg-gray-100"
@@ -87,12 +95,16 @@ const Sidebar: React.FC<SidebarProps> = ({ userRole, isOpen = true, onClose }) =
                     href={item.href}
                     className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-200 ${
                       isActive(item.href)
-                        ? 'bg-blue-50 text-blue-600 font-medium shadow-sm'
-                        : 'text-gray-700 hover:bg-gray-50 hover:text-gray-900'
+                        ? "bg-blue-50 text-blue-600 font-medium shadow-sm"
+                        : "text-gray-700 hover:bg-gray-50 hover:text-gray-900"
                     }`}
                     onClick={onClose}
                   >
-                    <span className={isActive(item.href) ? 'text-blue-600' : 'text-gray-500'}>
+                    <span
+                      className={
+                        isActive(item.href) ? "text-blue-600" : "text-gray-500"
+                      }
+                    >
                       {item.icon}
                     </span>
                     <span>{item.name}</span>
@@ -113,8 +125,12 @@ const Sidebar: React.FC<SidebarProps> = ({ userRole, isOpen = true, onClose }) =
                   <FaBolt className="w-8 h-8 text-blue-500" />
                 </div>
                 <div>
-                  <h3 className="text-sm font-semibold text-gray-900 mb-1">Need Help?</h3>
-                  <p className="text-xs text-gray-600 mb-2">Check our documentation</p>
+                  <h3 className="text-sm font-semibold text-gray-900 mb-1">
+                    Need Help?
+                  </h3>
+                  <p className="text-xs text-gray-600 mb-2">
+                    Check our documentation
+                  </p>
                   <Link
                     href="/docs"
                     className="text-xs text-blue-600 hover:text-blue-700 font-medium inline-flex items-center gap-1"
