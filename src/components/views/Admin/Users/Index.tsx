@@ -1,22 +1,22 @@
-'use client';
+"use client";
 
-import React, { useState } from 'react';
-import Button from '@/components/ui/Button';
+import React, { useState } from "react";
+import Button from "@/components/ui/Button";
 
 interface User {
   id: number;
   name: string;
   email: string;
-  role: 'Admin' | 'Developer' | 'User';
-  status: 'Active' | 'Inactive' | 'Suspended';
+  role: "Admin" | "Developer";
+  status: "Pending" | "Approve" | "Rejected";
+  phone: string;
   joinDate: string;
-  lastLogin: string;
 }
 
 const AdminUsers: React.FC = () => {
-  const [searchQuery, setSearchQuery] = useState('');
-  const [filterRole, setFilterRole] = useState<string>('all');
-  const [filterStatus, setFilterStatus] = useState<string>('all');
+  const [searchQuery, setSearchQuery] = useState("");
+  const [filterRole, setFilterRole] = useState<string>("all");
+  const [filterStatus, setFilterStatus] = useState<string>("all");
   const [selectedUsers, setSelectedUsers] = useState<number[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10;
@@ -24,90 +24,70 @@ const AdminUsers: React.FC = () => {
   const [users] = useState<User[]>([
     {
       id: 1,
-      name: 'John Doe',
-      email: 'john.doe@example.com',
-      role: 'Admin',
-      status: 'Active',
-      joinDate: '2024-01-15',
-      lastLogin: '2 hours ago',
+      name: "John Doe",
+      email: "john.doe@example.com",
+      role: "Admin",
+      status: "Pending",
+      phone: "6281572565173",
+      joinDate: "2024-01-15",
     },
     {
       id: 2,
-      name: 'Jane Smith',
-      email: 'jane.smith@example.com',
-      role: 'Developer',
-      status: 'Active',
-      joinDate: '2024-02-20',
-      lastLogin: '5 minutes ago',
+      name: "Jane Smith",
+      email: "jane.smith@example.com",
+      role: "Developer",
+      status: "Approve",
+      phone: "6281572565173",
+      joinDate: "2024-02-20",
     },
-    {
-      id: 3,
-      name: 'Mike Johnson',
-      email: 'mike.johnson@example.com',
-      role: 'User',
-      status: 'Inactive',
-      joinDate: '2024-01-10',
-      lastLogin: '2 days ago',
-    },
+
     {
       id: 4,
-      name: 'Sarah Williams',
-      email: 'sarah.williams@example.com',
-      role: 'Developer',
-      status: 'Active',
-      joinDate: '2024-03-05',
-      lastLogin: '1 hour ago',
+      name: "Sarah Williams",
+      email: "sarah.williams@example.com",
+      role: "Developer",
+      status: "Approve",
+      phone: "6281572565173",
+      joinDate: "2024-03-05",
     },
-    {
-      id: 5,
-      name: 'Tom Brown',
-      email: 'tom.brown@example.com',
-      role: 'User',
-      status: 'Suspended',
-      joinDate: '2023-12-20',
-      lastLogin: '1 week ago',
-    },
+
     {
       id: 6,
-      name: 'Emily Davis',
-      email: 'emily.davis@example.com',
-      role: 'Admin',
-      status: 'Active',
-      joinDate: '2024-01-25',
-      lastLogin: '30 minutes ago',
+      name: "Emily Davis",
+      email: "emily.davis@example.com",
+      role: "Admin",
+      status: "Approve",
+      phone: "6281572565173",
+      joinDate: "2024-01-25",
     },
     {
       id: 7,
-      name: 'David Wilson',
-      email: 'david.wilson@example.com',
-      role: 'Developer',
-      status: 'Active',
-      joinDate: '2024-02-15',
-      lastLogin: '3 hours ago',
-    },
-    {
-      id: 8,
-      name: 'Lisa Anderson',
-      email: 'lisa.anderson@example.com',
-      role: 'User',
-      status: 'Active',
-      joinDate: '2024-03-10',
-      lastLogin: '1 day ago',
+      name: "David Wilson",
+      email: "david.wilson@example.com",
+      role: "Developer",
+      status: "Rejected",
+      phone: "6281572565173",
+      joinDate: "2024-02-15",
     },
   ]);
 
   const filteredUsers = users.filter((user) => {
-    const matchesSearch = user.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                          user.email.toLowerCase().includes(searchQuery.toLowerCase());
-    const matchesRole = filterRole === 'all' || user.role === filterRole;
-    const matchesStatus = filterStatus === 'all' || user.status === filterStatus;
-    
+    const matchesSearch =
+      user.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      user.email.toLowerCase().includes(searchQuery.toLowerCase());
+    const matchesRole = filterRole === "all" || user.role === filterRole;
+    const matchesStatus =
+      filterStatus === "all" || user.status === filterStatus;
+
     return matchesSearch && matchesRole && matchesStatus;
   });
 
   const totalPages = Math.ceil(filteredUsers.length / itemsPerPage);
   const startIndex = (currentPage - 1) * itemsPerPage;
-  const paginatedUsers = filteredUsers.slice(startIndex, startIndex + itemsPerPage);
+  const paginatedUsers = filteredUsers.slice(
+    startIndex,
+    startIndex + itemsPerPage
+  );
 
   const handleSelectAll = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.checked) {
@@ -119,226 +99,194 @@ const AdminUsers: React.FC = () => {
 
   const handleSelectUser = (userId: number) => {
     setSelectedUsers((prev) =>
-      prev.includes(userId) ? prev.filter((id) => id !== userId) : [...prev, userId]
+      prev.includes(userId)
+        ? prev.filter((id) => id !== userId)
+        : [...prev, userId]
     );
   };
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'Active':
-        return 'bg-green-100 text-green-700';
-      case 'Inactive':
-        return 'bg-gray-100 text-gray-700';
-      case 'Suspended':
-        return 'bg-red-100 text-red-700';
+      case "Pending":
+        return "bg-green-100 text-green-700";
+      case "Approve":
+        return "bg-gray-100 text-gray-700";
+      case "Rejected":
+        return "bg-red-100 text-red-700";
       default:
-        return 'bg-gray-100 text-gray-700';
+        return "bg-gray-100 text-gray-700";
     }
   };
 
   const getRoleBadgeColor = (role: string) => {
     switch (role) {
-      case 'Admin':
-        return 'bg-blue-100 text-blue-700';
-      case 'Developer':
-        return 'bg-purple-100 text-purple-700';
-      case 'User':
-        return 'bg-gray-100 text-gray-700';
+      case "Admin":
+        return "bg-blue-100 text-blue-700";
+      case "Developer":
+        return "bg-purple-100 text-purple-700";
       default:
-        return 'bg-gray-100 text-gray-700';
+        return "bg-gray-100 text-gray-700";
     }
   };
 
   return (
     <div className="space-y-6">
-      {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+      {/* Header: Stacked on mobile, side-by-side on desktop */}
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">Users Management</h1>
-          <p className="text-gray-600 mt-1">Manage and monitor all system users.</p>
+          <h1 className="text-xl font-bold text-gray-900 sm:text-2xl">
+            Users Management
+          </h1>
+          <p className="text-xs text-gray-500 sm:text-sm">
+            Total {users.length} system users.
+          </p>
         </div>
-        <div className="flex items-center gap-3">
-          <Button variant="outline" size="md">
-            <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-            </svg>
+        <div className="flex gap-2">
+          <Button variant="outline" size="sm" className="flex-1 sm:flex-none">
             Export
           </Button>
-          <Button variant="primary" size="md">
-            <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-            </svg>
-            Add User
+          <Button variant="primary" size="sm" className="flex-1 sm:flex-none">
+            + Add User
           </Button>
         </div>
       </div>
 
-      {/* Filters and Search */}
-      <div className="bg-white rounded-xl shadow-md p-6">
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-          {/* Search */}
-          <div className="lg:col-span-2">
-            <div className="relative">
-              <input
-                type="text"
-                placeholder="Search by name or email..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-              />
-              <svg
-                className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-                />
-              </svg>
-            </div>
-          </div>
-
-          {/* Role Filter */}
-          <div>
-            <select
-              value={filterRole}
-              onChange={(e) => setFilterRole(e.target.value)}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-            >
-              <option value="all">All Roles</option>
-              <option value="Admin">Admin</option>
-              <option value="Developer">Developer</option>
-              <option value="User">User</option>
-            </select>
-          </div>
-
-          {/* Status Filter */}
-          <div>
-            <select
-              value={filterStatus}
-              onChange={(e) => setFilterStatus(e.target.value)}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-            >
-              <option value="all">All Status</option>
-              <option value="Active">Active</option>
-              <option value="Inactive">Inactive</option>
-              <option value="Suspended">Suspended</option>
-            </select>
-          </div>
+      {/* Filter Bar: Compact Grid */}
+      <div className="grid grid-cols-1 gap-3 md:grid-cols-4 lg:grid-cols-5">
+        <div className="md:col-span-2 lg:col-span-3 relative">
+          <input
+            type="text"
+            placeholder="Search name/email..."
+            className="w-full pl-9 pr-4 py-2 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500/20 outline-none"
+            onChange={(e) => setSearchQuery(e.target.value)}
+          />
+          <svg
+            className="absolute left-3 top-2.5 h-4 w-4 text-gray-400"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+            />
+          </svg>
         </div>
-
-        {/* Bulk Actions */}
-        {selectedUsers.length > 0 && (
-          <div className="mt-4 flex items-center gap-3">
-            <span className="text-sm text-gray-600">
-              {selectedUsers.length} user{selectedUsers.length > 1 ? 's' : ''} selected
-            </span>
-            <Button variant="outline" size="sm">
-              Export Selected
-            </Button>
-            <Button variant="danger" size="sm">
-              Delete Selected
-            </Button>
-          </div>
-        )}
+        <select
+          className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg outline-none focus:ring-2 focus:ring-blue-500/20"
+          onChange={(e) => setFilterRole(e.target.value)}
+        >
+          <option value="all">All Roles</option>
+          <option value="Admin">Admin</option>
+          <option value="Developer">Developer</option>
+        </select>
+        <select
+          className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg outline-none focus:ring-2 focus:ring-blue-500/20"
+          onChange={(e) => setFilterStatus(e.target.value)}
+        >
+          <option value="all">Status</option>
+          <option value="Approve">Approve</option>
+          <option value="Pending">Pending</option>
+        </select>
       </div>
 
-      {/* Users Table */}
-      <div className="bg-white rounded-xl shadow-md overflow-hidden">
-        <div className="overflow-x-auto">
-          <table className="w-full">
-            <thead className="bg-gray-50 border-b border-gray-200">
+      {/* Table Section: Truly Responsive */}
+      <div className="bg-white border border-gray-200 rounded-xl overflow-hidden shadow-sm">
+        <div className="overflow-x-auto overflow-y-hidden">
+          <table className="w-full text-sm text-left">
+            <thead className="bg-gray-50 border-b border-gray-200 text-gray-600 font-semibold">
               <tr>
-                <th className="px-6 py-3 text-left">
+                <th className="px-4 py-3 w-4">
                   <input
                     type="checkbox"
-                    checked={selectedUsers.length === paginatedUsers.length && paginatedUsers.length > 0}
-                    onChange={handleSelectAll}
-                    className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+                    className="rounded border-gray-300 text-blue-600"
                   />
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  User
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Role
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Status
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Join Date
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Last Login
-                </th>
-                <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Actions
-                </th>
+                <th className="px-4 py-3">User Information</th>
+                <th className="hidden lg:table-cell px-4 py-3">Phone</th>
+                <th className="hidden md:table-cell px-4 py-3">Role</th>
+                <th className="px-4 py-3">Status</th>
+                <th className="hidden lg:table-cell px-4 py-3">Join Date</th>
+                <th className="px-4 py-3 text-right">Actions</th>
               </tr>
             </thead>
-            <tbody className="bg-white divide-y divide-gray-200">
+            <tbody className="divide-y divide-gray-100">
               {paginatedUsers.map((user) => (
-                <tr key={user.id} className="hover:bg-gray-50 transition-colors duration-150">
-                  <td className="px-6 py-4">
+                <tr key={user.id} className="hover:bg-gray-50/50">
+                  <td className="px-4 py-4">
                     <input
                       type="checkbox"
-                      checked={selectedUsers.includes(user.id)}
-                      onChange={() => handleSelectUser(user.id)}
-                      className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+                      className="rounded border-gray-300 text-blue-600"
                     />
                   </td>
-                  <td className="px-6 py-4">
-                    <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-500 rounded-full flex items-center justify-center">
-                        <span className="text-white font-semibold text-sm">
-                          {user.name.split(' ').map(n => n[0]).join('')}
+                  <td className="px-4 py-4">
+                    <div className="flex flex-col">
+                      <span className="font-semibold text-gray-900 truncate max-w-[140px] sm:max-w-none">
+                        {user.name}
+                      </span>
+                      <span className="text-[11px] text-gray-500 truncate max-w-[140px] sm:max-w-none">
+                        {user.email}
+                      </span>
+                      {/* Info tambahan yang muncul HANYA di mobile */}
+                      <div className="flex gap-2 mt-1 md:hidden">
+                        <span className="text-[10px] font-bold uppercase text-blue-600 tracking-tighter">
+                          {user.role}
                         </span>
-                      </div>
-                      <div>
-                        <div className="font-medium text-gray-900">{user.name}</div>
-                        <div className="text-sm text-gray-500">{user.email}</div>
                       </div>
                     </div>
                   </td>
-                  <td className="px-6 py-4">
-                    <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${getRoleBadgeColor(user.role)}`}>
-                      {user.role}
-                    </span>
+                  <td className="hidden lg:table-cell px-4 py-4 text-gray-500">
+                    {user.phone}
                   </td>
-                  <td className="px-6 py-4">
-                    <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${getStatusColor(user.status)}`}>
+                  <td className="hidden md:table-cell px-4 py-4 text-gray-600">
+                    {user.role}
+                  </td>
+                  <td className="px-4 py-4">
+                    <span
+                      className={`px-2 py-0.5 rounded-full text-[10px] font-bold uppercase border ${
+                        user.status === "Approve"
+                          ? "bg-green-50 border-green-200 text-green-700"
+                          : "bg-orange-50 border-orange-200 text-orange-700"
+                      }`}
+                    >
                       {user.status}
                     </span>
                   </td>
-                  <td className="px-6 py-4 text-sm text-gray-900">
-                    {new Date(user.joinDate).toLocaleDateString('en-US', { 
-                      year: 'numeric', 
-                      month: 'short', 
-                      day: 'numeric' 
-                    })}
+                  <td className="hidden lg:table-cell px-4 py-4 text-gray-500">
+                    {user.joinDate}
                   </td>
-                  <td className="px-6 py-4 text-sm text-gray-500">{user.lastLogin}</td>
-                  <td className="px-6 py-4 text-right">
-                    <div className="flex items-center justify-end gap-2">
-                      <button className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors duration-150">
-                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                  <td className="px-4 py-4 text-right">
+                    <div className="flex justify-end gap-1">
+                      <button className="p-1.5 hover:bg-blue-50 text-blue-600 rounded-md transition-colors">
+                        <svg
+                          className="w-4 h-4"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"
+                          />
                         </svg>
                       </button>
-                      <button className="p-2 text-green-600 hover:bg-green-50 rounded-lg transition-colors duration-150">
-                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-                        </svg>
-                      </button>
-                      <button className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors duration-150">
-                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                      <button className="p-1.5 hover:bg-red-50 text-red-600 rounded-md transition-colors">
+                        <svg
+                          className="w-4 h-4"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+                          />
                         </svg>
                       </button>
                     </div>
@@ -349,36 +297,23 @@ const AdminUsers: React.FC = () => {
           </table>
         </div>
 
-        {/* Pagination */}
-        <div className="px-6 py-4 border-t border-gray-200 flex items-center justify-between">
-          <div className="text-sm text-gray-500">
-            Showing {startIndex + 1} to {Math.min(startIndex + itemsPerPage, filteredUsers.length)} of {filteredUsers.length} users
-          </div>
-          <div className="flex items-center gap-2">
+        {/* Simple Pagination */}
+        <div className="px-4 py-3 border-t border-gray-100 flex items-center justify-between bg-gray-50/50">
+          <p className="text-[11px] text-gray-500 font-medium">
+            Page {currentPage} of {totalPages}
+          </p>
+          <div className="flex gap-2">
             <button
-              onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+              onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+              className="px-3 py-1 text-xs font-semibold border border-gray-300 rounded-md bg-white hover:bg-gray-50 disabled:opacity-40"
               disabled={currentPage === 1}
-              className="px-3 py-1 border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-150"
             >
-              Previous
+              Prev
             </button>
-            {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
-              <button
-                key={page}
-                onClick={() => setCurrentPage(page)}
-                className={`px-3 py-1 rounded-lg transition-colors duration-150 ${
-                  currentPage === page
-                    ? 'bg-blue-600 text-white'
-                    : 'border border-gray-300 hover:bg-gray-50'
-                }`}
-              >
-                {page}
-              </button>
-            ))}
             <button
-              onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
+              onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
+              className="px-3 py-1 text-xs font-semibold border border-gray-300 rounded-md bg-white hover:bg-gray-50 disabled:opacity-40"
               disabled={currentPage === totalPages}
-              className="px-3 py-1 border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-150"
             >
               Next
             </button>
