@@ -1,133 +1,115 @@
 'use client';
 
-import React from 'react';
-import { FaUsers, FaFolderOpen, FaDollarSign, FaTicketAlt, FaArrowUp, FaArrowDown, FaPlus, FaEdit, FaTrash, FaComment } from 'react-icons/fa';
+import { useRequireAuth } from '@/hooks/useRequireAuth';
+import MainLayouts from '@/components/layouts/MainLayouts';
 
-interface StatCardProps {
-  title: string;
-  value: string | number;
-  change: number;
-  icon: React.ReactNode;
-  color: string;
-}
+export default function AdminDashboard() {
+  const { user, loading, isAuthorized } = useRequireAuth(['admin']);
 
-const StatCard: React.FC<StatCardProps> = ({ title, value, change, icon, color }) => {
-  const isPositive = change >= 0;
-
-  return (
-    <div className="bg-white rounded-xl shadow-md p-6 hover:shadow-lg transition-shadow duration-200">
-      <div className="flex items-center justify-between mb-4">
-        <div className={`p-3 rounded-lg ${color}`}>
-          {icon}
-        </div>
-        <div className={`flex items-center gap-1 text-sm font-medium ${
-          isPositive ? 'text-green-600' : 'text-red-600'
-        }`}>
-          {isPositive ? <FaArrowUp className="w-3 h-3" /> : <FaArrowDown className="w-3 h-3" />}
-          {Math.abs(change)}%
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+        <div className="text-center">
+          <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600"></div>
+          <p className="mt-4 text-gray-600">Loading...</p>
         </div>
       </div>
-      <h3 className="text-gray-600 text-sm font-medium mb-1">{title}</h3>
-      <p className="text-2xl font-bold text-gray-900">{value}</p>
-    </div>
-  );
-};
+    );
+  }
 
-const AdminDashboard: React.FC = () => {
-  const stats = [
-    {
-      title: 'Total Users',
-      value: '2,543',
-      change: 12.5,
-      icon: <FaUsers className="w-6 h-6 text-blue-600" />,
-      color: 'bg-blue-100',
-    },
-    {
-      title: 'Active Projects',
-      value: '156',
-      change: 8.2,
-      icon: <FaFolderOpen className="w-6 h-6 text-green-600" />,
-      color: 'bg-green-100',
-    },
-    {
-      title: 'Revenue',
-      value: '$45,231',
-      change: 15.3,
-      icon: <FaDollarSign className="w-6 h-6 text-purple-600" />,
-      color: 'bg-purple-100',
-    },
-    {
-      title: 'Support Tickets',
-      value: '89',
-      change: -3.1,
-      icon: <FaTicketAlt className="w-6 h-6 text-orange-600" />,
-      color: 'bg-orange-100',
-    },
-  ];
-
-  const recentActivities = [
-    { id: 1, user: 'John Doe', action: 'created a new project', time: '2 minutes ago', type: 'create' },
-    { id: 2, user: 'Jane Smith', action: 'updated user profile', time: '15 minutes ago', type: 'update' },
-    { id: 3, user: 'Mike Johnson', action: 'deleted a task', time: '1 hour ago', type: 'delete' },
-    { id: 4, user: 'Sarah Williams', action: 'commented on issue #234', time: '2 hours ago', type: 'comment' },
-  ];
-
-  const getActivityIcon = (type: string) => {
-    switch (type) {
-      case 'create':
-        return <div className="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center text-green-600">
-          <FaPlus className="w-4 h-4" />
-        </div>;
-      case 'update':
-        return <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center text-blue-600">
-          <FaEdit className="w-4 h-4" />
-        </div>;
-      case 'delete':
-        return <div className="w-8 h-8 bg-red-100 rounded-full flex items-center justify-center text-red-600">
-          <FaTrash className="w-4 h-4" />
-        </div>;
-      default:
-        return <div className="w-8 h-8 bg-gray-100 rounded-full flex items-center justify-center text-gray-600">
-          <FaComment className="w-4 h-4" />
-        </div>;
-    }
-  };
+  if (!isAuthorized) {
+    return null;
+  }
 
   return (
-    <div className="space-y-6">
-      {/* Header */}
-      <div>
-        <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">Admin Dashboard</h1>
-        <p className="text-gray-600 mt-1">Welcome back! Here&apos;s what&apos;s happening today</p>
-      </div>
+    <MainLayouts userRole="admin">
+      <div className="space-y-6">
+        {/* Header */}
+        <div className="bg-white rounded-lg shadow-md p-6">
+          <h1 className="text-3xl font-bold text-gray-900 mb-2">
+            Admin Dashboard
+          </h1>
+          <p className="text-gray-600">
+            Welcome back, {user?.user_metadata?.full_name || 'Admin'}!
+          </p>
+        </div>
 
-      {/* Stats Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-        {stats.map((stat, index) => (
-          <StatCard key={index} {...stat} />
-        ))}
-      </div>
+        {/* User Info Card */}
+        <div className="bg-white rounded-lg shadow-md p-6">
+          <h2 className="text-xl font-semibold text-gray-900 mb-4">
+            Account Information
+          </h2>
+          <div className="space-y-3">
+            <div className="flex items-center justify-between py-3 border-b border-gray-200">
+              <span className="text-sm font-medium text-gray-600">Email:</span>
+              <span className="text-sm text-gray-900">{user?.email}</span>
+            </div>
+            <div className="flex items-center justify-between py-3 border-b border-gray-200">
+              <span className="text-sm font-medium text-gray-600">Role:</span>
+              <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-purple-100 text-purple-800">
+                {user?.user_metadata?.role}
+              </span>
+            </div>
+            <div className="flex items-center justify-between py-3 border-b border-gray-200">
+              <span className="text-sm font-medium text-gray-600">Status:</span>
+              <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                {user?.user_metadata?.status}
+              </span>
+            </div>
+            <div className="flex items-center justify-between py-3">
+              <span className="text-sm font-medium text-gray-600">Phone:</span>
+              <span className="text-sm text-gray-900">
+                {user?.user_metadata?.phone || user?.phone || '-'}
+              </span>
+            </div>
+          </div>
+        </div>
 
-      {/* Recent Activity */}
-      <div className="bg-white rounded-xl shadow-md p-6">
-        <h2 className="text-lg font-semibold text-gray-900 mb-4">Recent Activity</h2>
-        <div className="space-y-4">
-          {recentActivities.map((activity) => (
-            <div key={activity.id} className="flex items-start gap-3 pb-4 border-b border-gray-100 last:border-0 last:pb-0">
-              {getActivityIcon(activity.type)}
-              <div className="flex-1 min-w-0">
-                <p className="text-sm text-gray-900">
-                  <span className="font-medium">{activity.user}</span>{' '}
-                  <span className="text-gray-600">{activity.action}</span>
-                </p>
-                <p className="text-xs text-gray-500 mt-0.5">{activity.time}</p>
+        {/* Quick Stats */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div className="bg-white rounded-lg shadow-md p-6">
+            <div className="flex items-center">
+              <div className="flex-shrink-0 bg-blue-100 rounded-lg p-3">
+                <svg className="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
+                </svg>
+              </div>
+              <div className="ml-4">
+                <p className="text-sm font-medium text-gray-600">Total Users</p>
+                <p className="text-2xl font-semibold text-gray-900">0</p>
               </div>
             </div>
-          ))}
+          </div>
+
+          <div className="bg-white rounded-lg shadow-md p-6">
+            <div className="flex items-center">
+              <div className="flex-shrink-0 bg-green-100 rounded-lg p-3">
+                <svg className="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+              </div>
+              <div className="ml-4">
+                <p className="text-sm font-medium text-gray-600">Active Users</p>
+                <p className="text-2xl font-semibold text-gray-900">0</p>
+              </div>
+            </div>
+          </div>
+
+          <div className="bg-white rounded-lg shadow-md p-6">
+            <div className="flex items-center">
+              <div className="flex-shrink-0 bg-yellow-100 rounded-lg p-3">
+                <svg className="w-6 h-6 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+              </div>
+              <div className="ml-4">
+                <p className="text-sm font-medium text-gray-600">Pending</p>
+                <p className="text-2xl font-semibold text-gray-900">0</p>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
-    </div>
+    </MainLayouts>
   );
-};
-
-export default AdminDashboard;
+}

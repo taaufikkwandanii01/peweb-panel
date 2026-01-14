@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useAuth } from "@/contexts/AuthContext";
 import Navbar from "../fragments/Navbar";
 import Sidebar from "../fragments/Sidebar";
 import Footer from "../fragments/Footer";
@@ -9,7 +9,6 @@ import Footer from "../fragments/Footer";
 interface MainLayoutsProps {
   children: React.ReactNode;
   userRole: "admin" | "developer";
-  userName?: string;
   showSidebar?: boolean;
   showFooter?: boolean;
 }
@@ -17,17 +16,18 @@ interface MainLayoutsProps {
 const MainLayouts: React.FC<MainLayoutsProps> = ({
   children,
   userRole,
-  userName = "User",
   showSidebar = true,
   showFooter = true,
 }) => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-  const router = useRouter();
+  const { user, signOut } = useAuth();
 
-  const handleLogout = () => {
-    // Add your logout logic here
-    console.log("Logging out...");
-    router.push("/auth/login");
+  const handleLogout = async () => {
+    try {
+      await signOut();
+    } catch (error) {
+      console.error("Logout error:", error);
+    }
   };
 
   const toggleSidebar = () => {
@@ -37,6 +37,9 @@ const MainLayouts: React.FC<MainLayoutsProps> = ({
   const closeSidebar = () => {
     setIsSidebarOpen(false);
   };
+
+  // Get user name from metadata
+  const userName = user?.user_metadata?.full_name || user?.email?.split('@')[0] || "User";
 
   return (
     <div className="min-h-screen flex flex-col bg-gray-50">

@@ -1,138 +1,128 @@
 'use client';
 
-import React from 'react';
-import { FaFolderOpen, FaCode, FaExclamationTriangle, FaCheckCircle, FaArrowUp, FaArrowDown } from 'react-icons/fa';
+import { useRequireAuth } from '@/hooks/useRequireAuth';
+import MainLayouts from '@/components/layouts/MainLayouts';
 
-interface StatCardProps {
-  title: string;
-  value: string | number;
-  change: number;
-  icon: React.ReactNode;
-  color: string;
-}
+export default function DeveloperDashboard() {
+  const { user, loading, isAuthorized } = useRequireAuth(['developer']);
 
-const StatCard: React.FC<StatCardProps> = ({ title, value, change, icon, color }) => {
-  const isPositive = change >= 0;
-
-  return (
-    <div className="bg-white rounded-xl shadow-md p-6 hover:shadow-lg transition-shadow duration-200">
-      <div className="flex items-center justify-between mb-4">
-        <div className={`p-3 rounded-lg ${color}`}>
-          {icon}
-        </div>
-        <div className={`flex items-center gap-1 text-sm font-medium ${
-          isPositive ? 'text-green-600' : 'text-red-600'
-        }`}>
-          {isPositive ? <FaArrowUp className="w-3 h-3" /> : <FaArrowDown className="w-3 h-3" />}
-          {Math.abs(change)}%
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+        <div className="text-center">
+          <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600"></div>
+          <p className="mt-4 text-gray-600">Loading...</p>
         </div>
       </div>
-      <h3 className="text-gray-600 text-sm font-medium mb-1">{title}</h3>
-      <p className="text-2xl font-bold text-gray-900">{value}</p>
-    </div>
-  );
-};
+    );
+  }
 
-const DeveloperDashboard: React.FC = () => {
-  const stats = [
-    {
-      title: 'Active Projects',
-      value: '12',
-      change: 20.0,
-      icon: <FaFolderOpen className="w-6 h-6 text-purple-600" />,
-      color: 'bg-purple-100',
-    },
-    {
-      title: 'Commits Today',
-      value: '47',
-      change: 15.3,
-      icon: <FaCode className="w-6 h-6 text-blue-600" />,
-      color: 'bg-blue-100',
-    },
-    {
-      title: 'Open Issues',
-      value: '23',
-      change: -8.5,
-      icon: <FaExclamationTriangle className="w-6 h-6 text-orange-600" />,
-      color: 'bg-orange-100',
-    },
-    {
-      title: 'Code Reviews',
-      value: '8',
-      change: 12.1,
-      icon: <FaCheckCircle className="w-6 h-6 text-green-600" />,
-      color: 'bg-green-100',
-    },
-  ];
-
-  const recentProjects = [
-    {
-      id: 1,
-      name: 'E-Commerce Platform',
-      status: 'In Progress',
-      progress: 75,
-      color: 'bg-blue-500',
-    },
-    {
-      id: 2,
-      name: 'Mobile Banking App',
-      status: 'Review',
-      progress: 90,
-      color: 'bg-purple-500',
-    },
-    {
-      id: 3,
-      name: 'Analytics Dashboard',
-      status: 'In Progress',
-      progress: 45,
-      color: 'bg-green-500',
-    },
-  ];
+  if (!isAuthorized) {
+    return null;
+  }
 
   return (
-    <div className="space-y-6">
-      {/* Header */}
-      <div>
-        <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">Developer Dashboard</h1>
-        <p className="text-gray-600 mt-1">Track your projects and development activity</p>
-      </div>
+    <MainLayouts userRole="developer">
+      <div className="space-y-6">
+        {/* Header */}
+        <div className="bg-white rounded-lg shadow-md p-6">
+          <h1 className="text-3xl font-bold text-gray-900 mb-2">
+            Developer Dashboard
+          </h1>
+          <p className="text-gray-600">
+            Welcome back, {user?.user_metadata?.full_name || 'Developer'}!
+          </p>
+        </div>
 
-      {/* Stats Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-        {stats.map((stat, index) => (
-          <StatCard key={index} {...stat} />
-        ))}
-      </div>
+        {/* User Info Card */}
+        <div className="bg-white rounded-lg shadow-md p-6">
+          <h2 className="text-xl font-semibold text-gray-900 mb-4">
+            Account Information
+          </h2>
+          <div className="space-y-3">
+            <div className="flex items-center justify-between py-3 border-b border-gray-200">
+              <span className="text-sm font-medium text-gray-600">Email:</span>
+              <span className="text-sm text-gray-900">{user?.email}</span>
+            </div>
+            <div className="flex items-center justify-between py-3 border-b border-gray-200">
+              <span className="text-sm font-medium text-gray-600">Role:</span>
+              <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                {user?.user_metadata?.role}
+              </span>
+            </div>
+            <div className="flex items-center justify-between py-3 border-b border-gray-200">
+              <span className="text-sm font-medium text-gray-600">Status:</span>
+              <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                {user?.user_metadata?.status}
+              </span>
+            </div>
+            <div className="flex items-center justify-between py-3">
+              <span className="text-sm font-medium text-gray-600">Phone:</span>
+              <span className="text-sm text-gray-900">
+                {user?.user_metadata?.phone || user?.phone || '-'}
+              </span>
+            </div>
+          </div>
+        </div>
 
-      {/* Recent Projects */}
-      <div className="bg-white rounded-xl shadow-md p-6">
-        <h2 className="text-lg font-semibold text-gray-900 mb-6">Recent Projects</h2>
-        <div className="space-y-4">
-          {recentProjects.map((project) => (
-            <div key={project.id} className="p-4 border border-gray-200 rounded-lg hover:border-purple-300 hover:shadow-sm transition-all duration-200">
-              <div className="flex items-start justify-between mb-3">
-                <div>
-                  <h3 className="font-semibold text-gray-900">{project.name}</h3>
-                  <span className="inline-flex items-center mt-1 px-2 py-1 rounded-full text-xs font-medium bg-blue-50 text-blue-700">
-                    {project.status}
-                  </span>
-                </div>
-                <span className="text-sm font-semibold text-gray-900">{project.progress}%</span>
+        {/* Quick Stats */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div className="bg-white rounded-lg shadow-md p-6">
+            <div className="flex items-center">
+              <div className="flex-shrink-0 bg-indigo-100 rounded-lg p-3">
+                <svg className="w-6 h-6 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" />
+                </svg>
               </div>
-              
-              {/* Progress Bar */}
-              <div className="w-full bg-gray-200 rounded-full h-2">
-                <div
-                  className={`h-2 rounded-full transition-all duration-300 ${project.color}`}
-                  style={{ width: `${project.progress}%` }}
-                ></div>
+              <div className="ml-4">
+                <p className="text-sm font-medium text-gray-600">Projects</p>
+                <p className="text-2xl font-semibold text-gray-900">0</p>
               </div>
             </div>
-          ))}
+          </div>
+
+          <div className="bg-white rounded-lg shadow-md p-6">
+            <div className="flex items-center">
+              <div className="flex-shrink-0 bg-green-100 rounded-lg p-3">
+                <svg className="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+              </div>
+              <div className="ml-4">
+                <p className="text-sm font-medium text-gray-600">Completed</p>
+                <p className="text-2xl font-semibold text-gray-900">0</p>
+              </div>
+            </div>
+          </div>
+
+          <div className="bg-white rounded-lg shadow-md p-6">
+            <div className="flex items-center">
+              <div className="flex-shrink-0 bg-yellow-100 rounded-lg p-3">
+                <svg className="w-6 h-6 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+              </div>
+              <div className="ml-4">
+                <p className="text-sm font-medium text-gray-600">In Progress</p>
+                <p className="text-2xl font-semibold text-gray-900">0</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Recent Activity */}
+        <div className="bg-white rounded-lg shadow-md p-6">
+          <h2 className="text-xl font-semibold text-gray-900 mb-4">
+            Recent Activity
+          </h2>
+          <div className="text-center py-8">
+            <svg className="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+            </svg>
+            <p className="mt-2 text-sm text-gray-500">No recent activity</p>
+          </div>
         </div>
       </div>
-    </div>
+    </MainLayouts>
   );
-};
-
-export default DeveloperDashboard;
+}
