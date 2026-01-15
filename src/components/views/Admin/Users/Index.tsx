@@ -12,6 +12,8 @@ import {
   FiPhone,
   FiCalendar,
   FiUser,
+  FiSearch,
+  FiAlertTriangle,
 } from "react-icons/fi";
 import { HiOutlineBadgeCheck } from "react-icons/hi";
 
@@ -35,7 +37,7 @@ const AdminUsers: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [filterStatus, setFilterStatus] = useState<string>("all");
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 10;
+  const itemsPerPage = 6;
 
   // State untuk data
   const [users, setUsers] = useState<ApiUser[]>([]);
@@ -252,19 +254,7 @@ const AdminUsers: React.FC = () => {
             className="w-full pl-9 pr-4 py-2 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500/20 outline-none"
             onChange={(e) => setSearchQuery(e.target.value)}
           />
-          <svg
-            className="absolute left-3 top-2.5 h-4 w-4 text-gray-400"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-            />
-          </svg>
+          <FiSearch className="absolute left-3 top-2.5 h-4 w-4 text-gray-400" />
         </div>
 
         <select
@@ -477,19 +467,7 @@ const AdminUsers: React.FC = () => {
           <div className="space-y-4">
             <div className="bg-red-50 border border-red-200 rounded-lg p-4">
               <div className="flex items-start gap-3">
-                <svg
-                  className="w-5 h-5 text-red-600 mt-0.5 flex-shrink-0"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
-                  />
-                </svg>
+                <FiAlertTriangle className="w-5 h-5 text-red-600 mt-0.5 flex-shrink-0" />
                 <div>
                   <h4 className="text-sm font-semibold text-red-800">
                     Warning: Permanent Action
