@@ -5,6 +5,15 @@ import Button from "@/components/ui/Button";
 import Modal from "@/components/ui/Modal";
 import Toast, { ToastType } from "@/components/ui/Toast";
 import { adminService, ApiUser } from "@/services/adminService";
+import {
+  FiEdit2,
+  FiTrash2,
+  FiMail,
+  FiPhone,
+  FiCalendar,
+  FiUser,
+} from "react-icons/fi";
+import { HiOutlineBadgeCheck } from "react-icons/hi";
 
 interface ToastState {
   isVisible: boolean;
@@ -270,139 +279,102 @@ const AdminUsers: React.FC = () => {
         </select>
       </div>
 
-      {/* Table Section */}
-      <div className="bg-white border border-gray-200 rounded-xl overflow-hidden shadow-sm">
-        <div className="overflow-x-auto overflow-y-hidden">
-          <table className="w-full text-sm text-left">
-            <thead className="bg-gray-50 border-b border-gray-200 text-gray-600 font-semibold">
-              <tr>
-                <th className="px-4 py-3">User Information</th>
-                <th className="hidden md:table-cell px-4 py-3 text-center">
-                  Role
-                </th>
-                <th className="px-4 py-3 text-center">Status</th>
-                <th className="hidden lg:table-cell px-4 py-3 text-center">
-                  Join Date
-                </th>
-                <th className="px-4 py-3 text-right text-center">Actions</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-gray-100">
-              {paginatedUsers.length === 0 ? (
-                <tr>
-                  <td
-                    colSpan={6}
-                    className="px-4 py-8 text-center text-gray-500"
-                  >
-                    No users found
-                  </td>
-                </tr>
-              ) : (
-                paginatedUsers.map((user) => (
-                  <tr key={user.id} className="hover:bg-gray-50/50">
-                    <td className="px-4 py-4">
-                      <div className="flex flex-col">
-                        <span className="font-semibold text-gray-900 truncate max-w-[140px] sm:max-w-none">
-                          {user.full_name || "N/A"}
-                        </span>
-                        <span className="text-[11px] text-gray-500 truncate max-w-[140px] sm:max-w-none">
-                          {user.email}
-                        </span>
-                        <span className="text-[11px] text-gray-500 truncate max-w-[140px] sm:max-w-none">
-                          {user.phone}
-                        </span>
-                        <div className="flex gap-2 mt-1 md:hidden">
-                          <span className="text-[10px] font-bold uppercase text-blue-600 tracking-tighter">
-                            {user.role}
-                          </span>
-                        </div>
-                      </div>
-                    </td>
-                    <td className="hidden md:table-cell px-4 py-4 text-gray-600 text-center">
-                      <span>{user.role}</span>
-                    </td>
-                    <td className="px-4 py-4 text-center">
-                      <span
-                        className={`px-2 py-0.5 rounded-full text-[10px] font-bold uppercase border ${getStatusColor(
-                          user.status
-                        )}`}
-                      >
-                        {user.status}
-                      </span>
-                    </td>
-                    <td className="hidden lg:table-cell px-4 py-4 text-gray-500 text-center">
-                      {formatDate(user.created_at)}
-                    </td>
-                    <td className="px-4 py-4 text-center">
-                      <div className="flex justify-end gap-1">
-                        <button
-                          onClick={() => handleOpenEditModal(user)}
-                          className="p-1.5 hover:bg-blue-50 text-blue-600 rounded-md transition-colors"
-                          title="Edit user"
-                        >
-                          <svg
-                            className="w-4 h-4"
-                            fill="none"
-                            stroke="currentColor"
-                            viewBox="0 0 24 24"
-                          >
-                            <path
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              strokeWidth={2}
-                              d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"
-                            />
-                          </svg>
-                        </button>
-                        <button
-                          onClick={() => handleOpenDeleteModal(user)}
-                          className="p-1.5 hover:bg-red-50 text-red-600 rounded-md transition-colors"
-                          title="Delete user"
-                        >
-                          <svg
-                            className="w-4 h-4"
-                            fill="none"
-                            stroke="currentColor"
-                            viewBox="0 0 24 24"
-                          >
-                            <path
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              strokeWidth={2}
-                              d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
-                            />
-                          </svg>
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
-                ))
-              )}
-            </tbody>
-          </table>
-        </div>
-
-        {/* Pagination */}
-        <div className="px-4 py-3 border-t border-gray-100 flex items-center justify-between bg-gray-50/50">
-          <p className="text-[11px] text-gray-500 font-medium">
-            Page {currentPage} of {totalPages || 1}
-          </p>
-          <div className="flex gap-2">
-            <button
-              onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
-              className="px-3 py-1 text-xs font-semibold border border-gray-300 rounded-md bg-white hover:bg-gray-50 disabled:opacity-40"
-              disabled={currentPage === 1}
-            >
-              Prev
-            </button>
-            <button
-              onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
-              className="px-3 py-1 text-xs font-semibold border border-gray-300 rounded-md bg-white hover:bg-gray-50 disabled:opacity-40"
-              disabled={currentPage === totalPages}
-            >
-              Next
-            </button>
+      {/* Cards Section */}
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        {paginatedUsers.length === 0 ? (
+          <div className="col-span-full py-12 text-center bg-white border border-dashed border-gray-300 rounded-xl">
+            <FiUser className="mx-auto h-12 w-12 text-gray-300 mb-3" />
+            <p className="text-gray-500">No users found</p>
           </div>
+        ) : (
+          paginatedUsers.map((user) => (
+            <div
+              key={user.id}
+              className="group bg-white border border-gray-200 rounded-xl p-5 shadow-sm hover:shadow-md transition-all duration-200 flex flex-col justify-between"
+            >
+              <div>
+                {/* Card Header: Name & Status */}
+                <div className="flex justify-between items-start mb-4">
+                  <div className="flex flex-col">
+                    <span className="font-bold capitalize text-gray-900 text-lg leading-tight">
+                      {user.full_name || "N/A"}
+                    </span>
+                    <div className="flex items-center gap-1.5 mt-1">
+                      <span className="text-xs text-gray-500 font-medium uppercase tracking-wider">
+                        {user.role}
+                      </span>
+                    </div>
+                  </div>
+                  <span
+                    className={`px-2.5 py-1 rounded-lg text-[10px] font-bold uppercase border shadow-sm ${getStatusColor(
+                      user.status
+                    )}`}
+                  >
+                    {user.status}
+                  </span>
+                </div>
+
+                {/* Card Body: Contact Info */}
+                <div className="space-y-2.5 mb-6">
+                  <div className="flex items-center text-gray-600 group/item">
+                    <FiMail className="w-3.5 h-3.5 mr-2 text-gray-400 group-hover/item:text-blue-500" />
+                    <span className="text-xs truncate">{user.email}</span>
+                  </div>
+                  <div className="flex items-center text-gray-600 group/item">
+                    <FiPhone className="w-3.5 h-3.5 mr-2 text-gray-400 group-hover/item:text-blue-500" />
+                    <span className="text-xs">{user.phone || "-"}</span>
+                  </div>
+                  <div className="flex items-center text-gray-400 mt-4 pt-3 border-t border-gray-50">
+                    <FiCalendar className="w-3.5 h-3.5 mr-2" />
+                    <span className="text-[11px]">
+                      Joined {formatDate(user.created_at)}
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Card Footer: Actions */}
+              <div className="flex gap-3">
+                <button
+                  onClick={() => handleOpenEditModal(user)}
+                  className="flex-1 flex justify-center items-center gap-2 py-2 text-sm font-semibold text-blue-600 bg-blue-50 hover:bg-blue-600 hover:text-white rounded-lg transition-all duration-200"
+                >
+                  <FiEdit2 className="w-3.5 h-3.5" />
+                  Edit
+                </button>
+                <button
+                  onClick={() => handleOpenDeleteModal(user)}
+                  className="flex-1 flex justify-center items-center gap-2 py-2 text-sm font-semibold text-red-600 bg-red-50 hover:bg-red-600 hover:text-white rounded-lg transition-all duration-200"
+                >
+                  <FiTrash2 className="w-3.5 h-3.5" />
+                  Delete
+                </button>
+              </div>
+            </div>
+          ))
+        )}
+      </div>
+
+      {/* Pagination (Disesuaikan agar tanpa border-t table) */}
+      <div className="mt-6 px-1 flex items-center justify-between">
+        <p className="text-[11px] text-gray-500 font-medium">
+          Page {currentPage} of {totalPages || 1}
+        </p>
+        <div className="flex gap-2">
+          <button
+            onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+            className="px-4 py-1.5 text-xs font-semibold border border-gray-300 rounded-lg bg-white hover:bg-gray-50 disabled:opacity-40 shadow-sm"
+            disabled={currentPage === 1}
+          >
+            Prev
+          </button>
+          <button
+            onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
+            className="px-4 py-1.5 text-xs font-semibold border border-gray-300 rounded-lg bg-white hover:bg-gray-50 disabled:opacity-40 shadow-sm"
+            disabled={currentPage === totalPages}
+          >
+            Next
+          </button>
         </div>
       </div>
 
