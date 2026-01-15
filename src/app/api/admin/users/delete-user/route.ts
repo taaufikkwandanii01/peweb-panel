@@ -67,7 +67,10 @@ export async function DELETE(request: NextRequest) {
       { status: 200 }
     );
   } catch (error) {
-    console.error("Unexpected error in DELETE /api/admin/delete-user:", error);
+    console.error(
+      "Unexpected error in DELETE /api/admin/users/delete-user:",
+      error
+    );
     return NextResponse.json(
       { error: "Internal server error" },
       { status: 500 }

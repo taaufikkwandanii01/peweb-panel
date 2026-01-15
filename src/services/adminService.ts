@@ -95,7 +95,7 @@ export const adminService = {
         throw new Error("Not authorized. Admin access required.");
       }
 
-      const response = await fetch("/api/admin/update-user-status", {
+      const response = await fetch("/api/admin/users/update-user-status", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -142,7 +142,7 @@ export const adminService = {
         throw new Error("Not authorized. Admin access required.");
       }
 
-      const response = await fetch("/api/admin/delete-user", {
+      const response = await fetch("/api/admin/users/delete-user", {
         method: "DELETE",
         headers: {
           "Content-Type": "application/json",
