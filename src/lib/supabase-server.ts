@@ -27,3 +27,24 @@ export async function createClient() {
     }
   );
 }
+
+/**
+ * Create Supabase admin client for server-side admin operations
+ * This client has elevated privileges and should only be used in API routes
+ */
+export async function createAdminClient() {
+  return createServerClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.SUPABASE_SERVICE_ROLE_KEY!,
+    {
+      cookies: {
+        getAll: () => [],
+        setAll: () => {},
+      },
+      auth: {
+        persistSession: false,
+        autoRefreshToken: false,
+      },
+    }
+  );
+}

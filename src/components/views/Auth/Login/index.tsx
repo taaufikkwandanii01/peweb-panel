@@ -1,120 +1,121 @@
-'use client';
+"use client";
 
-import { useState, FormEvent, ChangeEvent } from 'react';
-import { useRouter } from 'next/navigation';
-import Link from 'next/link';
-import { authService } from '@/services/authService';
-import Input from '@/components/ui/Input';
-import Button from '@/components/ui/Button';
+import { useState, FormEvent, ChangeEvent } from "react";
+import { useRouter } from "next/navigation";
+import Link from "next/link";
+import { authService } from "@/services/authService";
+import Input from "@/components/ui/Input";
+import Button from "@/components/ui/Button";
 
 interface FormData {
   email: string;
   password: string;
-  role: 'developer' | 'admin';
+  role: "developer" | "admin";
 }
 
 export default function LoginView() {
   const router = useRouter();
   const [formData, setFormData] = useState<FormData>({
-    email: '',
-    password: '',
-    role: 'developer',
+    email: "",
+    password: "",
+    role: "developer",
   });
   const [loading, setLoading] = useState<boolean>(false);
-  const [error, setError] = useState<string>('');
+  const [error, setError] = useState<string>("");
 
   const handleChange = (e: ChangeEvent<HTMLInputElement>): void => {
     const { name, value } = e.target;
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
       [name]: value,
     }));
-    setError('');
+    setError("");
   };
 
-  const handleRoleChange = (role: 'developer' | 'admin'): void => {
-    setFormData(prev => ({
+  const handleRoleChange = (role: "developer" | "admin"): void => {
+    setFormData((prev) => ({
       ...prev,
       role,
     }));
-    setError('');
+    setError("");
   };
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>): Promise<void> => {
     e.preventDefault();
     setLoading(true);
-    setError('');
+    setError("");
 
     try {
-      console.log('Attempting login with:', { email: formData.email, role: formData.role });
-      
+      console.log("Attempting login with:", {
+        email: formData.email,
+        role: formData.role,
+      });
+
       const result = await authService.login(formData);
 
-      console.log('Login result:', result);
+      console.log("Login result:", result);
 
       if (result.success && result.role) {
         // Login berhasil dan status approved
         // Gunakan window.location untuk hard refresh
-        const dashboardPath = result.role === 'admin' 
-          ? '/admin/dashboard' 
-          : '/developer/dashboard';
-        
-        console.log('Redirecting to:', dashboardPath);
-        
+        const dashboardPath =
+          result.role === "admin" ? "/admin/dashboard" : "/developer/dashboard";
+
+        console.log("Redirecting to:", dashboardPath);
+
         // Small delay untuk memastikan session tersimpan
         setTimeout(() => {
           window.location.href = dashboardPath;
         }, 100);
       } else {
         // Login gagal - tampilkan error
-        setError(result.message || 'Login failed. Please try again.');
+        setError(result.message || "Login failed. Please try again.");
         setLoading(false);
       }
     } catch (err) {
       const error = err as Error;
-      setError(error.message || 'An unexpected error occurred during login');
-      console.error('Login error:', error);
+      setError(error.message || "An unexpected error occurred during login");
+      console.error("Login error:", error);
       setLoading(false);
     }
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100 px-4 py-12">
+    <div className="min-h-screen flex items-center justify-center bg-linear-to-br from-blue-50 to-indigo-100 px-4 py-12">
       <div className="max-w-md w-full">
         <div className="bg-white rounded-2xl shadow-xl p-8">
           {/* Header */}
           <div className="text-center mb-8">
-            <h1 className="text-3xl font-bold text-gray-900 mb-2">Welcome Back</h1>
+            <h1 className="text-3xl font-bold text-gray-900 mb-2">
+              Peweb Panel
+            </h1>
             <p className="text-gray-600">Sign in to your account</p>
           </div>
 
           {/* Role Selection */}
           <div className="mb-6">
-            <label className="block text-sm font-medium text-gray-700 mb-3">
-              Login as
-            </label>
             <div className="grid grid-cols-2 gap-3">
               <button
                 type="button"
-                onClick={() => handleRoleChange('developer')}
+                onClick={() => handleRoleChange("developer")}
                 disabled={loading}
                 className={`py-3 px-4 rounded-lg font-medium transition-all ${
-                  formData.role === 'developer'
-                    ? 'bg-indigo-600 text-white shadow-md'
-                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                } ${loading ? 'opacity-50 cursor-not-allowed' : ''}`}
+                  formData.role === "developer"
+                    ? "bg-indigo-600 text-white shadow-md"
+                    : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+                } ${loading ? "opacity-50 cursor-not-allowed" : ""}`}
               >
                 Developer
               </button>
               <button
                 type="button"
-                onClick={() => handleRoleChange('admin')}
+                onClick={() => handleRoleChange("admin")}
                 disabled={loading}
                 className={`py-3 px-4 rounded-lg font-medium transition-all ${
-                  formData.role === 'admin'
-                    ? 'bg-indigo-600 text-white shadow-md'
-                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                } ${loading ? 'opacity-50 cursor-not-allowed' : ''}`}
+                  formData.role === "admin"
+                    ? "bg-indigo-600 text-white shadow-md"
+                    : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+                } ${loading ? "opacity-50 cursor-not-allowed" : ""}`}
               >
                 Admin
               </button>
@@ -157,14 +158,14 @@ export default function LoginView() {
               className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-3 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
               disabled={loading}
             >
-              {loading ? 'Signing in...' : 'Sign In'}
+              {loading ? "Signing in..." : "Sign In"}
             </Button>
           </form>
 
           {/* Footer */}
           <div className="mt-6 text-center">
             <p className="text-sm text-gray-600">
-              Don&apos;t have an account?{' '}
+              Don&apos;t have an account?{" "}
               <Link
                 href="/auth/register"
                 className="font-medium text-indigo-600 hover:text-indigo-500 transition-colors"
@@ -178,7 +179,8 @@ export default function LoginView() {
         {/* Info Box */}
         <div className="mt-6 bg-blue-50 border border-blue-200 rounded-lg p-4">
           <p className="text-sm text-blue-800 text-center">
-            <span className="font-medium">Note:</span> Your account must be approved by an admin before you can log in.
+            <span className="font-medium">Note:</span> Your account must be
+            approved by an admin before you can log in.
           </p>
         </div>
       </div>
