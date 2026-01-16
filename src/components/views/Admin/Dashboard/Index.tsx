@@ -2,6 +2,48 @@
 
 import { useRequireAuth } from "@/hooks/useRequireAuth";
 import MainLayouts from "@/components/layouts/MainLayouts";
+import { IconType } from "react-icons";
+import {
+  FiUsers,
+  FiClock,
+  FiCheckCircle,
+  FiXCircle,
+  FiGlobe,
+  FiLayout,
+  FiActivity,
+} from "react-icons/fi";
+
+// 1. Definisikan Interface untuk Props StatCard
+interface StatCardProps {
+  title: string;
+  value: string | number;
+  icon: IconType;
+  colorClass: string;
+  bgColor: string;
+}
+
+// 2. Terapkan interface pada komponen
+const StatCard = ({
+  title,
+  value,
+  icon: Icon,
+  colorClass,
+  bgColor,
+}: StatCardProps) => (
+  <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-5 hover:shadow-md transition-shadow">
+    <div className="flex items-center">
+      <div className={`flex-shrink-0 rounded-lg p-3 ${bgColor} ${colorClass}`}>
+        <Icon size={24} />
+      </div>
+      <div className="ml-4">
+        <p className="text-xs font-bold text-gray-500 uppercase tracking-wider">
+          {title}
+        </p>
+        <p className="text-2xl font-bold text-gray-900">{value}</p>
+      </div>
+    </div>
+  </div>
+);
 
 export default function AdminDashboard() {
   const { user, loading, isAuthorized } = useRequireAuth(["admin"]);
@@ -11,104 +53,166 @@ export default function AdminDashboard() {
       <div className="min-h-screen flex items-center justify-center bg-gray-50">
         <div className="text-center">
           <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600"></div>
-          <p className="mt-4 text-gray-600">Loading...</p>
+          <p className="mt-4 text-gray-600 font-medium">Memuat Dashboard...</p>
         </div>
       </div>
     );
   }
 
-  if (!isAuthorized) {
-    return null;
-  }
+  if (!isAuthorized) return null;
 
   return (
     <MainLayouts userRole="admin">
-      <div className="space-y-6">
-        {/* Header */}
-        <div className="bg-white rounded-lg shadow-md p-6">
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">
-            Admin Dashboard
-          </h1>
-          <p className="text-gray-600">
-            Welcome back, {user?.user_metadata?.full_name || "Admin"}!
-          </p>
-        </div>
-
-        {/* Quick Stats */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <div className="bg-white rounded-lg shadow-md p-6">
-            <div className="flex items-center">
-              <div className="flex-shrink-0 bg-blue-100 rounded-lg p-3">
-                <svg
-                  className="w-6 h-6 text-blue-600"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"
-                  />
-                </svg>
-              </div>
-              <div className="ml-4">
-                <p className="text-sm font-medium text-gray-600">Total Users</p>
-                <p className="text-2xl font-semibold text-gray-900">0</p>
-              </div>
-            </div>
-          </div>
-
-          <div className="bg-white rounded-lg shadow-md p-6">
-            <div className="flex items-center">
-              <div className="flex-shrink-0 bg-yellow-100 rounded-lg p-3">
-                <svg
-                  className="w-6 h-6 text-yellow-600"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
-                  />
-                </svg>
-              </div>
-              <div className="ml-4">
-                <p className="text-sm font-medium text-gray-600">Pending</p>
-                <p className="text-2xl font-semibold text-gray-900">0</p>
-              </div>
-            </div>
-          </div>
-
-          <div className="bg-white rounded-lg shadow-md p-6">
-            <div className="flex items-center">
-              <div className="flex-shrink-0 bg-green-100 rounded-lg p-3">
-                <svg
-                  className="w-6 h-6 text-green-600"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
-                  />
-                </svg>
-              </div>
-              <div className="ml-4">
-                <p className="text-sm font-medium text-gray-600">Approve</p>
-                <p className="text-2xl font-semibold text-gray-900">0</p>
-              </div>
-            </div>
+      <div className="max-w-7xl mx-auto space-y-8 pb-10">
+        {/* Header Section - Minimalist Version */}
+        <div className="flex flex-col border-b border-gray-200 pb-6 mb-2">
+          <div>
+            <h1 className="text-2xl font-bold text-gray-900 tracking-tight">
+              Admin Dashboard
+            </h1>
+            <p className="text-gray-500 mt-1">
+              Selamat datang{" "}
+              <span className="font-medium text-indigo-600 capitalize">
+                {user?.user_metadata?.full_name || "Admin"}
+              </span>
+            </p>
           </div>
         </div>
+
+        {/* SECTION: USER STATISTICS */}
+        <section className="space-y-4">
+          <div className="flex items-center gap-2 px-1">
+            <FiUsers className="text-indigo-600" size={20} />
+            <h2 className="text-xl font-bold text-gray-800">Manajemen User</h2>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <StatCard
+              title="Total Users"
+              value={0}
+              icon={FiUsers}
+              colorClass="text-blue-600"
+              bgColor="bg-blue-50"
+            />
+            <StatCard
+              title="User Pending"
+              value={0}
+              icon={FiClock}
+              colorClass="text-amber-600"
+              bgColor="bg-amber-50"
+            />
+            <StatCard
+              title="User Approved"
+              value={0}
+              icon={FiCheckCircle}
+              colorClass="text-emerald-600"
+              bgColor="bg-emerald-50"
+            />
+          </div>
+        </section>
+
+        <hr className="border-gray-200" />
+
+        {/* SECTION: PRODUCT STATISTICS */}
+        <section className="space-y-4">
+          <div className="flex items-center gap-2 px-1">
+            <FiActivity className="text-purple-600" size={20} />
+            <h2 className="text-xl font-bold text-gray-800">Status Products</h2>
+          </div>
+
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            {/* Website Category Box */}
+            <div className="bg-gray-50/50 p-6 rounded-2xl border border-gray-200 space-y-4">
+              <div className="flex items-center">
+                <div className="flex items-center gap-2 font-bold text-gray-700">
+                  <FiGlobe className="text-blue-500" />
+                  <span>Kategori: Website</span>
+                </div>
+              </div>
+              <div className="grid grid-cols-3 gap-4">
+                <StatusSmallCard
+                  label="Pending"
+                  value={0}
+                  icon={FiClock}
+                  color="text-amber-500"
+                />
+                <StatusSmallCard
+                  label="Approved"
+                  value={0}
+                  icon={FiCheckCircle}
+                  color="text-emerald-500"
+                  border="border-emerald-500"
+                />
+                <StatusSmallCard
+                  label="Rejected"
+                  value={0}
+                  icon={FiXCircle}
+                  color="text-rose-500"
+                  border="border-rose-500"
+                />
+              </div>
+            </div>
+
+            {/* Web App Category Box */}
+            <div className="bg-gray-50/50 p-6 rounded-2xl border border-gray-200 space-y-4">
+              <div className="flex items-center">
+                <div className="flex items-center gap-2 font-bold text-gray-700">
+                  <FiLayout className="text-purple-500" />
+                  <span>Kategori: Web App</span>
+                </div>
+              </div>
+              <div className="grid grid-cols-3 gap-4">
+                <StatusSmallCard
+                  label="Pending"
+                  value={0}
+                  icon={FiClock}
+                  color="text-amber-500"
+                />
+                <StatusSmallCard
+                  label="Approved"
+                  value={0}
+                  icon={FiCheckCircle}
+                  color="text-emerald-500"
+                  border="border-emerald-500"
+                />
+                <StatusSmallCard
+                  label="Rejected"
+                  value={0}
+                  icon={FiXCircle}
+                  color="text-rose-500"
+                  border="border-rose-500"
+                />
+              </div>
+            </div>
+          </div>
+        </section>
       </div>
     </MainLayouts>
   );
 }
+
+// 3. Tambahan Komponen Kecil untuk Status Produk agar lebih rapi
+interface StatusSmallCardProps {
+  label: string;
+  value: number;
+  icon: IconType;
+  color: string;
+  border?: string;
+}
+
+const StatusSmallCard = ({
+  label,
+  value,
+  icon: Icon,
+  color,
+  border,
+}: StatusSmallCardProps) => (
+  <div
+    className={`bg-white p-4 rounded-xl shadow-sm text-center border-b-2 ${
+      border || "border-transparent"
+    }`}
+  >
+    <Icon className={`mx-auto mb-1 ${color}`} />
+    <p className="text-[10px] uppercase text-gray-400 font-bold">{label}</p>
+    <p className="text-xl font-bold text-gray-900">{value}</p>
+  </div>
+);

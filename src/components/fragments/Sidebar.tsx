@@ -10,6 +10,7 @@ import {
   FaTimes,
   FaChevronRight,
   FaBolt,
+  FaCode,
 } from "react-icons/fa";
 
 interface SidebarProps {
@@ -43,6 +44,11 @@ const Sidebar: React.FC<SidebarProps> = ({
       href: "/admin/users",
       icon: <FaUsers className="w-5 h-5" />,
       adminOnly: true,
+    },
+    {
+      name: "Products",
+      href: `/${userRole}/products`,
+      icon: <FaCode className="w-5 h-5" />,
     },
   ];
 
