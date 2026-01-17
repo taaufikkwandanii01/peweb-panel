@@ -15,10 +15,11 @@ import {
   FiCheckCircle,
   FiXCircle,
   FiClock,
+  FiMessageSquare,
 } from "react-icons/fi";
 import { Product } from "./index";
-import CardProductsUpdate from "@/components/ui/CardProducts/CardProductsUpdate";
-import CardProductsDelete from "@/components/ui/CardProducts/CardProductsDelete";
+import CardProductsUpdate from "@/components/ui/ModalProducts/ModalDeveloper/ModalProductsUpdate";
+import CardProductsDelete from "@/components/ui/ModalProducts/ModalDeveloper/ModaProductsDelete";
 import Button from "@/components/ui/Button";
 
 const ProductDetail: React.FC = () => {
@@ -84,26 +85,11 @@ const ProductDetail: React.FC = () => {
   const getStatusBadge = (status: string) => {
     switch (status?.toLowerCase()) {
       case "approved":
-        return (
-          <span className="inline-flex items-center gap-2 px-4 py-2 bg-green-100 text-green-700 rounded-lg font-bold text-sm">
-            <FiCheckCircle size={18} />
-            Approved
-          </span>
-        );
+        return <span className="text-green-700">Approved</span>;
       case "rejected":
-        return (
-          <span className="inline-flex items-center gap-2 px-4 py-2 bg-red-100 text-red-700 rounded-lg font-bold text-sm">
-            <FiXCircle size={18} />
-            Rejected
-          </span>
-        );
+        return <span className="text-red-700">Rejected</span>;
       default:
-        return (
-          <span className="inline-flex items-center gap-2 px-4 py-2 bg-amber-100 text-amber-700 rounded-lg font-bold text-sm">
-            <FiClock size={18} />
-            Pending
-          </span>
-        );
+        return <span className="text-amber-700">Pending</span>;
     }
   };
 
@@ -178,12 +164,30 @@ const ProductDetail: React.FC = () => {
         <div className="lg:col-span-1 space-y-6">
           {/* Product Image */}
           <div className="bg-white rounded-2xl overflow-hidden shadow-sm border border-gray-200">
-            <div className="aspect-square overflow-hidden bg-gray-100">
+            <div className="relative overflow-hidden bg-gray-100">
               <img
                 src={product.image}
                 alt={product.title}
                 className="w-full h-full object-cover"
               />
+              <div className="absolute top-3 left-3 flex gap-2">
+                <span className="px-3 py-1 bg-indigo-100 text-indigo-700 rounded-lg text-xs font-bold uppercase">
+                  {product.category}
+                </span>
+              </div>
+
+              <div className="absolute top-3 right-3">
+                {product.discount > 0 && (
+                  <div className="bg-rose-500 text-white px-2 py-1.5 rounded-lg shadow-lg shadow-rose-200 flex flex-col items-center">
+                    <span className="text-[8px] font-bold leading-none uppercase">
+                      Disc
+                    </span>
+                    <span className="text-xs font-black">
+                      {product.discount}%
+                    </span>
+                  </div>
+                )}
+              </div>
             </div>
             <div className="p-4">
               <a
@@ -199,12 +203,46 @@ const ProductDetail: React.FC = () => {
           </div>
 
           {/* Status Card */}
-          <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-200">
-            <h3 className="text-sm font-bold text-gray-500 uppercase mb-3">
-              Status Produk
-            </h3>
-            <div className="flex justify-center">
-              {getStatusBadge(product.status)}
+          <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+            {/* Header Section - Status */}
+            <div className="p-6">
+              <div className="flex items-center justify-between">
+                <h3 className="text-xs font-bold text-gray-800 uppercase tracking-widest flex items-center gap-1">
+                  <FiTag className="text-blue-500" size={16} />
+                  Status Produk {getStatusBadge(product.status)}
+                </h3>
+                {/* Opsional: Dot indikator kecil */}
+                <span className="flex h-2 w-2">
+                  <span className="animate-ping absolute inline-flex h-2 w-2 rounded-full bg-blue-400 opacity-75"></span>
+                  <span className="relative inline-flex rounded-full h-2 w-2 bg-blue-500"></span>
+                </span>
+              </div>
+            </div>
+
+            {/* Admin Notes Section */}
+            <div className="bg-gray-50/50 border-t border-gray-100 p-6">
+              <h3 className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-4 flex items-center gap-2">
+                <FiMessageSquare className="text-gray-400" size={16} />
+                Catatan Admin
+              </h3>
+
+              {product.admin_notes ? (
+                <>
+                  {/* Quote Icon Background */}
+                  <div className="absolute right-2 top-2 opacity-5 text-gray-900">
+                    <FiMessageSquare size={40} />
+                  </div>
+                  <p className="text-gray-700 text-sm leading-relaxed relative z-10 font-medium">
+                    {product.admin_notes}
+                  </p>
+                </>
+              ) : (
+                <div className="flex flex-col items-center py-2 opacity-60">
+                  <p className="text-gray-400 text-sm italic">
+                    Tidak ada instruksi tambahan
+                  </p>
+                </div>
+              )}
             </div>
           </div>
         </div>
@@ -216,31 +254,21 @@ const ProductDetail: React.FC = () => {
             <div className="space-y-4">
               {/* Title & Category */}
               <div>
-                <div className="flex items-center gap-2 mb-2">
-                  <span className="px-3 py-1 bg-indigo-100 text-indigo-700 rounded-lg text-xs font-bold uppercase">
-                    {product.category}
-                  </span>
-                </div>
-                <h1 className="text-2xl md:text-3xl font-bold text-gray-900">
+                <h1 className="text-2xl md:text-3xl font-bold text-gray-900 capitalize">
                   {product.title}
                 </h1>
               </div>
 
               {/* Price Section */}
-              <div className="flex flex-col gap-2 py-4 border-t border-b border-gray-100">
+              <div className="flex flex-row items-center gap-2 py-4 border-t border-b border-gray-100">
                 <div className="flex items-baseline gap-3">
-                  <span className="text-3xl font-black text-emerald-600">
+                  <span className="text-3xl font-black text-indigo-600">
                     {formatIDR(getFinalPrice(product.price, product.discount))}
                   </span>
-                  {product.discount > 0 && (
-                    <span className="text-base font-bold text-rose-500 bg-rose-50 px-3 py-1 rounded-lg">
-                      -{product.discount}%
-                    </span>
-                  )}
                 </div>
                 {product.discount > 0 && (
-                  <p className="text-sm text-gray-400 line-through font-medium">
-                    Harga Normal: {formatIDR(product.price)}
+                  <p className="text-sm text-gray-400 line-through decoration-rose-500/50 font-medium">
+                    {formatIDR(product.price)}
                   </p>
                 )}
               </div>
@@ -254,20 +282,11 @@ const ProductDetail: React.FC = () => {
                   {product.description}
                 </p>
               </div>
-            </div>
-          </div>
 
-          {/* Technical Details Card */}
-          <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-200">
-            <h3 className="text-lg font-bold text-gray-900 mb-4">
-              Detail Teknis
-            </h3>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {/* Tools/Tech Stack */}
               <div className="col-span-full">
-                <div className="flex items-center gap-2 mb-3">
-                  <FiPackage className="text-indigo-600" size={18} />
-                  <h4 className="text-sm font-semibold text-gray-700">
+                <div className="flex items-center mb-3">
+                  <h4 className="text-sm font-bold text-gray-500">
                     Tools & Tech Stack
                   </h4>
                 </div>
@@ -276,7 +295,7 @@ const ProductDetail: React.FC = () => {
                     product.tools.map((tool, index) => (
                       <span
                         key={index}
-                        className="px-3 py-1.5 bg-gray-100 text-gray-700 rounded-lg text-xs font-medium"
+                        className="px-3 py-1.5 bg-gray-100 text-gray-700 rounded-lg text-xs font-medium capitalize"
                       >
                         {tool}
                       </span>
@@ -291,9 +310,8 @@ const ProductDetail: React.FC = () => {
 
               {/* Created At */}
               <div>
-                <div className="flex items-center gap-2 mb-2">
-                  <FiCalendar className="text-gray-500" size={16} />
-                  <h4 className="text-sm font-semibold text-gray-700">
+                <div className="flex items-center mb-2">
+                  <h4 className="text-sm font-bold text-gray-500">
                     Tanggal Dibuat
                   </h4>
                 </div>
@@ -301,70 +319,6 @@ const ProductDetail: React.FC = () => {
                   {formatDate(product.created_at)}
                 </p>
               </div>
-
-              {/* Category */}
-              <div>
-                <div className="flex items-center gap-2 mb-2">
-                  <FiTag className="text-gray-500" size={16} />
-                  <h4 className="text-sm font-semibold text-gray-700">
-                    Kategori
-                  </h4>
-                </div>
-                <p className="text-sm text-gray-600">{product.category}</p>
-              </div>
-
-              {/* Price */}
-              <div>
-                <div className="flex items-center gap-2 mb-2">
-                  <FiDollarSign className="text-gray-500" size={16} />
-                  <h4 className="text-sm font-semibold text-gray-700">
-                    Harga Normal
-                  </h4>
-                </div>
-                <p className="text-sm text-gray-600">
-                  {formatIDR(product.price)}
-                </p>
-              </div>
-
-              {/* Discount */}
-              {product.discount > 0 && (
-                <div>
-                  <div className="flex items-center gap-2 mb-2">
-                    <FiTag className="text-gray-500" size={16} />
-                    <h4 className="text-sm font-semibold text-gray-700">
-                      Diskon
-                    </h4>
-                  </div>
-                  <p className="text-sm text-gray-600">{product.discount}%</p>
-                </div>
-              )}
-            </div>
-          </div>
-
-          {/* Developer Info Card */}
-          <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-200">
-            <h3 className="text-lg font-bold text-gray-900 mb-4">
-              Informasi Developer
-            </h3>
-            <div className="space-y-3">
-              <div>
-                <p className="text-xs text-gray-500 uppercase font-semibold mb-1">
-                  Nama
-                </p>
-                <p className="text-sm text-gray-900 font-medium">
-                  {product.developer_name || "Unknown Developer"}
-                </p>
-              </div>
-              {product.developer_phone && (
-                <div>
-                  <p className="text-xs text-gray-500 uppercase font-semibold mb-1">
-                    Telepon
-                  </p>
-                  <p className="text-sm text-gray-900 font-medium">
-                    {product.developer_phone}
-                  </p>
-                </div>
-              )}
             </div>
           </div>
         </div>

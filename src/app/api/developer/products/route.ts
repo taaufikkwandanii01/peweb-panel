@@ -67,6 +67,7 @@ export async function GET(request: NextRequest) {
       description: p.description,
       tools: p.tools || [],
       status: p.status,
+      admin_notes: p.admin_notes || null, // TAMBAHKAN INI
       developer_name: userProfile?.full_name || "Unknown",
       developer_phone: userProfile?.phone || "",
       created_at: p.created_at,
@@ -204,6 +205,7 @@ export async function POST(request: NextRequest) {
       description: newProduct.description,
       tools: newProduct.tools || [],
       status: newProduct.status,
+      admin_notes: newProduct.admin_notes || null, // TAMBAHKAN INI
       developer_name: userProfile?.full_name || "Unknown",
       developer_phone: userProfile?.phone || "",
       created_at: newProduct.created_at,

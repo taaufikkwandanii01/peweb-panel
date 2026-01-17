@@ -15,10 +15,11 @@ import {
 import Link from "next/link";
 
 // Import Modal Components
-import CardProductsAdd from "@/components/ui/CardProducts/CardProductsAdd";
-import CardProductsDelete from "@/components/ui/CardProducts/CardProductsDelete";
-import CardProductsUpdate from "@/components/ui/CardProducts/CardProductsUpdate";
+import CardProductsAdd from "@/components/ui/ModalProducts/ModalDeveloper/ModalProductsAdd";
+import CardProductsDelete from "@/components/ui/ModalProducts/ModalDeveloper/ModaProductsDelete";
+import CardProductsUpdate from "@/components/ui/ModalProducts/ModalDeveloper/ModalProductsUpdate";
 import Button from "@/components/ui/Button";
+import CardDeveloperProducts from "@/components/ui/CardProducts/CardDeveloperProducts";
 
 // Interface Product
 export interface Product {
@@ -34,6 +35,7 @@ export interface Product {
   description: string;
   tools: string[];
   status: "pending" | "approved" | "rejected";
+  admin_notes?: string;
   created_at?: string;
 }
 
@@ -196,7 +198,7 @@ const DeveloperProducts: React.FC = () => {
       </div>
 
       {/* Grid Cards Section */}
-      <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
+      <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
         {paginatedProducts.length === 0 ? (
           <div className="col-span-full py-16 text-center bg-white border border-dashed border-gray-300 rounded-2xl">
             <FiPackage className="mx-auto h-12 w-12 text-gray-300 mb-3" />
@@ -204,115 +206,18 @@ const DeveloperProducts: React.FC = () => {
           </div>
         ) : (
           paginatedProducts.map((product) => (
-            <div
+            <CardDeveloperProducts
               key={product.id}
-              className="group bg-white border border-gray-200 rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 flex flex-col"
-            >
-              {/* Thumbnail Area */}
-              <div className="relative h-44 overflow-hidden bg-gray-100">
-                <img
-                  src={product.image}
-                  alt={product.title}
-                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                />
-                <div className="absolute top-3 right-3">
-                  <span
-                    className={`px-2.5 py-1 rounded-lg text-[10px] font-bold uppercase border shadow-sm ${getStatusStyle(
-                      product.status,
-                    )}`}
-                  >
-                    {product.status}
-                  </span>
-                </div>
-              </div>
-
-              {/* Content Area */}
-              <div className="p-5 flex-1 flex flex-col">
-                <div className="mb-3">
-                  <div className="flex items-center gap-1.5 mb-1">
-                    <span className="text-[10px] font-bold text-indigo-600 bg-indigo-50 px-2 py-0.5 rounded uppercase tracking-wider">
-                      {product.category}
-                    </span>
-                  </div>
-                  <h3 className="font-bold text-gray-900 text-lg leading-tight line-clamp-1">
-                    {product.title}
-                  </h3>
-                </div>
-
-                {/* Price Info */}
-                <div className="space-y-1 mb-4">
-                  <div className="flex items-baseline gap-2">
-                    <span className="text-lg font-black text-emerald-600">
-                      {formatIDR(
-                        getFinalPrice(product.price, product.discount),
-                      )}
-                    </span>
-                    {product.discount > 0 && (
-                      <span className="text-[11px] font-bold text-rose-500 bg-rose-50 px-1.5 py-0.5 rounded">
-                        -{product.discount}%
-                      </span>
-                    )}
-                  </div>
-                  {product.discount > 0 && (
-                    <p className="text-xs text-gray-400 line-through font-medium">
-                      {formatIDR(product.price)}
-                    </p>
-                  )}
-                </div>
-
-                {/* Meta Info */}
-                <div className="mt-auto pt-4 border-t border-gray-50 flex items-center justify-between text-gray-500">
-                  <div className="flex items-center gap-1.5">
-                    <FiLayers className="w-3.5 h-3.5" />
-                    <span className="text-[11px] font-medium truncate max-w-[120px]">
-                      {product.tools.slice(0, 2).join(", ")}
-                    </span>
-                  </div>
-                  <button
-                    onClick={() => window.open(product.href, "_blank")}
-                    className="text-gray-400 hover:text-indigo-600 transition-colors"
-                    title="Buka Preview"
-                  >
-                    <FiExternalLink size={16} />
-                  </button>
-                </div>
-              </div>
-
-              {/* Action Buttons */}
-              <div className="flex gap-2 p-5 pt-0">
-                {/* Tombol Detail */}
-                <Link
-                  href={`/developer/products/${product.id}`}
-                  className="flex-1 flex justify-center items-center gap-2 py-2 text-sm font-bold text-white bg-gray-600 hover:bg-gray-700 rounded-xl transition-colors duration-200"
-                >
-                  <FiEye size={14} /> Detail
-                </Link>
-
-                {/* Tombol Edit */}
-                <Button
-                  onClick={() => {
-                    setSelectedProduct(product);
-                    setIsUpdateOpen(true);
-                  }}
-                  variant="primary"
-                  className="gap-2 py-2 text-sm font-bold rounded-xl"
-                >
-                  <FiEdit2 size={14} /> Edit
-                </Button>
-
-                {/* Tombol Hapus */}
-                <Button
-                  onClick={() => {
-                    setSelectedProduct(product);
-                    setIsDeleteOpen(true);
-                  }}
-                  variant="danger"
-                  className="gap-2 py-2 text-sm font-bold rounded-xl"
-                >
-                  <FiTrash2 size={14} /> Hapus
-                </Button>
-              </div>
-            </div>
+              product={product}
+              onEdit={(p) => {
+                setSelectedProduct(p);
+                setIsUpdateOpen(true);
+              }}
+              onDelete={(p) => {
+                setSelectedProduct(p);
+                setIsDeleteOpen(true);
+              }}
+            />
           ))
         )}
       </div>

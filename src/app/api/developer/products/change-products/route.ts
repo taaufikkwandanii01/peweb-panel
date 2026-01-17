@@ -100,6 +100,9 @@ export async function PUT(request: NextRequest) {
     if (description !== undefined) updateData.description = description;
     if (tools !== undefined) updateData.tools = tools;
 
+    // PERUBAHAN: Set status kembali ke pending saat produk diupdate
+    updateData.status = "pending";
+
     // Update product
     const { data: updatedProduct, error: updateError } = await supabase
       .from("products")
@@ -135,6 +138,7 @@ export async function PUT(request: NextRequest) {
       description: updatedProduct.description,
       tools: updatedProduct.tools || [],
       status: updatedProduct.status,
+      admin_notes: updatedProduct.admin_notes,
       developer_name: userProfile?.full_name || "Unknown",
       developer_phone: userProfile?.phone || "",
       created_at: updatedProduct.created_at,
@@ -143,7 +147,8 @@ export async function PUT(request: NextRequest) {
 
     return NextResponse.json(
       {
-        message: "Product updated successfully",
+        message:
+          "Product updated successfully. Status changed to pending for admin review.",
         product: transformedProduct,
       },
       { status: 200 },

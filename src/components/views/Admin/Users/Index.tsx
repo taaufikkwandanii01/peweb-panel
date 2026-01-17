@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import Button from "@/components/ui/Button";
 import Modal from "@/components/ui/Modal";
 import Toast, { ToastType } from "@/components/ui/Toast";
@@ -14,8 +14,8 @@ import {
   FiUser,
   FiSearch,
   FiAlertTriangle,
+  FiUsers,
 } from "react-icons/fi";
-import { HiOutlineBadgeCheck } from "react-icons/hi";
 
 interface ToastState {
   isVisible: boolean;
@@ -119,7 +119,6 @@ const AdminUsers: React.FC = () => {
 
     setIsActionLoading(true);
     try {
-      // Update status
       const statusResult = await adminService.updateUserStatus({
         userId: editModal.user.id,
         status: editForm.status,
@@ -128,7 +127,7 @@ const AdminUsers: React.FC = () => {
       if (statusResult.success) {
         showToast("User updated successfully", "success");
         handleCloseEditModal();
-        fetchUsers(); // Refresh data
+        fetchUsers();
       } else {
         showToast(statusResult.message, "error");
       }
@@ -149,7 +148,7 @@ const AdminUsers: React.FC = () => {
       if (result.success) {
         showToast("User deleted successfully", "success");
         handleCloseDeleteModal();
-        fetchUsers(); // Refresh data
+        fetchUsers();
       } else {
         showToast(result.message, "error");
       }
@@ -159,6 +158,16 @@ const AdminUsers: React.FC = () => {
       setIsActionLoading(false);
     }
   };
+
+  // Statistics
+  const stats = useMemo(() => {
+    return {
+      total: users.length,
+      pending: users.filter((u) => u.status === "pending").length,
+      approved: users.filter((u) => u.status === "approved").length,
+      rejected: users.filter((u) => u.status === "rejected").length,
+    };
+  }, [users]);
 
   // Filter users
   const filteredUsers = users.filter((user) => {
@@ -229,7 +238,7 @@ const AdminUsers: React.FC = () => {
             Users Management
           </h1>
           <p className="text-xs text-gray-500 sm:text-sm">
-            Total {users.length} system users.
+            Manage system users and their access
           </p>
         </div>
         <div className="flex gap-2">
@@ -241,6 +250,49 @@ const AdminUsers: React.FC = () => {
           >
             Refresh
           </Button>
+        </div>
+      </div>
+
+      {/* Statistics Cards */}
+      <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
+        <div className="bg-white border border-gray-200 rounded-xl p-4 shadow-sm">
+          <div className="flex items-center justify-between mb-2">
+            <span className="text-xs font-semibold text-gray-500 uppercase">
+              Total
+            </span>
+            <FiUsers className="text-gray-400" size={18} />
+          </div>
+          <p className="text-2xl font-black text-gray-900">{stats.total}</p>
+        </div>
+
+        <div className="bg-amber-50 border border-amber-200 rounded-xl p-4 shadow-sm">
+          <div className="flex items-center justify-between mb-2">
+            <span className="text-xs font-semibold text-amber-700 uppercase">
+              Pending
+            </span>
+            <div className="w-3 h-3 rounded-full bg-amber-500"></div>
+          </div>
+          <p className="text-2xl font-black text-amber-700">{stats.pending}</p>
+        </div>
+
+        <div className="bg-green-50 border border-green-200 rounded-xl p-4 shadow-sm">
+          <div className="flex items-center justify-between mb-2">
+            <span className="text-xs font-semibold text-green-700 uppercase">
+              Approved
+            </span>
+            <div className="w-3 h-3 rounded-full bg-green-500"></div>
+          </div>
+          <p className="text-2xl font-black text-green-700">{stats.approved}</p>
+        </div>
+
+        <div className="bg-red-50 border border-red-200 rounded-xl p-4 shadow-sm">
+          <div className="flex items-center justify-between mb-2">
+            <span className="text-xs font-semibold text-red-700 uppercase">
+              Rejected
+            </span>
+            <div className="w-3 h-3 rounded-full bg-red-500"></div>
+          </div>
+          <p className="text-2xl font-black text-red-700">{stats.rejected}</p>
         </div>
       </div>
 
@@ -345,7 +397,7 @@ const AdminUsers: React.FC = () => {
         )}
       </div>
 
-      {/* Pagination (Disesuaikan agar tanpa border-t table) */}
+      {/* Pagination */}
       <div className="mt-6 px-1 flex items-center justify-between">
         <p className="text-[11px] text-gray-500 font-medium">
           Page {currentPage} of {totalPages || 1}
@@ -405,7 +457,7 @@ const AdminUsers: React.FC = () => {
                 Role
               </label>
               <input
-                type="email"
+                type="text"
                 value={editModal.user.role || ""}
                 disabled
                 className="w-full px-3 py-2 border border-gray-200 rounded-lg bg-gray-50 text-gray-500"

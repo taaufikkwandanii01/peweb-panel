@@ -135,15 +135,26 @@ const Sidebar: React.FC<SidebarProps> = ({
                     Need Help?
                   </h3>
                   <p className="text-xs text-gray-600 mb-2">
-                    Check our documentation
+                    Check our support center
                   </p>
-                  <Link
-                    href="/docs"
-                    className="text-xs text-blue-600 hover:text-blue-700 font-medium inline-flex items-center gap-1"
+                  <button
+                    onClick={() => {
+                      // Option 1: Show alert (temporary)
+                      // alert("Support feature coming soon!");
+                      
+                      // Option 2: Open external docs
+                      // window.open('https://your-docs-url.com', '_blank');
+                      
+                      // Option 3: Navigate to internal docs (if exists)
+                      // window.location.href = '/support';
+                      
+                      alert("Documentation and support features coming soon!");
+                    }}
+                    className="text-xs text-blue-600 hover:text-blue-700 font-medium inline-flex items-center gap-1 cursor-pointer"
                   >
                     Learn More
                     <FaChevronRight className="w-3 h-3" />
-                  </Link>
+                  </button>
                 </div>
               </div>
             </div>

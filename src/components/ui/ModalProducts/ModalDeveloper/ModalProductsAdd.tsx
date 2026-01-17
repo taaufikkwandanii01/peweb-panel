@@ -1,9 +1,10 @@
 "use client";
 import React, { useState, useRef } from "react";
-import { FiX, FiSave, FiUpload, FiImage } from "react-icons/fi";
-import { Product } from "@/components/views/Developer/Products";
+import { FiX, FiSave, FiUpload } from "react-icons/fi";
 import { supabase } from "@/lib/supabase";
-import Button from "../Button";
+// Import komponen UI Anda
+import Button from "../../Button";
+import Input from "../../Input";
 
 interface CardProductsAddProps {
   isOpen: boolean;
@@ -25,7 +26,7 @@ const CardProductsAdd: React.FC<CardProductsAddProps> = ({
   const [formData, setFormData] = useState({
     title: "",
     category: "Website" as "Website" | "Web App",
-    price: "100000",
+    price: "", // Diubah menjadi kosong agar user mengisi sendiri
     discount: "0",
     href: "",
     image: "",
@@ -39,30 +40,19 @@ const CardProductsAdd: React.FC<CardProductsAddProps> = ({
     >,
   ) => {
     const { name, value } = e.target;
+    // Logika otomatis harga berdasarkan kategori di sini telah dihapus
     setFormData((prev) => ({ ...prev, [name]: value }));
-
-    // Update price when category changes
-    if (name === "category") {
-      const defaultPrice = value === "Website" ? "100000" : "300000";
-      setFormData((prev) => ({
-        ...prev,
-        category: value as "Website" | "Web App",
-        price: defaultPrice,
-      }));
-    }
   };
 
   const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
 
-    // Validate file type
     if (!file.type.startsWith("image/")) {
       setError("File harus berupa gambar");
       return;
     }
 
-    // Validate file size (max 5MB)
     if (file.size > 5 * 1024 * 1024) {
       setError("Ukuran file maksimal 5MB");
       return;
@@ -72,32 +62,25 @@ const CardProductsAdd: React.FC<CardProductsAddProps> = ({
     setError(null);
 
     try {
-      // Create unique filename
       const fileExt = file.name.split(".").pop();
       const fileName = `${Math.random().toString(36).substring(2)}-${Date.now()}.${fileExt}`;
       const filePath = `products/${fileName}`;
 
-      // Upload to Supabase Storage
-      const { data: uploadData, error: uploadError } = await supabase.storage
+      const { error: uploadError } = await supabase.storage
         .from("product-images")
         .upload(filePath, file);
 
-      if (uploadError) {
+      if (uploadError)
         throw new Error("Gagal upload gambar: " + uploadError.message);
-      }
 
-      // Get public URL
       const { data: urlData } = supabase.storage
         .from("product-images")
         .getPublicUrl(filePath);
 
       const imageUrl = urlData.publicUrl;
-
-      // Update form data and preview
       setFormData((prev) => ({ ...prev, image: imageUrl }));
       setImagePreview(imageUrl);
     } catch (err) {
-      console.error("Error uploading image:", err);
       setError(err instanceof Error ? err.message : "Gagal upload gambar");
     } finally {
       setIsUploading(false);
@@ -127,17 +110,11 @@ const CardProductsAdd: React.FC<CardProductsAddProps> = ({
 
       const response = await fetch("/api/developer/products", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          title: formData.title,
-          category: formData.category,
+          ...formData,
           price: parseFloat(formData.price),
           discount: parseInt(formData.discount) || 0,
-          href: formData.href,
-          image: formData.image,
-          description: formData.description,
           tools: toolsArray,
         }),
       });
@@ -147,13 +124,11 @@ const CardProductsAdd: React.FC<CardProductsAddProps> = ({
         throw new Error(errorData.error || "Gagal menambahkan produk");
       }
 
-      const data = await response.json();
-
-      // Reset form
+      // Reset form ke kondisi awal
       setFormData({
         title: "",
         category: "Website",
-        price: "100000",
+        price: "",
         discount: "0",
         href: "",
         image: "",
@@ -161,11 +136,9 @@ const CardProductsAdd: React.FC<CardProductsAddProps> = ({
         tools: "",
       });
       setImagePreview("");
-
       onProductAdded();
       onClose();
     } catch (err) {
-      console.error("Error adding product:", err);
       setError(err instanceof Error ? err.message : "Gagal menambahkan produk");
     } finally {
       setIsLoading(false);
@@ -177,7 +150,6 @@ const CardProductsAdd: React.FC<CardProductsAddProps> = ({
   return (
     <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
       <div className="bg-white rounded-xl w-full max-w-2xl max-h-[90vh] overflow-hidden shadow-2xl">
-        {/* Header */}
         <div className="p-4 md:p-6 flex justify-between items-center bg-indigo-50">
           <h2 className="text-lg md:text-xl font-bold text-indigo-900">
             Tambah Produk
@@ -192,38 +164,35 @@ const CardProductsAdd: React.FC<CardProductsAddProps> = ({
         </div>
 
         <form onSubmit={handleSubmit}>
-          {/* Content */}
-          <div className="p-4 md:p-6 grid grid-cols-1 md:grid-cols-2 gap-4 overflow-y-auto max-h-[calc(90vh-180px)]">
-            {error && (
-              <div className="col-span-full bg-red-50 border border-red-200 text-red-700 px-3 md:px-4 py-2 md:py-3 rounded-lg text-xs md:text-sm">
-                {error}
-              </div>
-            )}
+          {/* Menampilkan error jika ada */}
+          {error && (
+            <div className="mx-4 mt-4 p-3 bg-red-100 text-red-700 rounded-lg text-sm">
+              {error}
+            </div>
+          )}
 
-            <div className="col-span-full space-y-1">
-              <label className="text-xs md:text-sm font-semibold text-gray-700">
-                Title <span className="text-red-500">*</span>
-              </label>
-              <input
-                type="text"
+          <div className="p-4 md:p-6 grid grid-cols-1 md:grid-cols-2 gap-4 overflow-y-auto max-h-[calc(90vh-180px)]">
+            <div className="col-span-full">
+              <Input
+                label="Title"
                 name="title"
                 value={formData.title}
                 onChange={handleChange}
-                className="w-full p-2 md:p-2.5 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent outline-none"
                 placeholder="Nama Produk..."
                 required
+                fullWidth
               />
             </div>
 
             <div className="space-y-1">
-              <label className="text-xs md:text-sm font-semibold text-gray-700">
+              <label className="block text-sm font-medium text-gray-700 mb-1">
                 Category <span className="text-red-500">*</span>
               </label>
               <select
                 name="category"
                 value={formData.category}
                 onChange={handleChange}
-                className="w-full p-2 md:p-2.5 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent outline-none"
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all text-sm"
                 required
               >
                 <option value="Website">Website</option>
@@ -231,60 +200,46 @@ const CardProductsAdd: React.FC<CardProductsAddProps> = ({
               </select>
             </div>
 
-            <div className="space-y-1">
-              <label className="text-xs md:text-sm font-semibold text-gray-700">
-                Price (IDR) <span className="text-red-500">*</span>
-              </label>
-              <input
-                type="number"
-                name="price"
-                value={formData.price}
-                onChange={handleChange}
-                className="w-full p-2 md:p-2.5 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent outline-none"
-                placeholder="125000"
-                min="0"
-                required
-              />
-            </div>
+            <Input
+              label="Price (IDR)"
+              type="number"
+              name="price"
+              value={formData.price}
+              onChange={handleChange}
+              placeholder="Contoh: 150000"
+              min="0"
+              required
+              fullWidth
+            />
 
-            <div className="space-y-1">
-              <label className="text-xs md:text-sm font-semibold text-gray-700">
-                Discount (%)
-              </label>
-              <input
-                type="number"
-                name="discount"
-                value={formData.discount}
-                onChange={handleChange}
-                className="w-full p-2 md:p-2.5 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent outline-none"
-                placeholder="0"
-                min="0"
-                max="100"
-              />
-            </div>
+            <Input
+              label="Discount (%)"
+              type="number"
+              name="discount"
+              value={formData.discount}
+              onChange={handleChange}
+              placeholder="0"
+              min="0"
+              max="100"
+              fullWidth
+            />
 
-            <div className="space-y-1">
-              <label className="text-xs md:text-sm font-semibold text-gray-700">
-                URL/Link <span className="text-red-500">*</span>
-              </label>
-              <input
-                type="url"
-                name="href"
-                value={formData.href}
-                onChange={handleChange}
-                className="w-full p-2 md:p-2.5 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent outline-none"
-                placeholder="https://example.com"
-                required
-              />
-            </div>
+            <Input
+              label="URL/Link"
+              type="url"
+              name="href"
+              value={formData.href}
+              onChange={handleChange}
+              placeholder="https://example.com"
+              required
+              fullWidth
+            />
 
-            {/* Image Upload Section */}
             <div className="col-span-full space-y-2">
               <label className="text-xs md:text-sm font-semibold text-gray-700">
                 Product Image <span className="text-red-500">*</span>
               </label>
 
-              {/* Image Preview */}
               {imagePreview && (
                 <div className="relative w-full h-48 bg-gray-100 rounded-lg overflow-hidden border border-gray-300">
                   <img
@@ -306,7 +261,6 @@ const CardProductsAdd: React.FC<CardProductsAddProps> = ({
                 </div>
               )}
 
-              {/* Upload Button */}
               <input
                 ref={fileInputRef}
                 type="file"
@@ -336,71 +290,56 @@ const CardProductsAdd: React.FC<CardProductsAddProps> = ({
                   </>
                 )}
               </button>
-
               <p className="text-xs text-gray-500">Max 5MB. Format: JPG, PNG</p>
             </div>
 
-            <div className="col-span-full space-y-1">
-              <label className="text-xs md:text-sm font-semibold text-gray-700">
-                Tools/Tech Stack
-              </label>
-              <input
-                type="text"
+            <div className="col-span-full">
+              <Input
+                label="Tools/Tech Stack"
                 name="tools"
                 value={formData.tools}
                 onChange={handleChange}
-                className="w-full p-2 md:p-2.5 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent outline-none"
                 placeholder="React.js, Tailwind CSS, Next.js"
+                helperText="Pisahkan dengan koma untuk multiple tools"
+                fullWidth
               />
-              <p className="text-xs text-gray-500">
-                Pisahkan dengan koma untuk multiple tools
-              </p>
             </div>
 
-            <div className="col-span-full space-y-1">
-              <label className="text-xs md:text-sm font-semibold text-gray-700">
+            <div className="col-span-full">
+              <label className="block text-sm font-medium text-gray-700 mb-1">
                 Description <span className="text-red-500">*</span>
               </label>
               <textarea
                 name="description"
                 value={formData.description}
                 onChange={handleChange}
-                className="w-full p-2 md:p-2.5 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent outline-none resize-none"
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all text-sm resize-none"
                 rows={3}
                 placeholder="Deskripsi produk..."
                 required
-              ></textarea>
+              />
             </div>
           </div>
 
-          {/* Footer */}
           <div className="p-4 md:p-6 bg-gray-50 flex flex-col-reverse sm:flex-row justify-end gap-2 sm:gap-3">
             <Button
               variant="secondary"
-              size="sm"
+              size="md"
               type="button"
               onClick={onClose}
               disabled={isLoading}
             >
               Batal
             </Button>
+
             <Button
               variant="primary"
-              size="sm"
+              size="md"
               type="submit"
-              className="gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
-              disabled={isLoading || isUploading}
+              isLoading={isLoading}
+              disabled={isUploading}
             >
-              {isLoading ? (
-                <>
-                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
-                  Menyimpan...
-                </>
-              ) : (
-                <>
-                  <FiSave size={16} /> Simpan
-                </>
-              )}
+              Simpan
             </Button>
           </div>
         </form>

@@ -6,25 +6,23 @@ import {
   FiRefreshCw,
   FiPackage,
   FiExternalLink,
-  FiLayers,
   FiEdit2,
-  FiUser,
-  FiMail,
-  FiPhone,
+  FiEye,
 } from "react-icons/fi";
 
 // Import Modal Component
-import CardAdminProductStatus from "@/components/ui/CardProducts/Admin/CardAdminProductStatus";
-import { AdminProduct } from "@/components/ui/CardProducts/Admin/CardAdminProductStatus";
+import CardAdminProductStatus from "@/components/ui/ModalProducts/ModalAdmin/ModalProductsUpdateStatus";
+import { AdminProduct } from "@/components/ui/ModalProducts/ModalAdmin/ModalProductsUpdateStatus";
 
 const AdminProducts: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategory, setSelectedCategory] = useState<string>("all");
   const [selectedStatus, setSelectedStatus] = useState<string>("all");
+  const [selectedDeveloper, setSelectedDeveloper] = useState<string>("all");
 
   // State untuk Pagination
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 9;
+  const itemsPerPage = 10;
 
   // State untuk Modal & Data
   const [isUpdateStatusOpen, setIsUpdateStatusOpen] = useState(false);
@@ -55,7 +53,7 @@ const AdminProducts: React.FC = () => {
   // Reset page ke 1 saat filter berubah
   useEffect(() => {
     setCurrentPage(1);
-  }, [searchTerm, selectedCategory, selectedStatus]);
+  }, [searchTerm, selectedCategory, selectedStatus, selectedDeveloper]);
 
   // Helper Formatting
   const formatIDR = (n: number) =>
@@ -78,6 +76,26 @@ const AdminProducts: React.FC = () => {
     }
   };
 
+  const getStatusBadge = (status: string) => {
+    return (
+      <span
+        className={`px-2.5 py-1 rounded-lg text-[10px] font-bold uppercase border shadow-sm ${getStatusStyle(
+          status,
+        )}`}
+      >
+        {status}
+      </span>
+    );
+  };
+
+  // Get unique developers
+  const developers = useMemo(() => {
+    const uniqueDevs = Array.from(
+      new Set(products.map((p) => p.developer_name)),
+    );
+    return uniqueDevs.sort();
+  }, [products]);
+
   // Filter Logic
   const filteredData = useMemo(() => {
     return products.filter((p) => {
@@ -89,9 +107,17 @@ const AdminProducts: React.FC = () => {
         selectedCategory === "all" || p.category === selectedCategory;
       const matchStatus =
         selectedStatus === "all" || p.status === selectedStatus;
-      return matchSearch && matchCategory && matchStatus;
+      const matchDeveloper =
+        selectedDeveloper === "all" || p.developer_name === selectedDeveloper;
+      return matchSearch && matchCategory && matchStatus && matchDeveloper;
     });
-  }, [products, searchTerm, selectedCategory, selectedStatus]);
+  }, [
+    products,
+    searchTerm,
+    selectedCategory,
+    selectedStatus,
+    selectedDeveloper,
+  ]);
 
   // Statistics
   const stats = useMemo(() => {
@@ -184,8 +210,8 @@ const AdminProducts: React.FC = () => {
       </div>
 
       {/* Filter Bar */}
-      <div className="grid grid-cols-1 gap-3 md:grid-cols-4 lg:grid-cols-5">
-        <div className="md:col-span-2 lg:col-span-3 relative">
+      <div className="grid grid-cols-1 gap-3 md:grid-cols-2 lg:grid-cols-5">
+        <div className="lg:col-span-2 relative">
           <input
             type="text"
             placeholder="Cari produk atau developer..."
@@ -216,162 +242,196 @@ const AdminProducts: React.FC = () => {
           <option value="approved">Approved</option>
           <option value="rejected">Rejected</option>
         </select>
+
+        <select
+          value={selectedDeveloper}
+          className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg outline-none focus:ring-2 focus:ring-indigo-500/20"
+          onChange={(e) => setSelectedDeveloper(e.target.value)}
+        >
+          <option value="all">Semua Developer</option>
+          {developers.map((dev) => (
+            <option key={dev} value={dev}>
+              {dev}
+            </option>
+          ))}
+        </select>
       </div>
 
-      {/* Grid Cards Section */}
-      <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
-        {paginatedProducts.length === 0 ? (
-          <div className="col-span-full py-16 text-center bg-white border border-dashed border-gray-300 rounded-2xl">
-            <FiPackage className="mx-auto h-12 w-12 text-gray-300 mb-3" />
-            <p className="text-gray-500 font-medium">Produk tidak ditemukan</p>
-          </div>
-        ) : (
-          paginatedProducts.map((product) => (
-            <div
-              key={product.id}
-              className="group bg-white border border-gray-200 rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 flex flex-col"
-            >
-              {/* Thumbnail Area */}
-              <div className="relative h-44 overflow-hidden bg-gray-100">
-                <img
-                  src={product.image}
-                  alt={product.title}
-                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                />
-                <div className="absolute top-3 right-3">
-                  <span
-                    className={`px-2.5 py-1 rounded-lg text-[10px] font-bold uppercase border shadow-sm ${getStatusStyle(
-                      product.status,
-                    )}`}
+      {/* Table Section */}
+      <div className="bg-white border border-gray-200 rounded-xl shadow-sm overflow-hidden">
+        <div className="overflow-x-auto">
+          <table className="w-full">
+            <thead className="bg-gray-50 border-b border-gray-200">
+              <tr>
+                <th className="px-4 py-3 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">
+                  Product
+                </th>
+                <th className="px-4 py-3 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">
+                  Developer
+                </th>
+                <th className="px-4 py-3 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">
+                  Category
+                </th>
+                <th className="px-4 py-3 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">
+                  Price
+                </th>
+                <th className="px-4 py-3 text-center text-xs font-bold text-gray-700 uppercase tracking-wider">
+                  Status
+                </th>
+                <th className="px-4 py-3 text-center text-xs font-bold text-gray-700 uppercase tracking-wider">
+                  Actions
+                </th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-gray-200">
+              {paginatedProducts.length === 0 ? (
+                <tr>
+                  <td colSpan={6} className="px-4 py-12 text-center">
+                    <FiPackage className="mx-auto h-12 w-12 text-gray-300 mb-3" />
+                    <p className="text-gray-500 font-medium">
+                      Produk tidak ditemukan
+                    </p>
+                  </td>
+                </tr>
+              ) : (
+                paginatedProducts.map((product) => (
+                  <tr
+                    key={product.id}
+                    className="hover:bg-gray-50 transition-colors"
                   >
-                    {product.status}
-                  </span>
-                </div>
-              </div>
-
-              {/* Content Area */}
-              <div className="p-5 flex-1 flex flex-col">
-                <div className="mb-3">
-                  <div className="flex items-center gap-1.5 mb-1">
-                    <span className="text-[10px] font-bold text-indigo-600 bg-indigo-50 px-2 py-0.5 rounded uppercase tracking-wider">
-                      {product.category}
-                    </span>
-                  </div>
-                  <h3 className="font-bold text-gray-900 text-lg leading-tight line-clamp-1 mb-2">
-                    {product.title}
-                  </h3>
-
-                  {/* Developer Info */}
-                  <div className="space-y-1 text-xs text-gray-600">
-                    <div className="flex items-center gap-1.5">
-                      <FiUser size={12} className="flex-shrink-0" />
-                      <span className="truncate">{product.developer_name}</span>
-                    </div>
-                    <div className="flex items-center gap-1.5">
-                      <FiMail size={12} className="flex-shrink-0" />
-                      <span className="truncate">
-                        {product.developer_email}
-                      </span>
-                    </div>
-                    {product.developer_phone && (
-                      <div className="flex items-center gap-1.5">
-                        <FiPhone size={12} className="flex-shrink-0" />
-                        <span>{product.developer_phone}</span>
+                    {/* Product Column */}
+                    <td className="px-4 py-4">
+                      <div className="flex items-center gap-3">
+                        <div className="flex-shrink-0 w-16 h-16 rounded-lg overflow-hidden bg-gray-100 border border-gray-200">
+                          <img
+                            src={product.image}
+                            alt={product.title}
+                            className="w-full h-full object-cover"
+                          />
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <p className="text-sm font-bold text-gray-900 truncate">
+                            {product.title}
+                          </p>
+                          <div className="flex items-center gap-2 mt-1">
+                            <span className="text-xs text-gray-500">
+                              {product.tools.slice(0, 2).join(", ")}
+                            </span>
+                          </div>
+                        </div>
                       </div>
-                    )}
-                  </div>
-                </div>
+                    </td>
 
-                {/* Price Info */}
-                <div className="space-y-1 mb-4">
-                  <div className="flex items-baseline gap-2">
-                    <span className="text-lg font-black text-emerald-600">
-                      {formatIDR(
-                        getFinalPrice(product.price, product.discount),
-                      )}
-                    </span>
-                    {product.discount > 0 && (
-                      <span className="text-[11px] font-bold text-rose-500 bg-rose-50 px-1.5 py-0.5 rounded">
-                        -{product.discount}%
+                    {/* Developer Column */}
+                    <td className="px-4 py-4">
+                      <div>
+                        <p className="text-sm font-semibold text-gray-900">
+                          {product.developer_name}
+                        </p>
+                        <p className="text-xs text-gray-500 truncate max-w-[200px]">
+                          {product.developer_email}
+                        </p>
+                        {product.developer_phone && (
+                          <p className="text-xs text-gray-400 mt-0.5">
+                            {product.developer_phone}
+                          </p>
+                        )}
+                      </div>
+                    </td>
+
+                    {/* Category Column */}
+                    <td className="px-4 py-4">
+                      <span className="inline-flex items-center px-2.5 py-1 rounded-lg text-xs font-bold bg-indigo-50 text-indigo-700 border border-indigo-200">
+                        {product.category}
                       </span>
-                    )}
-                  </div>
-                  {product.discount > 0 && (
-                    <p className="text-xs text-gray-400 line-through font-medium">
-                      {formatIDR(product.price)}
-                    </p>
-                  )}
-                </div>
+                    </td>
 
-                {/* Admin Notes Indicator */}
-                {product.admin_notes && (
-                  <div className="mb-3 p-2 bg-blue-50 border border-blue-200 rounded-lg">
-                    <p className="text-[10px] font-bold text-blue-700 mb-1">
-                      CATATAN ADMIN:
-                    </p>
-                    <p className="text-xs text-blue-600 line-clamp-2">
-                      {product.admin_notes}
-                    </p>
-                  </div>
-                )}
+                    {/* Price Column */}
+                    <td className="px-4 py-4">
+                      <div>
+                        <p className="text-sm font-black text-emerald-600">
+                          {formatIDR(
+                            getFinalPrice(product.price, product.discount),
+                          )}
+                        </p>
+                        {product.discount > 0 && (
+                          <div className="flex items-center gap-1 mt-1">
+                            <p className="text-xs text-gray-400 line-through">
+                              {formatIDR(product.price)}
+                            </p>
+                            <span className="text-[10px] font-bold text-rose-600 bg-rose-50 px-1.5 py-0.5 rounded">
+                              -{product.discount}%
+                            </span>
+                          </div>
+                        )}
+                      </div>
+                    </td>
 
-                {/* Meta Info */}
-                <div className="mt-auto pt-4 border-t border-gray-50 flex items-center justify-between text-gray-500">
-                  <div className="flex items-center gap-1.5">
-                    <FiLayers className="w-3.5 h-3.5" />
-                    <span className="text-[11px] font-medium truncate max-w-[120px]">
-                      {product.tools.slice(0, 2).join(", ")}
-                    </span>
-                  </div>
-                  <button
-                    onClick={() => window.open(product.href, "_blank")}
-                    className="text-gray-400 hover:text-indigo-600 transition-colors"
-                    title="Buka Preview"
-                  >
-                    <FiExternalLink size={16} />
-                  </button>
-                </div>
-              </div>
+                    {/* Status Column */}
+                    <td className="px-4 py-4 text-center">
+                      {getStatusBadge(product.status)}
+                    </td>
 
-              {/* Action Button */}
-              <div className="p-5 pt-0">
-                <button
-                  onClick={() => {
-                    setSelectedProduct(product);
-                    setIsUpdateStatusOpen(true);
-                  }}
-                  className="w-full flex justify-center items-center gap-2 py-2.5 text-sm font-bold text-indigo-600 bg-indigo-50 hover:bg-indigo-600 hover:text-white rounded-xl transition-all duration-200"
-                >
-                  <FiEdit2 size={14} /> Update Status
-                </button>
-              </div>
-            </div>
-          ))
-        )}
-      </div>
-
-      {/* Pagination */}
-      <div className="mt-6 px-1 flex items-center justify-between">
-        <p className="text-[11px] text-gray-500 font-medium">
-          Page {currentPage} of {totalPages || 1} • Showing{" "}
-          {paginatedProducts.length} of {filteredData.length} products
-        </p>
-        <div className="flex gap-2">
-          <button
-            onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
-            className="px-4 py-1.5 text-xs font-semibold border border-gray-300 rounded-lg bg-white hover:bg-gray-50 disabled:opacity-40 shadow-sm transition-all"
-            disabled={currentPage === 1}
-          >
-            Prev
-          </button>
-          <button
-            onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
-            className="px-4 py-1.5 text-xs font-semibold border border-gray-300 rounded-lg bg-white hover:bg-gray-50 disabled:opacity-40 shadow-sm transition-all"
-            disabled={currentPage === totalPages || totalPages === 0}
-          >
-            Next
-          </button>
+                    {/* Actions Column */}
+                    <td className="px-4 py-4">
+                      <div className="flex items-center justify-center gap-2">
+                        <button
+                          onClick={() => window.open(product.href, "_blank")}
+                          className="p-2 text-gray-500 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition-all"
+                          title="Preview"
+                        >
+                          <FiExternalLink size={16} />
+                        </button>
+                        <button
+                          onClick={() => {
+                            setSelectedProduct(product);
+                            setIsUpdateStatusOpen(true);
+                          }}
+                          className="p-2 text-gray-500 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition-all"
+                          title="Update Status"
+                        >
+                          <FiEdit2 size={16} />
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))
+              )}
+            </tbody>
+          </table>
         </div>
+
+        {/* Table Footer - Pagination */}
+        {paginatedProducts.length > 0 && (
+          <div className="px-4 py-3 border-t border-gray-200 flex items-center justify-between bg-gray-50">
+            <p className="text-xs text-gray-600 font-medium">
+              Showing {startIndex + 1} to{" "}
+              {Math.min(startIndex + itemsPerPage, filteredData.length)} of{" "}
+              {filteredData.length} products
+            </p>
+            <div className="flex items-center gap-2">
+              <button
+                onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+                className="px-3 py-1.5 text-xs font-semibold border border-gray-300 rounded-lg bg-white hover:bg-gray-50 disabled:opacity-40 shadow-sm transition-all"
+                disabled={currentPage === 1}
+              >
+                Previous
+              </button>
+              <span className="text-xs font-medium text-gray-700 px-2">
+                Page {currentPage} of {totalPages || 1}
+              </span>
+              <button
+                onClick={() =>
+                  setCurrentPage((p) => Math.min(totalPages, p + 1))
+                }
+                className="px-3 py-1.5 text-xs font-semibold border border-gray-300 rounded-lg bg-white hover:bg-gray-50 disabled:opacity-40 shadow-sm transition-all"
+                disabled={currentPage === totalPages || totalPages === 0}
+              >
+                Next
+              </button>
+            </div>
+          </div>
+        )}
       </div>
 
       {/* Modal */}
