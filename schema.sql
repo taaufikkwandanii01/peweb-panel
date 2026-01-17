@@ -15,6 +15,7 @@ CREATE TABLE public.products (
   status text NOT NULL DEFAULT 'pending'::text CHECK (status = ANY (ARRAY['pending'::text, 'approved'::text, 'rejected'::text])),
   created_at timestamp with time zone DEFAULT now(),
   updated_at timestamp with time zone DEFAULT now(),
+  admin_notes text,
   CONSTRAINT products_pkey PRIMARY KEY (id),
   CONSTRAINT fk_developer FOREIGN KEY (developer_id) REFERENCES auth.users(id)
 );
