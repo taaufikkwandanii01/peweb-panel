@@ -15,7 +15,7 @@ export async function GET(request: NextRequest) {
     if (authError || !user) {
       return NextResponse.json(
         { error: "Unauthorized - Authentication required" },
-        { status: 401 }
+        { status: 401 },
       );
     }
 
@@ -29,7 +29,7 @@ export async function GET(request: NextRequest) {
     if (roleError || !roleCheck || roleCheck.role !== "developer") {
       return NextResponse.json(
         { error: "Forbidden - Developer access required" },
-        { status: 403 }
+        { status: 403 },
       );
     }
 
@@ -44,7 +44,7 @@ export async function GET(request: NextRequest) {
       console.error("Error fetching products:", productsError);
       return NextResponse.json(
         { error: "Failed to fetch products" },
-        { status: 500 }
+        { status: 500 },
       );
     }
 
@@ -78,7 +78,7 @@ export async function GET(request: NextRequest) {
     console.error("Unexpected error in GET /api/developer/products:", error);
     return NextResponse.json(
       { error: "Internal server error" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
@@ -97,7 +97,7 @@ export async function POST(request: NextRequest) {
     if (authError || !user) {
       return NextResponse.json(
         { error: "Unauthorized - Authentication required" },
-        { status: 401 }
+        { status: 401 },
       );
     }
 
@@ -111,19 +111,35 @@ export async function POST(request: NextRequest) {
     if (roleError || !roleCheck || roleCheck.role !== "developer") {
       return NextResponse.json(
         { error: "Forbidden - Developer access required" },
-        { status: 403 }
+        { status: 403 },
       );
     }
 
     // Parse request body
     const body = await request.json();
-    const { title, category, price, discount, href, image, description, tools } = body;
+    const {
+      title,
+      category,
+      price,
+      discount,
+      href,
+      image,
+      description,
+      tools,
+    } = body;
 
     // Validate required fields
-    if (!title || !category || price === undefined || !href || !image || !description) {
+    if (
+      !title ||
+      !category ||
+      price === undefined ||
+      !href ||
+      !image ||
+      !description
+    ) {
       return NextResponse.json(
         { error: "Missing required fields" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -131,7 +147,7 @@ export async function POST(request: NextRequest) {
     if (!["Website", "Web App"].includes(category)) {
       return NextResponse.json(
         { error: "Invalid category. Must be 'Website' or 'Web App'" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -139,7 +155,7 @@ export async function POST(request: NextRequest) {
     if (discount !== undefined && (discount < 0 || discount > 100)) {
       return NextResponse.json(
         { error: "Discount must be between 0 and 100" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -165,7 +181,7 @@ export async function POST(request: NextRequest) {
       console.error("Error creating product:", insertError);
       return NextResponse.json(
         { error: "Failed to create product" },
-        { status: 500 }
+        { status: 500 },
       );
     }
 
@@ -199,13 +215,13 @@ export async function POST(request: NextRequest) {
         message: "Product created successfully",
         product: transformedProduct,
       },
-      { status: 201 }
+      { status: 201 },
     );
   } catch (error) {
     console.error("Unexpected error in POST /api/developer/products:", error);
     return NextResponse.json(
       { error: "Internal server error" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

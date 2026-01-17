@@ -2,12 +2,13 @@
 import { Product } from "@/components/views/Developer/Products";
 import React, { useState } from "react";
 import { FiAlertTriangle, FiX } from "react-icons/fi";
+import Button from "../Button";
 
 interface CardProductsDeleteProps {
   isOpen: boolean;
   onClose: () => void;
   product: Product;
-  onProductDeleted: (productId: string) => void;
+  onProductDeleted: () => void;
 }
 
 const CardProductsDelete: React.FC<CardProductsDeleteProps> = ({
@@ -39,7 +40,11 @@ const CardProductsDelete: React.FC<CardProductsDeleteProps> = ({
         throw new Error(errorData.error || "Gagal menghapus produk");
       }
 
-      onProductDeleted(product.id);
+      // Close modal first
+      onClose();
+
+      // Call the callback to refresh products list
+      onProductDeleted();
     } catch (err) {
       console.error("Error deleting product:", err);
       setError(err instanceof Error ? err.message : "Gagal menghapus produk");
@@ -91,8 +96,10 @@ const CardProductsDelete: React.FC<CardProductsDeleteProps> = ({
           <div className="bg-gray-50 rounded-lg p-3 md:p-4 text-left">
             <div className="grid grid-cols-2 gap-2 text-xs md:text-sm">
               <div className="text-gray-600 font-medium">Kategori:</div>
-              <div className="font-semibold text-gray-900">{product.category}</div>
-              
+              <div className="font-semibold text-gray-900">
+                {product.category}
+              </div>
+
               <div className="text-gray-600 font-medium">Status:</div>
               <div>
                 <span
@@ -100,8 +107,8 @@ const CardProductsDelete: React.FC<CardProductsDeleteProps> = ({
                     product.status === "approved"
                       ? "bg-green-100 text-green-700"
                       : product.status === "rejected"
-                      ? "bg-red-100 text-red-700"
-                      : "bg-amber-100 text-amber-700"
+                        ? "bg-red-100 text-red-700"
+                        : "bg-amber-100 text-amber-700"
                   }`}
                 >
                   {product.status}
@@ -122,16 +129,20 @@ const CardProductsDelete: React.FC<CardProductsDeleteProps> = ({
 
           {/* Action Buttons */}
           <div className="flex flex-col-reverse sm:flex-row gap-2 sm:gap-3 pt-2">
-            <button
+            <Button
+              variant="secondary"
+              size="sm"
               onClick={onClose}
-              className="flex-1 px-4 py-2.5 text-sm border border-gray-300 rounded-lg font-medium hover:bg-gray-100 transition-colors"
+              className="flex-1"
               disabled={isLoading}
             >
               Batal
-            </button>
-            <button
+            </Button>
+            <Button
+              variant="danger"
+              size="sm"
               onClick={handleDelete}
-              className="flex-1 px-4 py-2.5 bg-rose-600 text-white rounded-lg font-medium hover:bg-rose-700 transition-all disabled:opacity-50 disabled:cursor-not-allowed text-sm"
+              className="flex-1 disabled:opacity-50 disabled:cursor-not-allowed"
               disabled={isLoading}
             >
               {isLoading ? (
@@ -142,7 +153,7 @@ const CardProductsDelete: React.FC<CardProductsDeleteProps> = ({
               ) : (
                 "Hapus Sekarang"
               )}
-            </button>
+            </Button>
           </div>
         </div>
       </div>

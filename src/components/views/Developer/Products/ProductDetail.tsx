@@ -19,6 +19,7 @@ import {
 import { Product } from "./index";
 import CardProductsUpdate from "@/components/ui/CardProducts/CardProductsUpdate";
 import CardProductsDelete from "@/components/ui/CardProducts/CardProductsDelete";
+import Button from "@/components/ui/Button";
 
 const ProductDetail: React.FC = () => {
   const params = useParams();
@@ -108,7 +109,7 @@ const ProductDetail: React.FC = () => {
 
   if (isLoading) {
     return (
-      <div className="flex flex-col items-center justify-center min-h-[400px]">
+      <div className="flex flex-col items-center justify-center min-h-screen">
         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600"></div>
         <p className="mt-4 text-gray-600">Loading product details...</p>
       </div>
@@ -146,24 +147,28 @@ const ProductDetail: React.FC = () => {
         </button>
 
         <div className="flex gap-2">
-          <button
+          <Button
+            variant="outline"
+            size="sm"
+            className="flex-1 sm:flex-none"
             onClick={fetchProductDetail}
-            className="px-4 py-2 text-sm font-semibold border border-gray-300 rounded-lg bg-white hover:bg-gray-50 transition-all flex items-center gap-2"
           >
-            <FiRefreshCw size={14} /> Refresh
-          </button>
-          <button
+            Refresh
+          </Button>
+
+          <Button
             onClick={() => setIsUpdateOpen(true)}
             className="px-4 py-2 text-sm font-semibold bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-all flex items-center gap-2"
           >
-            <FiEdit2 size={14} /> Edit Produk
-          </button>
-          <button
+            <FiEdit2 size={14} /> Edit
+          </Button>
+          <Button
             onClick={() => setIsDeleteOpen(true)}
             className="px-4 py-2 text-sm font-semibold bg-red-600 text-white rounded-lg hover:bg-red-700 transition-all flex items-center gap-2"
           >
+            {" "}
             <FiTrash2 size={14} /> Hapus
-          </button>
+          </Button>
         </div>
       </div>
 

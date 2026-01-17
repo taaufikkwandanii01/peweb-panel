@@ -15,7 +15,7 @@ export async function PUT(request: NextRequest) {
     if (authError || !user) {
       return NextResponse.json(
         { error: "Unauthorized - Authentication required" },
-        { status: 401 }
+        { status: 401 },
       );
     }
 
@@ -29,19 +29,29 @@ export async function PUT(request: NextRequest) {
     if (roleError || !roleCheck || roleCheck.role !== "developer") {
       return NextResponse.json(
         { error: "Forbidden - Developer access required" },
-        { status: 403 }
+        { status: 403 },
       );
     }
 
     // Parse request body
     const body = await request.json();
-    const { id, title, category, price, discount, href, image, description, tools } = body;
+    const {
+      id,
+      title,
+      category,
+      price,
+      discount,
+      href,
+      image,
+      description,
+      tools,
+    } = body;
 
     // Validate required fields
     if (!id) {
       return NextResponse.json(
         { error: "Product ID is required" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -53,16 +63,13 @@ export async function PUT(request: NextRequest) {
       .single();
 
     if (checkError || !existingProduct) {
-      return NextResponse.json(
-        { error: "Product not found" },
-        { status: 404 }
-      );
+      return NextResponse.json({ error: "Product not found" }, { status: 404 });
     }
 
     if (existingProduct.developer_id !== user.id) {
       return NextResponse.json(
         { error: "Forbidden - You can only update your own products" },
-        { status: 403 }
+        { status: 403 },
       );
     }
 
@@ -70,7 +77,7 @@ export async function PUT(request: NextRequest) {
     if (category && !["Website", "Web App"].includes(category)) {
       return NextResponse.json(
         { error: "Invalid category. Must be 'Website' or 'Web App'" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -78,7 +85,7 @@ export async function PUT(request: NextRequest) {
     if (discount !== undefined && (discount < 0 || discount > 100)) {
       return NextResponse.json(
         { error: "Discount must be between 0 and 100" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -105,7 +112,7 @@ export async function PUT(request: NextRequest) {
       console.error("Error updating product:", updateError);
       return NextResponse.json(
         { error: "Failed to update product" },
-        { status: 500 }
+        { status: 500 },
       );
     }
 
@@ -139,13 +146,16 @@ export async function PUT(request: NextRequest) {
         message: "Product updated successfully",
         product: transformedProduct,
       },
-      { status: 200 }
+      { status: 200 },
     );
   } catch (error) {
-    console.error("Unexpected error in PUT /api/developer/products/change-products:", error);
+    console.error(
+      "Unexpected error in PUT /api/developer/products/change-products:",
+      error,
+    );
     return NextResponse.json(
       { error: "Internal server error" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
@@ -164,7 +174,7 @@ export async function DELETE(request: NextRequest) {
     if (authError || !user) {
       return NextResponse.json(
         { error: "Unauthorized - Authentication required" },
-        { status: 401 }
+        { status: 401 },
       );
     }
 
@@ -178,7 +188,7 @@ export async function DELETE(request: NextRequest) {
     if (roleError || !roleCheck || roleCheck.role !== "developer") {
       return NextResponse.json(
         { error: "Forbidden - Developer access required" },
-        { status: 403 }
+        { status: 403 },
       );
     }
 
@@ -189,7 +199,7 @@ export async function DELETE(request: NextRequest) {
     if (!id) {
       return NextResponse.json(
         { error: "Product ID is required" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -201,16 +211,13 @@ export async function DELETE(request: NextRequest) {
       .single();
 
     if (checkError || !existingProduct) {
-      return NextResponse.json(
-        { error: "Product not found" },
-        { status: 404 }
-      );
+      return NextResponse.json({ error: "Product not found" }, { status: 404 });
     }
 
     if (existingProduct.developer_id !== user.id) {
       return NextResponse.json(
         { error: "Forbidden - You can only delete your own products" },
-        { status: 403 }
+        { status: 403 },
       );
     }
 
@@ -224,7 +231,7 @@ export async function DELETE(request: NextRequest) {
       console.error("Error deleting product:", deleteError);
       return NextResponse.json(
         { error: "Failed to delete product" },
-        { status: 500 }
+        { status: 500 },
       );
     }
 
@@ -233,13 +240,16 @@ export async function DELETE(request: NextRequest) {
         message: "Product deleted successfully",
         deletedProductId: id,
       },
-      { status: 200 }
+      { status: 200 },
     );
   } catch (error) {
-    console.error("Unexpected error in DELETE /api/developer/products/change-products:", error);
+    console.error(
+      "Unexpected error in DELETE /api/developer/products/change-products:",
+      error,
+    );
     return NextResponse.json(
       { error: "Internal server error" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

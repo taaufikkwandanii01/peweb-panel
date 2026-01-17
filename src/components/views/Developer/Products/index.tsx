@@ -18,6 +18,7 @@ import Link from "next/link";
 import CardProductsAdd from "@/components/ui/CardProducts/CardProductsAdd";
 import CardProductsDelete from "@/components/ui/CardProducts/CardProductsDelete";
 import CardProductsUpdate from "@/components/ui/CardProducts/CardProductsUpdate";
+import Button from "@/components/ui/Button";
 
 // Interface Product
 export interface Product {
@@ -116,12 +117,12 @@ const DeveloperProducts: React.FC = () => {
   const startIndex = (currentPage - 1) * itemsPerPage;
   const paginatedProducts = filteredData.slice(
     startIndex,
-    startIndex + itemsPerPage
+    startIndex + itemsPerPage,
   );
 
   if (isLoading) {
     return (
-      <div className="flex flex-col items-center justify-center min-h-[400px]">
+      <div className="flex flex-col items-center justify-center min-h-screen">
         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600"></div>
         <p className="mt-4 text-gray-600">Loading products...</p>
       </div>
@@ -141,18 +142,21 @@ const DeveloperProducts: React.FC = () => {
           </p>
         </div>
         <div className="flex gap-2">
-          <button
+          <Button
+            variant="outline"
+            size="sm"
+            className="flex-1 sm:flex-none"
             onClick={fetchProducts}
-            className="flex-1 sm:flex-none px-4 py-2 text-sm font-semibold border border-gray-300 rounded-lg bg-white hover:bg-gray-50 transition-all flex items-center justify-center gap-2"
           >
-            <FiRefreshCw size={14} /> Refresh
-          </button>
-          <button
+            Refresh
+          </Button>
+          <Button
             onClick={() => setIsAddOpen(true)}
             className="flex-1 sm:flex-none px-4 py-2 text-sm font-semibold bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-all shadow-sm flex items-center justify-center gap-2"
           >
+            {" "}
             <FiPlus size={16} /> Tambah Produk
-          </button>
+          </Button>
         </div>
       </div>
 
@@ -214,7 +218,7 @@ const DeveloperProducts: React.FC = () => {
                 <div className="absolute top-3 right-3">
                   <span
                     className={`px-2.5 py-1 rounded-lg text-[10px] font-bold uppercase border shadow-sm ${getStatusStyle(
-                      product.status
+                      product.status,
                     )}`}
                   >
                     {product.status}
@@ -240,7 +244,7 @@ const DeveloperProducts: React.FC = () => {
                   <div className="flex items-baseline gap-2">
                     <span className="text-lg font-black text-emerald-600">
                       {formatIDR(
-                        getFinalPrice(product.price, product.discount)
+                        getFinalPrice(product.price, product.discount),
                       )}
                     </span>
                     {product.discount > 0 && (
@@ -276,30 +280,37 @@ const DeveloperProducts: React.FC = () => {
 
               {/* Action Buttons */}
               <div className="flex gap-2 p-5 pt-0">
+                {/* Tombol Detail */}
                 <Link
                   href={`/developer/products/${product.id}`}
-                  className="flex-1 flex justify-center items-center gap-2 py-2 text-sm font-bold text-blue-600 bg-blue-50 hover:bg-blue-600 hover:text-white rounded-xl transition-all duration-200"
+                  className="flex-1 flex justify-center items-center gap-2 py-2 text-sm font-bold text-white bg-gray-600 hover:bg-gray-700 rounded-xl transition-colors duration-200"
                 >
                   <FiEye size={14} /> Detail
                 </Link>
-                <button
+
+                {/* Tombol Edit */}
+                <Button
                   onClick={() => {
                     setSelectedProduct(product);
                     setIsUpdateOpen(true);
                   }}
-                  className="flex-1 flex justify-center items-center gap-2 py-2 text-sm font-bold text-indigo-600 bg-indigo-50 hover:bg-indigo-600 hover:text-white rounded-xl transition-all duration-200"
+                  variant="primary"
+                  className="gap-2 py-2 text-sm font-bold rounded-xl"
                 >
                   <FiEdit2 size={14} /> Edit
-                </button>
-                <button
+                </Button>
+
+                {/* Tombol Hapus */}
+                <Button
                   onClick={() => {
                     setSelectedProduct(product);
                     setIsDeleteOpen(true);
                   }}
-                  className="flex-1 flex justify-center items-center gap-2 py-2 text-sm font-bold text-rose-600 bg-rose-50 hover:bg-rose-600 hover:text-white rounded-xl transition-all duration-200"
+                  variant="danger"
+                  className="gap-2 py-2 text-sm font-bold rounded-xl"
                 >
                   <FiTrash2 size={14} /> Hapus
-                </button>
+                </Button>
               </div>
             </div>
           ))

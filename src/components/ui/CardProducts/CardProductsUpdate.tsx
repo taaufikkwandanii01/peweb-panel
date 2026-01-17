@@ -3,12 +3,13 @@ import { Product } from "@/components/views/Developer/Products";
 import React, { useState, useEffect, useRef } from "react";
 import { FiX, FiRefreshCw, FiUpload } from "react-icons/fi";
 import { supabase } from "@/lib/supabase";
+import Button from "../Button";
 
 interface CardProductsUpdateProps {
   isOpen: boolean;
   onClose: () => void;
   product: Product;
-  onProductUpdated: (product: Product) => void;
+  onProductUpdated: () => void;
 }
 
 const CardProductsUpdate: React.FC<CardProductsUpdateProps> = ({
@@ -51,14 +52,19 @@ const CardProductsUpdate: React.FC<CardProductsUpdateProps> = ({
   const handleChange = (
     e: React.ChangeEvent<
       HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
-    >
+    >,
   ) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
-    
-    // Update preview if image URL is manually entered
-    if (name === "image") {
-      setImagePreview(value);
+
+    // Update price when category changes
+    if (name === "category") {
+      const defaultPrice = value === "Website" ? "100000" : "300000";
+      setFormData((prev) => ({
+        ...prev,
+        category: value as "Website" | "Web App",
+        price: defaultPrice,
+      }));
     }
   };
 
@@ -159,8 +165,8 @@ const CardProductsUpdate: React.FC<CardProductsUpdateProps> = ({
       }
 
       const data = await response.json();
-      onProductUpdated(data.product);
       onClose();
+      onProductUpdated();
     } catch (err) {
       console.error("Error updating product:", err);
       setError(err instanceof Error ? err.message : "Gagal mengupdate produk");
@@ -281,7 +287,7 @@ const CardProductsUpdate: React.FC<CardProductsUpdateProps> = ({
               <label className="text-xs md:text-sm font-semibold text-gray-700">
                 Product Image <span className="text-red-500">*</span>
               </label>
-              
+
               {/* Image Preview */}
               {imagePreview && (
                 <div className="relative w-full h-48 bg-gray-100 rounded-lg overflow-hidden border border-gray-300">
@@ -313,7 +319,7 @@ const CardProductsUpdate: React.FC<CardProductsUpdateProps> = ({
                 className="hidden"
                 disabled={isUploading}
               />
-              
+
               <button
                 type="button"
                 onClick={() => fileInputRef.current?.click()}
@@ -335,20 +341,7 @@ const CardProductsUpdate: React.FC<CardProductsUpdateProps> = ({
                 )}
               </button>
 
-              {/* Manual URL Input */}
-              <div className="text-center text-xs text-gray-500">atau</div>
-              <input
-                type="text"
-                name="image"
-                value={formData.image}
-                onChange={handleChange}
-                className="w-full p-2 md:p-2.5 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-transparent outline-none"
-                placeholder="Atau masukkan URL gambar..."
-                required
-              />
-              <p className="text-xs text-gray-500">
-                Max 5MB. Format: JPG, PNG, GIF, WebP
-              </p>
+              <p className="text-xs text-gray-500">Max 5MB. Format: JPG, PNG</p>
             </div>
 
             <div className="col-span-full space-y-1">
@@ -400,7 +393,9 @@ const CardProductsUpdate: React.FC<CardProductsUpdateProps> = ({
                 <div className="flex-1">
                   <p className="text-xs md:text-sm text-amber-800">
                     <strong>Status saat ini:</strong>{" "}
-                    <span className="uppercase font-bold">{product.status}</span>
+                    <span className="uppercase font-bold">
+                      {product.status}
+                    </span>
                   </p>
                   <p className="text-xs text-amber-600 mt-1">
                     Setelah update, status akan kembali ke &quot;pending&quot;
@@ -413,17 +408,20 @@ const CardProductsUpdate: React.FC<CardProductsUpdateProps> = ({
 
           {/* Footer */}
           <div className="p-4 md:p-6 bg-gray-50 flex flex-col-reverse sm:flex-row justify-end gap-2 sm:gap-3">
-            <button
+            <Button
+              variant="secondary"
+              size="sm"
               type="button"
               onClick={onClose}
-              className="px-4 py-2 text-sm border border-gray-300 rounded-lg hover:bg-gray-100 transition-colors"
               disabled={isLoading}
             >
               Batal
-            </button>
-            <button
+            </Button>
+            <Button
+              variant="warning"
+              size="sm"
               type="submit"
-              className="bg-amber-500 text-white px-4 py-2 text-sm rounded-lg flex items-center justify-center gap-2 hover:bg-amber-600 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+              className="gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
               disabled={isLoading || isUploading}
             >
               {isLoading ? (
@@ -436,7 +434,7 @@ const CardProductsUpdate: React.FC<CardProductsUpdateProps> = ({
                   <FiRefreshCw size={16} /> Update
                 </>
               )}
-            </button>
+            </Button>
           </div>
         </form>
       </div>

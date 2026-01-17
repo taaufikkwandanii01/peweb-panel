@@ -3,11 +3,12 @@ import React, { useState, useRef } from "react";
 import { FiX, FiSave, FiUpload, FiImage } from "react-icons/fi";
 import { Product } from "@/components/views/Developer/Products";
 import { supabase } from "@/lib/supabase";
+import Button from "../Button";
 
 interface CardProductsAddProps {
   isOpen: boolean;
   onClose: () => void;
-  onProductAdded: (product: Product) => void;
+  onProductAdded: () => void;
 }
 
 const CardProductsAdd: React.FC<CardProductsAddProps> = ({
@@ -24,7 +25,7 @@ const CardProductsAdd: React.FC<CardProductsAddProps> = ({
   const [formData, setFormData] = useState({
     title: "",
     category: "Website" as "Website" | "Web App",
-    price: "",
+    price: "100000",
     discount: "0",
     href: "",
     image: "",
@@ -35,14 +36,19 @@ const CardProductsAdd: React.FC<CardProductsAddProps> = ({
   const handleChange = (
     e: React.ChangeEvent<
       HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
-    >
+    >,
   ) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
-    
-    // Update preview if image URL is manually entered
-    if (name === "image") {
-      setImagePreview(value);
+
+    // Update price when category changes
+    if (name === "category") {
+      const defaultPrice = value === "Website" ? "100000" : "300000";
+      setFormData((prev) => ({
+        ...prev,
+        category: value as "Website" | "Web App",
+        price: defaultPrice,
+      }));
     }
   };
 
@@ -147,7 +153,7 @@ const CardProductsAdd: React.FC<CardProductsAddProps> = ({
       setFormData({
         title: "",
         category: "Website",
-        price: "",
+        price: "100000",
         discount: "0",
         href: "",
         image: "",
@@ -156,7 +162,7 @@ const CardProductsAdd: React.FC<CardProductsAddProps> = ({
       });
       setImagePreview("");
 
-      onProductAdded(data.product);
+      onProductAdded();
       onClose();
     } catch (err) {
       console.error("Error adding product:", err);
@@ -277,7 +283,7 @@ const CardProductsAdd: React.FC<CardProductsAddProps> = ({
               <label className="text-xs md:text-sm font-semibold text-gray-700">
                 Product Image <span className="text-red-500">*</span>
               </label>
-              
+
               {/* Image Preview */}
               {imagePreview && (
                 <div className="relative w-full h-48 bg-gray-100 rounded-lg overflow-hidden border border-gray-300">
@@ -309,7 +315,7 @@ const CardProductsAdd: React.FC<CardProductsAddProps> = ({
                 className="hidden"
                 disabled={isUploading}
               />
-              
+
               <button
                 type="button"
                 onClick={() => fileInputRef.current?.click()}
@@ -331,20 +337,7 @@ const CardProductsAdd: React.FC<CardProductsAddProps> = ({
                 )}
               </button>
 
-              {/* Manual URL Input */}
-              <div className="text-center text-xs text-gray-500">atau</div>
-              <input
-                type="text"
-                name="image"
-                value={formData.image}
-                onChange={handleChange}
-                className="w-full p-2 md:p-2.5 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent outline-none"
-                placeholder="Atau masukkan URL gambar..."
-                required
-              />
-              <p className="text-xs text-gray-500">
-                Max 5MB. Format: JPG, PNG, GIF, WebP
-              </p>
+              <p className="text-xs text-gray-500">Max 5MB. Format: JPG, PNG</p>
             </div>
 
             <div className="col-span-full space-y-1">
@@ -382,17 +375,20 @@ const CardProductsAdd: React.FC<CardProductsAddProps> = ({
 
           {/* Footer */}
           <div className="p-4 md:p-6 bg-gray-50 flex flex-col-reverse sm:flex-row justify-end gap-2 sm:gap-3">
-            <button
+            <Button
+              variant="secondary"
+              size="sm"
               type="button"
               onClick={onClose}
-              className="px-4 py-2 text-sm border border-gray-300 rounded-lg hover:bg-gray-100 transition-colors"
               disabled={isLoading}
             >
               Batal
-            </button>
-            <button
+            </Button>
+            <Button
+              variant="primary"
+              size="sm"
               type="submit"
-              className="bg-indigo-600 text-white px-4 py-2 text-sm rounded-lg flex items-center justify-center gap-2 hover:bg-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+              className="gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
               disabled={isLoading || isUploading}
             >
               {isLoading ? (
@@ -405,7 +401,7 @@ const CardProductsAdd: React.FC<CardProductsAddProps> = ({
                   <FiSave size={16} /> Simpan
                 </>
               )}
-            </button>
+            </Button>
           </div>
         </form>
       </div>
