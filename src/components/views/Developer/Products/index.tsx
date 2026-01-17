@@ -10,7 +10,9 @@ import {
   FiPackage,
   FiExternalLink,
   FiLayers,
+  FiEye,
 } from "react-icons/fi";
+import Link from "next/link";
 
 // Import Modal Components
 import CardProductsAdd from "@/components/ui/CardProducts/CardProductsAdd";
@@ -274,6 +276,12 @@ const DeveloperProducts: React.FC = () => {
 
               {/* Action Buttons */}
               <div className="flex gap-2 p-5 pt-0">
+                <Link
+                  href={`/developer/products/${product.id}`}
+                  className="flex-1 flex justify-center items-center gap-2 py-2 text-sm font-bold text-blue-600 bg-blue-50 hover:bg-blue-600 hover:text-white rounded-xl transition-all duration-200"
+                >
+                  <FiEye size={14} /> Detail
+                </Link>
                 <button
                   onClick={() => {
                     setSelectedProduct(product);

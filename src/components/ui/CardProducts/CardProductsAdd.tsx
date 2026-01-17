@@ -1,7 +1,8 @@
 "use client";
-import React, { useState } from "react";
-import { FiX, FiSave } from "react-icons/fi";
+import React, { useState, useRef } from "react";
+import { FiX, FiSave, FiUpload, FiImage } from "react-icons/fi";
 import { Product } from "@/components/views/Developer/Products";
+import { supabase } from "@/lib/supabase";
 
 interface CardProductsAddProps {
   isOpen: boolean;
@@ -15,7 +16,10 @@ const CardProductsAdd: React.FC<CardProductsAddProps> = ({
   onProductAdded,
 }) => {
   const [isLoading, setIsLoading] = useState(false);
+  const [isUploading, setIsUploading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [imagePreview, setImagePreview] = useState<string>("");
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const [formData, setFormData] = useState({
     title: "",
@@ -35,6 +39,63 @@ const CardProductsAdd: React.FC<CardProductsAddProps> = ({
   ) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
+    
+    // Update preview if image URL is manually entered
+    if (name === "image") {
+      setImagePreview(value);
+    }
+  };
+
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    // Validate file type
+    if (!file.type.startsWith("image/")) {
+      setError("File harus berupa gambar");
+      return;
+    }
+
+    // Validate file size (max 5MB)
+    if (file.size > 5 * 1024 * 1024) {
+      setError("Ukuran file maksimal 5MB");
+      return;
+    }
+
+    setIsUploading(true);
+    setError(null);
+
+    try {
+      // Create unique filename
+      const fileExt = file.name.split(".").pop();
+      const fileName = `${Math.random().toString(36).substring(2)}-${Date.now()}.${fileExt}`;
+      const filePath = `products/${fileName}`;
+
+      // Upload to Supabase Storage
+      const { data: uploadData, error: uploadError } = await supabase.storage
+        .from("product-images")
+        .upload(filePath, file);
+
+      if (uploadError) {
+        throw new Error("Gagal upload gambar: " + uploadError.message);
+      }
+
+      // Get public URL
+      const { data: urlData } = supabase.storage
+        .from("product-images")
+        .getPublicUrl(filePath);
+
+      const imageUrl = urlData.publicUrl;
+
+      // Update form data and preview
+      setFormData((prev) => ({ ...prev, image: imageUrl }));
+      setImagePreview(imageUrl);
+    } catch (err) {
+      console.error("Error uploading image:", err);
+      setError(err instanceof Error ? err.message : "Gagal upload gambar");
+    } finally {
+      setIsUploading(false);
+    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -82,6 +143,7 @@ const CardProductsAdd: React.FC<CardProductsAddProps> = ({
 
       const data = await response.json();
 
+      // Reset form
       setFormData({
         title: "",
         category: "Website",
@@ -92,8 +154,10 @@ const CardProductsAdd: React.FC<CardProductsAddProps> = ({
         description: "",
         tools: "",
       });
+      setImagePreview("");
 
       onProductAdded(data.product);
+      onClose();
     } catch (err) {
       console.error("Error adding product:", err);
       setError(err instanceof Error ? err.message : "Gagal menambahkan produk");
@@ -208,21 +272,78 @@ const CardProductsAdd: React.FC<CardProductsAddProps> = ({
               />
             </div>
 
-            <div className="col-span-full space-y-1">
+            {/* Image Upload Section */}
+            <div className="col-span-full space-y-2">
               <label className="text-xs md:text-sm font-semibold text-gray-700">
-                Image URL <span className="text-red-500">*</span>
+                Product Image <span className="text-red-500">*</span>
               </label>
+              
+              {/* Image Preview */}
+              {imagePreview && (
+                <div className="relative w-full h-48 bg-gray-100 rounded-lg overflow-hidden border border-gray-300">
+                  <img
+                    src={imagePreview}
+                    alt="Preview"
+                    className="w-full h-full object-cover"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setImagePreview("");
+                      setFormData((prev) => ({ ...prev, image: "" }));
+                      if (fileInputRef.current) fileInputRef.current.value = "";
+                    }}
+                    className="absolute top-2 right-2 bg-red-500 text-white p-2 rounded-full hover:bg-red-600 transition-colors"
+                  >
+                    <FiX size={16} />
+                  </button>
+                </div>
+              )}
+
+              {/* Upload Button */}
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept="image/*"
+                onChange={handleImageUpload}
+                className="hidden"
+                disabled={isUploading}
+              />
+              
+              <button
+                type="button"
+                onClick={() => fileInputRef.current?.click()}
+                disabled={isUploading}
+                className="w-full p-3 border-2 border-dashed border-gray-300 rounded-lg hover:border-indigo-500 hover:bg-indigo-50 transition-all flex items-center justify-center gap-2 text-gray-600 hover:text-indigo-600 disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {isUploading ? (
+                  <>
+                    <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-indigo-600"></div>
+                    <span className="text-sm font-medium">Uploading...</span>
+                  </>
+                ) : (
+                  <>
+                    <FiUpload size={20} />
+                    <span className="text-sm font-medium">
+                      {imagePreview ? "Change Image" : "Upload Image"}
+                    </span>
+                  </>
+                )}
+              </button>
+
+              {/* Manual URL Input */}
+              <div className="text-center text-xs text-gray-500">atau</div>
               <input
                 type="text"
                 name="image"
                 value={formData.image}
                 onChange={handleChange}
                 className="w-full p-2 md:p-2.5 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent outline-none"
-                placeholder="/images/Product/001.png"
+                placeholder="Atau masukkan URL gambar..."
                 required
               />
               <p className="text-xs text-gray-500">
-                Masukkan path gambar atau URL lengkap
+                Max 5MB. Format: JPG, PNG, GIF, WebP
               </p>
             </div>
 
@@ -272,7 +393,7 @@ const CardProductsAdd: React.FC<CardProductsAddProps> = ({
             <button
               type="submit"
               className="bg-indigo-600 text-white px-4 py-2 text-sm rounded-lg flex items-center justify-center gap-2 hover:bg-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
-              disabled={isLoading}
+              disabled={isLoading || isUploading}
             >
               {isLoading ? (
                 <>
