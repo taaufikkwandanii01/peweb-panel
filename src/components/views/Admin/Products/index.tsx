@@ -1,18 +1,13 @@
 "use client";
 
 import React, { useState, useMemo, useEffect } from "react";
-import {
-  FiSearch,
-  FiRefreshCw,
-  FiPackage,
-  FiExternalLink,
-  FiEdit2,
-  FiEye,
-} from "react-icons/fi";
+import { FiSearch, FiRefreshCw, FiPackage } from "react-icons/fi";
 
-// Import Modal Component
+// Import Modal & Card Component
 import CardAdminProductStatus from "@/components/ui/ModalProducts/ModalAdmin/ModalProductsUpdateStatus";
 import { AdminProduct } from "@/components/ui/ModalProducts/ModalAdmin/ModalProductsUpdateStatus";
+import CardAdminProducts from "@/components/ui/CardProducts/CardAdminProducts";
+import Button from "@/components/ui/Button";
 
 const AdminProducts: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState("");
@@ -22,7 +17,7 @@ const AdminProducts: React.FC = () => {
 
   // State untuk Pagination
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 10;
+  const itemsPerPage = 9;
 
   // State untuk Modal & Data
   const [isUpdateStatusOpen, setIsUpdateStatusOpen] = useState(false);
@@ -54,39 +49,6 @@ const AdminProducts: React.FC = () => {
   useEffect(() => {
     setCurrentPage(1);
   }, [searchTerm, selectedCategory, selectedStatus, selectedDeveloper]);
-
-  // Helper Formatting
-  const formatIDR = (n: number) =>
-    new Intl.NumberFormat("id-ID", {
-      style: "currency",
-      currency: "IDR",
-      maximumFractionDigits: 0,
-    }).format(n);
-
-  const getFinalPrice = (p: number, d: number) => p - p * (d / 100);
-
-  const getStatusStyle = (status: string) => {
-    switch (status?.toLowerCase()) {
-      case "approved":
-        return "bg-green-50 border-green-200 text-green-700";
-      case "rejected":
-        return "bg-red-50 border-red-200 text-red-700";
-      default:
-        return "bg-amber-50 border-amber-200 text-amber-700";
-    }
-  };
-
-  const getStatusBadge = (status: string) => {
-    return (
-      <span
-        className={`px-2.5 py-1 rounded-lg text-[10px] font-bold uppercase border shadow-sm ${getStatusStyle(
-          status,
-        )}`}
-      >
-        {status}
-      </span>
-    );
-  };
 
   // Get unique developers
   const developers = useMemo(() => {
@@ -137,15 +99,6 @@ const AdminProducts: React.FC = () => {
     startIndex + itemsPerPage,
   );
 
-  if (isLoading) {
-    return (
-      <div className="flex flex-col items-center justify-center min-h-[400px]">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600"></div>
-        <p className="mt-4 text-gray-600">Loading products...</p>
-      </div>
-    );
-  }
-
   return (
     <div className="space-y-6">
       {/* Header Section */}
@@ -158,56 +111,75 @@ const AdminProducts: React.FC = () => {
             Kelola dan review products dari developer
           </p>
         </div>
-        <button
+        <Button
+          variant="outline"
+          size="sm"
+          className="flex items-center justify-center gap-2"
           onClick={fetchProducts}
-          className="px-4 py-2 text-sm font-semibold border border-gray-300 rounded-lg bg-white hover:bg-gray-50 transition-all flex items-center justify-center gap-2 shadow-sm"
+          disabled={isLoading}
         >
-          <FiRefreshCw size={14} /> Refresh
-        </button>
+          <FiRefreshCw className={isLoading ? "animate-spin" : ""} size={16} />
+          {isLoading ? "Loading" : "Refresh"}
+        </Button>
       </div>
 
       {/* Statistics Cards */}
-      <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
-        <div className="bg-white border border-gray-200 rounded-xl p-4 shadow-sm">
-          <div className="flex items-center justify-between mb-2">
-            <span className="text-xs font-semibold text-gray-500 uppercase">
-              Total
-            </span>
-            <FiPackage className="text-gray-400" size={18} />
-          </div>
-          <p className="text-2xl font-black text-gray-900">{stats.total}</p>
+      {isLoading ? (
+        <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
+          {[...Array(4)].map((_, i) => (
+            <div
+              key={i}
+              className="h-20 bg-gray-100 animate-pulse rounded-xl"
+            />
+          ))}
         </div>
+      ) : (
+        <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
+          <div className="bg-white border border-gray-200 rounded-xl p-4 shadow-sm">
+            <div className="flex items-center justify-between mb-2">
+              <span className="text-xs font-semibold text-gray-500 uppercase">
+                Total
+              </span>
+              <FiPackage className="text-gray-400" size={18} />
+            </div>
+            <p className="text-2xl font-black text-gray-900">{stats.total}</p>
+          </div>
 
-        <div className="bg-amber-50 border border-amber-200 rounded-xl p-4 shadow-sm">
-          <div className="flex items-center justify-between mb-2">
-            <span className="text-xs font-semibold text-amber-700 uppercase">
-              Pending
-            </span>
-            <div className="w-3 h-3 rounded-full bg-amber-500"></div>
+          <div className="bg-amber-50 border border-amber-200 rounded-xl p-4 shadow-sm">
+            <div className="flex items-center justify-between mb-2">
+              <span className="text-xs font-semibold text-amber-700 uppercase">
+                Pending
+              </span>
+              <div className="w-3 h-3 rounded-full bg-amber-500"></div>
+            </div>
+            <p className="text-2xl font-black text-amber-700">
+              {stats.pending}
+            </p>
           </div>
-          <p className="text-2xl font-black text-amber-700">{stats.pending}</p>
-        </div>
 
-        <div className="bg-green-50 border border-green-200 rounded-xl p-4 shadow-sm">
-          <div className="flex items-center justify-between mb-2">
-            <span className="text-xs font-semibold text-green-700 uppercase">
-              Approved
-            </span>
-            <div className="w-3 h-3 rounded-full bg-green-500"></div>
+          <div className="bg-green-50 border border-green-200 rounded-xl p-4 shadow-sm">
+            <div className="flex items-center justify-between mb-2">
+              <span className="text-xs font-semibold text-green-700 uppercase">
+                Approved
+              </span>
+              <div className="w-3 h-3 rounded-full bg-green-500"></div>
+            </div>
+            <p className="text-2xl font-black text-green-700">
+              {stats.approved}
+            </p>
           </div>
-          <p className="text-2xl font-black text-green-700">{stats.approved}</p>
-        </div>
 
-        <div className="bg-red-50 border border-red-200 rounded-xl p-4 shadow-sm">
-          <div className="flex items-center justify-between mb-2">
-            <span className="text-xs font-semibold text-red-700 uppercase">
-              Rejected
-            </span>
-            <div className="w-3 h-3 rounded-full bg-red-500"></div>
+          <div className="bg-red-50 border border-red-200 rounded-xl p-4 shadow-sm">
+            <div className="flex items-center justify-between mb-2">
+              <span className="text-xs font-semibold text-red-700 uppercase">
+                Rejected
+              </span>
+              <div className="w-3 h-3 rounded-full bg-red-500"></div>
+            </div>
+            <p className="text-2xl font-black text-red-700">{stats.rejected}</p>
           </div>
-          <p className="text-2xl font-black text-red-700">{stats.rejected}</p>
         </div>
-      </div>
+      )}
 
       {/* Filter Bar */}
       <div className="grid grid-cols-1 gap-3 md:grid-cols-2 lg:grid-cols-5">
@@ -257,182 +229,64 @@ const AdminProducts: React.FC = () => {
         </select>
       </div>
 
-      {/* Table Section */}
-      <div className="bg-white border border-gray-200 rounded-xl shadow-sm overflow-hidden">
-        <div className="overflow-x-auto">
-          <table className="w-full">
-            <thead className="bg-gray-50 border-b border-gray-200">
-              <tr>
-                <th className="px-4 py-3 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">
-                  Product
-                </th>
-                <th className="px-4 py-3 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">
-                  Developer
-                </th>
-                <th className="px-4 py-3 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">
-                  Category
-                </th>
-                <th className="px-4 py-3 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">
-                  Price
-                </th>
-                <th className="px-4 py-3 text-center text-xs font-bold text-gray-700 uppercase tracking-wider">
-                  Status
-                </th>
-                <th className="px-4 py-3 text-center text-xs font-bold text-gray-700 uppercase tracking-wider">
-                  Actions
-                </th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-gray-200">
-              {paginatedProducts.length === 0 ? (
-                <tr>
-                  <td colSpan={6} className="px-4 py-12 text-center">
-                    <FiPackage className="mx-auto h-12 w-12 text-gray-300 mb-3" />
-                    <p className="text-gray-500 font-medium">
-                      Produk tidak ditemukan
-                    </p>
-                  </td>
-                </tr>
-              ) : (
-                paginatedProducts.map((product) => (
-                  <tr
-                    key={product.id}
-                    className="hover:bg-gray-50 transition-colors"
-                  >
-                    {/* Product Column */}
-                    <td className="px-4 py-4">
-                      <div className="flex items-center gap-3">
-                        <div className="flex-shrink-0 w-16 h-16 rounded-lg overflow-hidden bg-gray-100 border border-gray-200">
-                          <img
-                            src={product.image}
-                            alt={product.title}
-                            className="w-full h-full object-cover"
-                          />
-                        </div>
-                        <div className="flex-1 min-w-0">
-                          <p className="text-sm font-bold text-gray-900 truncate">
-                            {product.title}
-                          </p>
-                          <div className="flex items-center gap-2 mt-1">
-                            <span className="text-xs text-gray-500">
-                              {product.tools.slice(0, 2).join(", ")}
-                            </span>
-                          </div>
-                        </div>
-                      </div>
-                    </td>
-
-                    {/* Developer Column */}
-                    <td className="px-4 py-4">
-                      <div>
-                        <p className="text-sm font-semibold text-gray-900">
-                          {product.developer_name}
-                        </p>
-                        <p className="text-xs text-gray-500 truncate max-w-[200px]">
-                          {product.developer_email}
-                        </p>
-                        {product.developer_phone && (
-                          <p className="text-xs text-gray-400 mt-0.5">
-                            {product.developer_phone}
-                          </p>
-                        )}
-                      </div>
-                    </td>
-
-                    {/* Category Column */}
-                    <td className="px-4 py-4">
-                      <span className="inline-flex items-center px-2.5 py-1 rounded-lg text-xs font-bold bg-indigo-50 text-indigo-700 border border-indigo-200">
-                        {product.category}
-                      </span>
-                    </td>
-
-                    {/* Price Column */}
-                    <td className="px-4 py-4">
-                      <div>
-                        <p className="text-sm font-black text-emerald-600">
-                          {formatIDR(
-                            getFinalPrice(product.price, product.discount),
-                          )}
-                        </p>
-                        {product.discount > 0 && (
-                          <div className="flex items-center gap-1 mt-1">
-                            <p className="text-xs text-gray-400 line-through">
-                              {formatIDR(product.price)}
-                            </p>
-                            <span className="text-[10px] font-bold text-rose-600 bg-rose-50 px-1.5 py-0.5 rounded">
-                              -{product.discount}%
-                            </span>
-                          </div>
-                        )}
-                      </div>
-                    </td>
-
-                    {/* Status Column */}
-                    <td className="px-4 py-4 text-center">
-                      {getStatusBadge(product.status)}
-                    </td>
-
-                    {/* Actions Column */}
-                    <td className="px-4 py-4">
-                      <div className="flex items-center justify-center gap-2">
-                        <button
-                          onClick={() => window.open(product.href, "_blank")}
-                          className="p-2 text-gray-500 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition-all"
-                          title="Preview"
-                        >
-                          <FiExternalLink size={16} />
-                        </button>
-                        <button
-                          onClick={() => {
-                            setSelectedProduct(product);
-                            setIsUpdateStatusOpen(true);
-                          }}
-                          className="p-2 text-gray-500 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition-all"
-                          title="Update Status"
-                        >
-                          <FiEdit2 size={16} />
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
-                ))
-              )}
-            </tbody>
-          </table>
+      {/* Cards Grid Section */}
+      {isLoading ? (
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          {[...Array(9)].map((_, i) => (
+            <div
+              key={i}
+              className="h-48 bg-gray-100 animate-pulse rounded-xl"
+            />
+          ))}
         </div>
-
-        {/* Table Footer - Pagination */}
-        {paginatedProducts.length > 0 && (
-          <div className="px-4 py-3 border-t border-gray-200 flex items-center justify-between bg-gray-50">
-            <p className="text-xs text-gray-600 font-medium">
-              Showing {startIndex + 1} to{" "}
-              {Math.min(startIndex + itemsPerPage, filteredData.length)} of{" "}
-              {filteredData.length} products
-            </p>
-            <div className="flex items-center gap-2">
-              <button
-                onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
-                className="px-3 py-1.5 text-xs font-semibold border border-gray-300 rounded-lg bg-white hover:bg-gray-50 disabled:opacity-40 shadow-sm transition-all"
-                disabled={currentPage === 1}
-              >
-                Previous
-              </button>
-              <span className="text-xs font-medium text-gray-700 px-2">
-                Page {currentPage} of {totalPages || 1}
-              </span>
-              <button
-                onClick={() =>
-                  setCurrentPage((p) => Math.min(totalPages, p + 1))
-                }
-                className="px-3 py-1.5 text-xs font-semibold border border-gray-300 rounded-lg bg-white hover:bg-gray-50 disabled:opacity-40 shadow-sm transition-all"
-                disabled={currentPage === totalPages || totalPages === 0}
-              >
-                Next
-              </button>
+      ) : (
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          {paginatedProducts.length === 0 ? (
+            <div className="col-span-full py-20 text-center bg-white border border-dashed border-gray-300 rounded-2xl">
+              <FiPackage className="mx-auto h-12 w-12 text-gray-300 mb-3" />
+              <p className="text-gray-500 font-medium">
+                Produk tidak ditemukan
+              </p>
             </div>
+          ) : (
+            paginatedProducts.map((product) => (
+              <CardAdminProducts
+                key={product.id}
+                product={product}
+                onEdit={(p) => {
+                  setSelectedProduct(p);
+                  setIsUpdateStatusOpen(true);
+                }}
+              />
+            ))
+          )}
+        </div>
+      )}
+
+      {/* Pagination */}
+      {paginatedProducts.length > 0 && (
+        <div className="mt-6 px-1 flex items-center justify-between">
+          <p className="text-[11px] text-gray-500 font-medium">
+            Page {currentPage} of {totalPages || 1}
+          </p>
+          <div className="flex gap-2">
+            <button
+              onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+              className="px-4 py-1.5 text-xs font-semibold border border-gray-300 rounded-lg bg-white hover:bg-gray-50 disabled:opacity-40 shadow-sm transition-all"
+              disabled={currentPage === 1}
+            >
+              Prev
+            </button>
+            <button
+              onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
+              className="px-4 py-1.5 text-xs font-semibold border border-gray-300 rounded-lg bg-white hover:bg-gray-50 disabled:opacity-40 shadow-sm transition-all"
+              disabled={currentPage === totalPages || totalPages === 0}
+            >
+              Next
+            </button>
           </div>
-        )}
-      </div>
+        </div>
+      )}
 
       {/* Modal */}
       {selectedProduct && (

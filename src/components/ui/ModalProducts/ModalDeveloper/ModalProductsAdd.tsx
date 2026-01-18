@@ -152,7 +152,7 @@ const CardProductsAdd: React.FC<CardProductsAddProps> = ({
       <div className="bg-white rounded-xl w-full max-w-2xl max-h-[90vh] overflow-hidden shadow-2xl">
         <div className="p-4 md:p-6 flex justify-between items-center bg-indigo-50">
           <h2 className="text-lg md:text-xl font-bold text-indigo-900">
-            Tambah Produk
+            Form Tambah
           </h2>
           <button
             onClick={onClose}
@@ -245,7 +245,7 @@ const CardProductsAdd: React.FC<CardProductsAddProps> = ({
                   <img
                     src={imagePreview}
                     alt="Preview"
-                    className="w-full h-full object-cover"
+                    className="w-full h-full object-containt"
                   />
                   <button
                     type="button"

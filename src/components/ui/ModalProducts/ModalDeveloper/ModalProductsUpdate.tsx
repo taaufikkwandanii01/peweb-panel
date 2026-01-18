@@ -163,9 +163,9 @@ const CardProductsUpdate: React.FC<CardProductsUpdateProps> = ({
         <div className="p-4 md:p-6 flex justify-between items-center bg-amber-50">
           <div className="min-w-0 flex-1 mr-2">
             <h2 className="text-lg md:text-xl font-bold text-amber-900 truncate">
-              Update Produk
+              Form Edit
             </h2>
-            <p className="text-xs md:text-sm text-amber-700 truncate">
+            <p className="text-xs md:text-sm text-amber-700 truncate capitalize">
               {product.title}
             </p>
           </div>
@@ -257,7 +257,7 @@ const CardProductsUpdate: React.FC<CardProductsUpdateProps> = ({
                   <img
                     src={imagePreview}
                     alt="Preview"
-                    className="w-full h-full object-cover"
+                    className="w-full h-full object-containt"
                   />
                   <button
                     type="button"

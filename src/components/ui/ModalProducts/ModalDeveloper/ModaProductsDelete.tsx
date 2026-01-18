@@ -66,10 +66,9 @@ const CardProductsDelete: React.FC<CardProductsDeleteProps> = ({
           </div>
 
           <div>
-            <h3 className="text-xl font-bold text-gray-900">Hapus Produk?</h3>
+            <h3 className="text-xl font-bold text-gray-900">Hapus</h3>
             <p className="text-gray-600 mt-2 text-sm">
-              Apakah Anda yakin ingin menghapus <b>{product.title}</b>? Tindakan
-              ini tidak dapat dibatalkan.
+              Apakah Anda yakin ingin menghapus <b>{product.title}</b>?
             </p>
           </div>
 

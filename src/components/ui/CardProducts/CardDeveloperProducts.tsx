@@ -74,7 +74,7 @@ const CardDeveloperProducts: React.FC<CardDeveloperProductsProps> = ({
         </div>
         <div className="absolute top-3 right-3">
           {product.discount > 0 && (
-            <div className="bg-rose-500 text-white px-2 py-1.5 rounded-lg shadow-lg shadow-rose-200 flex flex-col items-center">
+            <div className="bg-rose-500 text-white px-2 py-1.5 rounded-lg flex flex-col items-center">
               <span className="text-[8px] font-bold leading-none uppercase">
                 Disc
               </span>

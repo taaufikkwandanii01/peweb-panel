@@ -146,14 +146,14 @@ const ProductDetail: React.FC = () => {
             onClick={() => setIsUpdateOpen(true)}
             className="px-4 py-2 text-sm font-semibold bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-all flex items-center gap-2"
           >
-            <FiEdit2 size={14} /> Edit
+            <FiEdit2 size={14} />
           </Button>
           <Button
             onClick={() => setIsDeleteOpen(true)}
             className="px-4 py-2 text-sm font-semibold bg-red-600 text-white rounded-lg hover:bg-red-700 transition-all flex items-center gap-2"
           >
             {" "}
-            <FiTrash2 size={14} /> Hapus
+            <FiTrash2 size={14} />
           </Button>
         </div>
       </div>
@@ -168,7 +168,7 @@ const ProductDetail: React.FC = () => {
               <img
                 src={product.image}
                 alt={product.title}
-                className="w-full h-full object-cover"
+                className="w-full h-full object-containt"
               />
               <div className="absolute top-3 left-3 flex gap-2">
                 <span className="px-3 py-1 bg-indigo-100 text-indigo-700 rounded-lg text-xs font-bold uppercase">
@@ -178,7 +178,7 @@ const ProductDetail: React.FC = () => {
 
               <div className="absolute top-3 right-3">
                 {product.discount > 0 && (
-                  <div className="bg-rose-500 text-white px-2 py-1.5 rounded-lg shadow-lg shadow-rose-200 flex flex-col items-center">
+                  <div className="bg-rose-500 text-white px-2 py-1.5 rounded-lg flex flex-col items-center">
                     <span className="text-[8px] font-bold leading-none uppercase">
                       Disc
                     </span>
