@@ -183,7 +183,7 @@ export default function RegisterView() {
               label="Full Name"
               type="text"
               name="fullName"
-              placeholder="John Doe"
+              placeholder="Lionel Messi"
               value={formData.fullName}
               onChange={handleChange}
               required
@@ -194,7 +194,7 @@ export default function RegisterView() {
               label="Email Address"
               type="email"
               name="email"
-              placeholder="your@email.com"
+              placeholder="your@gmail.com"
               value={formData.email}
               onChange={handleChange}
               required

@@ -6,11 +6,15 @@ import { AuthProvider } from "@/contexts/AuthContext";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "Admin Panel - Manage Your Application",
-  description: "Modern and powerful admin panel for managing your applications",
-  keywords: ["admin panel", "dashboard", "management", "nextjs"],
-  authors: [{ name: "Your Company" }],
+  title: "PeWeb Panel - Manage Your Products",
+  description: "Modern and powerful admin panel for managing your products.",
+  keywords: ["peweb panel", "dashboard", "management", "products"],
+  authors: [{ name: "PeWeb Platform" }],
   viewport: "width=device-width, initial-scale=1",
+  icons: {
+    icon: "/images/Icons/favicons.png",
+    shortcut: "/images/Icons/favicons.png",
+  },
 };
 
 export default function RootLayout({

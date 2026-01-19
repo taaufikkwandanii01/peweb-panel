@@ -91,15 +91,15 @@ const Navbar: React.FC<NavbarProps> = ({
               href={`/${userRole}/dashboard`}
               className="flex items-center gap-3 group"
             >
-              <div className="hidden md:inline-flex  w-9 h-9 bg-gradient-to-tr from-indigo-600 to-blue-500 rounded-xl  items-center justify-center shadow-lg shadow-indigo-200 group-hover:rotate-6 transition-transform duration-300">
+              <div className="hidden md:inline-flex  w-9 h-9 bg-linear-to-tr from-indigo-600 to-blue-500 rounded-xl  items-center justify-center shadow-lg shadow-indigo-200 group-hover:rotate-6 transition-transform duration-300">
                 <span className="text-white font-bold text-lg italic">P</span>
               </div>
               <div className="flex flex-col leading-none">
                 <span className="text-lg font-black tracking-tighter text-gray-900 group-hover:text-indigo-600 transition-colors">
-                  PEWEB<span className="text-indigo-600">.</span>
+                  PeWeb<span className="text-indigo-600">.</span>
                 </span>
                 <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">
-                  Platform
+                  Panel
                 </span>
               </div>
             </Link>

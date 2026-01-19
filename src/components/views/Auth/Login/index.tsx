@@ -136,7 +136,7 @@ export default function LoginView() {
               label="Email Address"
               type="email"
               name="email"
-              placeholder="your@email.com"
+              placeholder="your@gmail.com"
               value={formData.email}
               onChange={handleChange}
               required
