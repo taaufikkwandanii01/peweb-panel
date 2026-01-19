@@ -319,7 +319,7 @@ const AdminProfile: React.FC = () => {
                   </div>
                 </div>
 
-                <h2 className="mt-4 text-xl font-bold text-gray-900">
+                <h2 className="mt-4 text-xl font-bold text-gray-900 capitalize">
                   {formData.full_name || "Admin User"}
                 </h2>
                 <a

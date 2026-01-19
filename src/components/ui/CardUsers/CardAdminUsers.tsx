@@ -19,7 +19,7 @@ const CardAdminUsers: React.FC<CardAdminUsersProps> = ({
     <div className="bg-white border border-gray-100 rounded-xl p-5 shadow-sm hover:shadow-md transition-shadow">
       <div className="flex justify-between items-start mb-4">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 bg-linear-to-br from-gray-500 to-black rounded-full flex items-center justify-center">
+          <div className="w-10 h-10 bg-linear-to-br from-indigo-500 to-purple-500 rounded-full flex items-center justify-center">
             <span className="text-white font-semibold text-sm">
               {user.full_name?.charAt(0).toUpperCase() || "?"}
             </span>

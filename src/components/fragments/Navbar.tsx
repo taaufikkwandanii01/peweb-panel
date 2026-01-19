@@ -73,9 +73,7 @@ const Navbar: React.FC<NavbarProps> = ({
   return (
     <nav
       className={`fixed w-full top-0 z-50 transition-all duration-300 ${
-        scrolled
-          ? "bg-white/80 backdrop-blur-md shadow-sm border-b border-gray-100"
-          : "bg-white"
+        scrolled ? "bg-white/80 backdrop-blur-md shadow-sm" : "bg-white"
       }`}
     >
       <div className="px-4 sm:px-6 lg:px-8">
@@ -93,7 +91,7 @@ const Navbar: React.FC<NavbarProps> = ({
               href={`/${userRole}/dashboard`}
               className="flex items-center gap-3 group"
             >
-              <div className="w-9 h-9 bg-gradient-to-tr from-indigo-600 to-blue-500 rounded-xl flex items-center justify-center shadow-lg shadow-indigo-200 group-hover:rotate-6 transition-transform duration-300">
+              <div className="hidden md:inline-flex  w-9 h-9 bg-gradient-to-tr from-indigo-600 to-blue-500 rounded-xl  items-center justify-center shadow-lg shadow-indigo-200 group-hover:rotate-6 transition-transform duration-300">
                 <span className="text-white font-bold text-lg italic">P</span>
               </div>
               <div className="flex flex-col leading-none">
@@ -109,19 +107,11 @@ const Navbar: React.FC<NavbarProps> = ({
 
           {/* Right Section */}
           <div className="flex items-center gap-3">
-            {/* Notification Bell (Interaktif) */}
-            <button className="p-2 text-gray-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-xl transition-all relative group">
-              <FaBell className="w-5 h-5" />
-              <span className="absolute top-2 right-2.5 w-2 h-2 bg-red-500 border-2 border-white rounded-full"></span>
-            </button>
-
-            <div className="h-6 w-[1px] bg-gray-200 mx-1 hidden sm:block"></div>
-
             {/* Profile Section */}
             <div className="relative">
               <button
                 onClick={() => setIsProfileOpen(!isProfileOpen)}
-                className={`flex items-center gap-3 p-1.5 pr-3 rounded-2xl transition-all duration-200 ${
+                className={`flex items-center gap-3 p-1.5 pr-3 rounded-2xl transition-all duration-200 cursor-pointer ${
                   isProfileOpen
                     ? "bg-gray-100 ring-1 ring-gray-200"
                     : "hover:bg-gray-50"
@@ -138,7 +128,7 @@ const Navbar: React.FC<NavbarProps> = ({
 
                 <div className="hidden md:flex flex-col items-start leading-none">
                   <span className="text-sm font-bold text-gray-800 line-clamp-1 capitalize">
-                    {loading ? "Loading..." : userName}
+                    {loading ? "Loading" : userName}
                   </span>
                   <span className="text-[10px] font-medium text-gray-500 uppercase tracking-tighter mt-1">
                     {userRole}
@@ -162,7 +152,7 @@ const Navbar: React.FC<NavbarProps> = ({
                       <p className="text-xs font-bold text-gray-400 uppercase tracking-widest">
                         Signed in as
                       </p>
-                      <p className="text-sm font-bold text-gray-800 truncate">
+                      <p className="text-sm font-bold text-gray-800 truncate capitalize">
                         {userName}
                       </p>
                     </div>
@@ -172,32 +162,21 @@ const Navbar: React.FC<NavbarProps> = ({
                       className="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-600 hover:text-indigo-600 hover:bg-indigo-50 transition-colors"
                       onClick={() => setIsProfileOpen(false)}
                     >
-                      <div className="w-8 h-8 rounded-lg bg-gray-50 flex items-center justify-center group-hover:bg-white">
+                      <div className="w-8 h-8 rounded-lg bg-gray-100 flex items-center justify-center group-hover:bg-white">
                         <FaUser className="w-3.5 h-3.5" />
                       </div>
                       My Profile
                     </Link>
 
-                    <Link
-                      href={`/${userRole}/settings`}
-                      className="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-600 hover:text-indigo-600 hover:bg-indigo-50 transition-colors"
-                      onClick={() => setIsProfileOpen(false)}
-                    >
-                      <div className="w-8 h-8 rounded-lg bg-gray-50 flex items-center justify-center">
-                        <FaCog className="w-3.5 h-3.5" />
-                      </div>
-                      Settings
-                    </Link>
-
-                    <div className="px-2 mt-2 pt-2 border-t border-gray-50">
+                    <div className="border-t border-gray-50">
                       <button
                         onClick={onLogout}
-                        className="flex items-center gap-3 w-full px-3 py-2.5 text-sm font-bold text-red-500 hover:bg-red-50 rounded-xl transition-colors cursor-pointer"
+                        className="flex items-center gap-3 w-full px-4 py-2.5 text-sm font-bold text-red-500 hover:bg-red-50 transition-colors cursor-pointer"
                       >
-                        <div className="w-8 h-8 rounded-lg bg-red-50 flex items-center justify-center">
+                        <div className="w-8 h-8 rounded-lg bg-red-100 flex items-center justify-center">
                           <FaSignOutAlt className="w-3.5 h-3.5" />
                         </div>
-                        Sign Out
+                        Logout
                       </button>
                     </div>
                   </div>

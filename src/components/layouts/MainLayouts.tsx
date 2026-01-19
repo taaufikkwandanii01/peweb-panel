@@ -39,17 +39,20 @@ const MainLayouts: React.FC<MainLayoutsProps> = ({
   };
 
   return (
-    <div className="min-h-screen flex flex-col bg-gray-50">
-      {/* Navbar */}
+    // min-h-screen dan flex-col memastikan footer bisa didorong ke bawah
+    <div className="min-h-screen flex flex-col bg-gray-50 text-gray-900">
+      {/* Navbar - Fixed at top with high z-index */}
       <Navbar
         userRole={userRole}
         onLogout={handleLogout}
         onToggleSidebar={toggleSidebar}
       />
 
-      {/* Main Content Area */}
+      {/* Kontainer Utama */}
       <div className="flex flex-1 pt-16">
-        {/* Sidebar */}
+        {" "}
+        {/* pt-16 menyesuaikan h-16 pada Navbar */}
+        {/* Sidebar - Position fixed inside */}
         {showSidebar && (
           <Sidebar
             userRole={userRole}
@@ -57,20 +60,29 @@ const MainLayouts: React.FC<MainLayoutsProps> = ({
             onClose={closeSidebar}
           />
         )}
+        {/* Area Konten Utama */}
+        <div className="flex flex-col flex-1 w-full">
+          <main
+            className={`flex-1 transition-all duration-300 min-h-[calc(100vh-4rem)] ${
+              showSidebar ? "lg:ml-64" : ""
+            }`}
+          >
+            {/* Wrapper konten dengan padding yang konsisten */}
+            <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
+              {children}
+            </div>
+          </main>
 
-        {/* Main Content */}
-        <main
-          className={`flex-1 transition-all duration-300 ${
-            showSidebar ? "lg:ml-64" : ""
-          }`}
-        >
-          <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
-            {children}
-          </div>
-        </main>
+          {/* Footer diletakkan di dalam flex-col konten utama agar sejajar dengan margin sidebar */}
+          {showFooter && (
+            <div
+              className={`transition-all duration-300 ${showSidebar ? "lg:ml-64" : ""}`}
+            >
+              <Footer />
+            </div>
+          )}
+        </div>
       </div>
-      {/* Footer */}
-      {showFooter && <Footer />}
     </div>
   );
 };
