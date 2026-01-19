@@ -1,5 +1,4 @@
 import React from "react";
-import { FaHeart } from "react-icons/fa"; // Pastikan react-icons terinstall
 
 const Footer: React.FC = () => {
   const currentYear = new Date().getFullYear();
@@ -20,7 +19,7 @@ const Footer: React.FC = () => {
           {/* Copyright Section */}
           <div className="flex items-center md:items-end">
             <p className="text-xs text-gray-500 font-medium">
-              © {currentYear} Peweb Panel. All rights reserved.
+              © {currentYear} PeWeb Panel. All rights reserved.
             </p>
           </div>
         </div>
