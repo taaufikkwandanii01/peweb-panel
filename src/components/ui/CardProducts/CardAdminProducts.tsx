@@ -139,7 +139,7 @@ const CardAdminProducts: React.FC<CardAdminProductsProps> = ({
       <div className="space-y-2 pt-3 border-t border-gray-50">
         <div className="flex items-center text-xs text-gray-600 gap-2">
           <FiUser className="shrink-0 text-gray-400" size={14} />
-          <span className="font-semibold truncate">
+          <span className="font-semibold truncate capitalize">
             {product.developer_name}
           </span>
         </div>
