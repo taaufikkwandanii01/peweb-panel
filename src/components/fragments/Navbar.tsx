@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
@@ -11,22 +11,62 @@ import {
   FaCog,
   FaSignOutAlt,
 } from "react-icons/fa";
+import { supabase } from "@/lib/supabase";
 
 interface NavbarProps {
   userRole?: "admin" | "developer";
-  userName?: string;
   onLogout?: () => void;
   onToggleSidebar?: () => void;
 }
 
 const Navbar: React.FC<NavbarProps> = ({
   userRole = "admin",
-  userName = "User",
   onLogout,
   onToggleSidebar,
 }) => {
   const [isProfileOpen, setIsProfileOpen] = useState(false);
+  const [userName, setUserName] = useState("User");
+  const [loading, setLoading] = useState(true);
   const pathname = usePathname();
+
+  useEffect(() => {
+    const fetchUserProfile = async () => {
+      try {
+        // Get current user
+        const {
+          data: { user },
+          error: authError,
+        } = await supabase.auth.getUser();
+
+        if (authError || !user) {
+          console.error("Auth error:", authError);
+          setLoading(false);
+          return;
+        }
+
+        // Fetch user profile from usersProfiles table
+        const { data: profile, error: profileError } = await supabase
+          .from("usersProfiles")
+          .select("full_name")
+          .eq("id", user.id)
+          .single();
+
+        if (profileError) {
+          console.error("Error fetching user profile:", profileError);
+          // Fallback to email if profile not found
+          setUserName(user.email?.split("@")[0] || "User");
+        } else if (profile) {
+          setUserName(profile.full_name || "User");
+        }
+      } catch (error) {
+        console.error("Error:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchUserProfile();
+  }, []);
 
   const handleLogout = () => {
     if (onLogout) {
@@ -78,13 +118,13 @@ const Navbar: React.FC<NavbarProps> = ({
                 onClick={() => setIsProfileOpen(!isProfileOpen)}
                 className="flex items-center gap-2 p-2 rounded-lg hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 cursor-pointer"
               >
-                <div className="w-8 h-8 bg-linear-to-br from-blue-500 to-slate-100 rounded-full flex items-center justify-center">
+                <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-slate-100 rounded-full flex items-center justify-center">
                   <span className="text-white font-semibold text-sm">
-                    {userName.charAt(0).toUpperCase()}
+                    {loading ? " " : userName.charAt(0).toUpperCase()}
                   </span>
                 </div>
                 <span className="hidden md:block text-sm font-medium text-gray-700">
-                  {userName}
+                  {loading ? " " : userName}
                 </span>
                 <FaChevronDown
                   className={`w-4 h-4 text-gray-600 transition-transform ${

@@ -20,7 +20,7 @@ const MainLayouts: React.FC<MainLayoutsProps> = ({
   showFooter = true,
 }) => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-  const { user, signOut } = useAuth();
+  const { signOut } = useAuth();
 
   const handleLogout = async () => {
     try {
@@ -38,16 +38,11 @@ const MainLayouts: React.FC<MainLayoutsProps> = ({
     setIsSidebarOpen(false);
   };
 
-  // Get user name from metadata
-  const userName =
-    user?.user_metadata?.full_name || user?.email?.split("@")[0] || "User";
-
   return (
     <div className="min-h-screen flex flex-col bg-gray-50">
       {/* Navbar */}
       <Navbar
         userRole={userRole}
-        userName={userName}
         onLogout={handleLogout}
         onToggleSidebar={toggleSidebar}
       />

@@ -132,7 +132,7 @@ const AdminProducts: React.FC = () => {
         <Button
           variant="outline"
           size="sm"
-          className="flex items-center justify-center gap-2"
+          className="flex items-center justify-center gap-2 cursor-pointer"
           onClick={fetchProducts}
           disabled={isLoading}
         >

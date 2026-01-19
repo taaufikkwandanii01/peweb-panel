@@ -8,6 +8,7 @@ import {
   FiPhone,
   FiDroplet,
   FiSettings,
+  FiBriefcase,
 } from "react-icons/fi";
 import { adminService, ApiUser } from "@/services/adminService";
 import { ToastType } from "@/components/ui/Toast";
@@ -81,15 +82,17 @@ const ModalUsersUpdateStatus: React.FC<ModalUsersUpdateStatusProps> = ({
           <div className="bg-gray-50 p-4 rounded-lg space-y-2 border border-gray-100">
             <div className="flex items-center text-sm text-gray-700">
               <FiUser className="mr-2 text-amber-500" />
-              <span className="font-semibold">{user.full_name || "N/A"}</span>
+              <span className="font-semibold capitalize">
+                {user.full_name || "N/A"}
+              </span>
             </div>
             <div className="flex items-center text-sm text-gray-600 capitalize">
-              <FaBriefcase className="mr-2 text-amber-500" />
+              <FiBriefcase className="mr-2 text-amber-500" />
               <span>{user.role}</span>
             </div>
             <div className="flex items-center text-sm text-gray-600">
               <FiPhone className="mr-2 text-amber-500" />
-              <span>+62 {user.phone}</span>
+              <span>{user.phone}</span>
             </div>
             <div className="flex items-center text-sm text-gray-600">
               <FiMail className="mr-2 text-amber-500" />

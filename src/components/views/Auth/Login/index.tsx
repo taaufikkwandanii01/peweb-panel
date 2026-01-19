@@ -6,6 +6,7 @@ import Link from "next/link";
 import { authService } from "@/services/authService";
 import Input from "@/components/ui/Input";
 import Button from "@/components/ui/Button";
+import { FaSpinner, FaWhatsapp } from "react-icons/fa";
 
 interface FormData {
   email: string;
@@ -158,7 +159,14 @@ export default function LoginView() {
               className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-3 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
               disabled={loading}
             >
-              {loading ? "Signing in..." : "Sign In"}
+              {loading ? (
+                <>
+                  <FaSpinner className="w-5 h-5 animate-spin" />
+                  <span>Signing in</span>
+                </>
+              ) : (
+                "Sign In"
+              )}
             </Button>
           </form>
 
@@ -180,7 +188,15 @@ export default function LoginView() {
         <div className="mt-6 bg-blue-50 border border-blue-200 rounded-lg p-4">
           <p className="text-sm text-blue-800 text-center">
             <span className="font-medium">Note:</span> Your account must be
-            approved by an admin before you can log in.
+            approved by an admin before you can log in.{" "}
+            <a
+              href="https://wa.me/628888118514?text=Hello%20Admin,%20I%20have%20just%20registered%20my%20account%20and%20would%20like%20to%20request%20an%20approval."
+              target="_blank"
+              rel="noopener noreferrer"
+              className="font-bold hover:text-blue-900 transition-colors"
+            >
+              Contact Admin Via WhatsApp
+            </a>
           </p>
         </div>
       </div>

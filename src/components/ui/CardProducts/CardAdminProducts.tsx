@@ -156,7 +156,7 @@ const CardAdminProducts: React.FC<CardAdminProductsProps> = ({
               rel="noopener noreferrer"
               className="hover:text-green-600 flex items-center gap-1 transition-colors"
             >
-              <span>+62 {product.developer_phone.replace(/^0/, "")}</span>
+              <span>{product.developer_phone}</span>
             </a>
           </div>
         )}

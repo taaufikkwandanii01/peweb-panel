@@ -434,7 +434,7 @@ const AdminProfile: React.FC = () => {
                     value={formData.phone || ""}
                     onChange={handleInputChange}
                     disabled={!isEditing}
-                    placeholder="+1 234 567 8900"
+                    placeholder="081933565666"
                     className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 disabled:bg-gray-100 disabled:cursor-not-allowed"
                   />
                 </div>

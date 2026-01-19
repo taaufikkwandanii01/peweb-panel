@@ -1,11 +1,12 @@
-'use client';
+"use client";
 
-import { useState, FormEvent, ChangeEvent } from 'react';
-import { useRouter } from 'next/navigation';
-import Link from 'next/link';
-import { authService } from '@/services/authService';
-import Input from '@/components/ui/Input';
-import Button from '@/components/ui/Button';
+import { useState, FormEvent, ChangeEvent } from "react";
+import { useRouter } from "next/navigation";
+import Link from "next/link";
+import { authService } from "@/services/authService";
+import Input from "@/components/ui/Input";
+import Button from "@/components/ui/Button";
+import { FaSpinner } from "react-icons/fa";
 
 interface FormData {
   fullName: string;
@@ -13,53 +14,53 @@ interface FormData {
   phone: string;
   password: string;
   confirmPassword: string;
-  role: 'developer' | 'admin';
+  role: "developer" | "admin";
 }
 
 export default function RegisterView() {
   const router = useRouter();
   const [formData, setFormData] = useState<FormData>({
-    fullName: '',
-    email: '',
-    phone: '',
-    password: '',
-    confirmPassword: '',
-    role: 'developer',
+    fullName: "",
+    email: "",
+    phone: "",
+    password: "",
+    confirmPassword: "",
+    role: "developer",
   });
   const [loading, setLoading] = useState<boolean>(false);
-  const [error, setError] = useState<string>('');
+  const [error, setError] = useState<string>("");
   const [success, setSuccess] = useState<boolean>(false);
 
   const handleChange = (e: ChangeEvent<HTMLInputElement>): void => {
     const { name, value } = e.target;
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
       [name]: value,
     }));
-    setError('');
+    setError("");
   };
 
   const validateForm = (): string | null => {
     // Validasi password match
     if (formData.password !== formData.confirmPassword) {
-      return 'Passwords do not match';
+      return "Passwords do not match";
     }
 
     // Validasi panjang password
     if (formData.password.length < 6) {
-      return 'Password must be at least 6 characters';
+      return "Password must be at least 6 characters";
     }
 
     // Validasi nomor telepon (basic)
     const phoneRegex = /^[0-9+\-\s()]+$/;
     if (!phoneRegex.test(formData.phone)) {
-      return 'Please enter a valid phone number';
+      return "Please enter a valid phone number";
     }
 
     // Validasi panjang nomor telepon
-    const cleanPhone = formData.phone.replace(/[^0-9]/g, '');
+    const cleanPhone = formData.phone.replace(/[^0-9]/g, "");
     if (cleanPhone.length < 10 || cleanPhone.length > 15) {
-      return 'Phone number must be between 10-15 digits';
+      return "Phone number must be between 10-15 digits";
     }
 
     return null;
@@ -68,7 +69,7 @@ export default function RegisterView() {
   const handleSubmit = async (e: FormEvent<HTMLFormElement>): Promise<void> => {
     e.preventDefault();
     setLoading(true);
-    setError('');
+    setError("");
 
     // Validasi form
     const validationError = validateForm();
@@ -79,10 +80,10 @@ export default function RegisterView() {
     }
 
     try {
-      console.log('Attempting registration with:', {
+      console.log("Attempting registration with:", {
         email: formData.email,
         phone: formData.phone,
-        role: formData.role
+        role: formData.role,
       });
 
       const result = await authService.register({
@@ -93,22 +94,24 @@ export default function RegisterView() {
         role: formData.role,
       });
 
-      console.log('Registration result:', result);
+      console.log("Registration result:", result);
 
       if (result.success) {
         setSuccess(true);
         // Redirect ke login setelah 3 detik
         setTimeout(() => {
-          router.push('/auth/login');
+          router.push("/auth/login");
         }, 3000);
       } else {
-        setError(result.message || 'Registration failed. Please try again.');
+        setError(result.message || "Registration failed. Please try again.");
         setLoading(false);
       }
     } catch (err) {
       const error = err as Error;
-      setError(error.message || 'An unexpected error occurred during registration');
-      console.error('Registration error:', error);
+      setError(
+        error.message || "An unexpected error occurred during registration",
+      );
+      console.error("Registration error:", error);
       setLoading(false);
     }
   };
@@ -141,7 +144,9 @@ export default function RegisterView() {
             </p>
             <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4 mb-4">
               <p className="text-sm text-yellow-800">
-                <span className="font-medium">Important:</span> Your account status is <strong>pending</strong>. Please wait for admin approval before you can log in.
+                <span className="font-medium">Important:</span> Your account
+                status is <strong>pending</strong>. Please wait for admin
+                approval before you can log in.
               </p>
             </div>
             <p className="text-sm text-gray-500">
@@ -159,7 +164,9 @@ export default function RegisterView() {
         <div className="bg-white rounded-2xl shadow-xl p-8">
           {/* Header */}
           <div className="text-center mb-8">
-            <h1 className="text-3xl font-bold text-gray-900 mb-2">Create Account</h1>
+            <h1 className="text-3xl font-bold text-gray-900 mb-2">
+              Create Account
+            </h1>
             <p className="text-gray-600">Sign up as a developer</p>
           </div>
 
@@ -198,7 +205,7 @@ export default function RegisterView() {
               label="Phone Number"
               type="tel"
               name="phone"
-              placeholder="+62 812 3456 7890"
+              placeholder="081933565666"
               value={formData.phone}
               onChange={handleChange}
               required
@@ -229,17 +236,24 @@ export default function RegisterView() {
 
             <Button
               type="submit"
-              className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-3 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-3 rounded-lg transition-all duration-200 disabled:opacity-70 disabled:cursor-not-allowed flex items-center justify-center gap-2"
               disabled={loading}
             >
-              {loading ? 'Creating Account...' : 'Create Account'}
+              {loading ? (
+                <>
+                  <FaSpinner className="w-5 h-5 animate-spin" />
+                  <span>Creating Account</span>
+                </>
+              ) : (
+                "Create Account"
+              )}
             </Button>
           </form>
 
           {/* Footer */}
           <div className="mt-6 text-center">
             <p className="text-sm text-gray-600">
-              Already have an account?{' '}
+              Already have an account?{" "}
               <Link
                 href="/auth/login"
                 className="font-medium text-indigo-600 hover:text-indigo-500 transition-colors"
@@ -253,7 +267,8 @@ export default function RegisterView() {
         {/* Info Box */}
         <div className="mt-6 bg-blue-50 border border-blue-200 rounded-lg p-4">
           <p className="text-sm text-blue-800 text-center">
-            <span className="font-medium">Note:</span> After registration, your account will need to be approved by an admin before you can log in.
+            <span className="font-medium">Note:</span> After registration, your
+            account will need to be approved by an admin before you can log in.
           </p>
         </div>
       </div>

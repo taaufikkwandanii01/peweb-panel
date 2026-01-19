@@ -9,6 +9,7 @@ import {
   FiMail,
   FiDroplet,
   FiSettings,
+  FiBriefcase,
 } from "react-icons/fi";
 import { adminService, ApiUser } from "@/services/adminService";
 import { ToastType } from "@/components/ui/Toast";
@@ -65,16 +66,19 @@ const ModalUsersDelete: React.FC<ModalUsersDeleteProps> = ({
           <div>
             <h3 className="text-xl font-bold text-gray-900">Delete</h3>
             <p className="text-gray-600 mt-2 text-sm">
-              Are you sure you want to delete <b>{user.full_name}</b>?
+              Are you sure you want to delete{" "}
+              <b className="capitalize">{user.full_name}</b>?
             </p>
           </div>
           <div className="bg-gray-50 p-4 rounded-lg space-y-2 border border-gray-100">
             <div className="flex items-center text-sm text-gray-700">
               <FiUser className="mr-2 text-red-500" />
-              <span className="font-semibold">{user.full_name || "N/A"}</span>
+              <span className="font-semibold capitalize">
+                {user.full_name || "N/A"}
+              </span>
             </div>
             <div className="flex items-center text-sm text-gray-600 capitalize">
-              <FaBriefcase className="mr-2 text-red-500" />
+              <FiBriefcase className="mr-2 text-red-500" />
               <span>{user.role}</span>
             </div>
             <div className="flex items-center text-sm text-gray-600">

@@ -108,7 +108,7 @@ const AdminUsers: React.FC = () => {
         <Button
           variant="outline"
           size="sm"
-          className="flex items-center justify-center gap-2"
+          className="flex items-center justify-center gap-2 cursor-pointer"
           onClick={fetchUsers}
           disabled={isLoading}
         >

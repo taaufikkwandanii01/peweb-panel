@@ -294,7 +294,7 @@ const CardAdminProductStatus: React.FC<CardAdminProductStatusProps> = ({
                           className="text-xs font-semibold truncate text-slate-700 hover:text-indigo-600 transition-all flex items-center gap-1"
                           title="Chat via WhatsApp"
                         >
-                          +62 {product.developer_phone}
+                          {product.developer_phone}
                         </a>
                       ) : (
                         <p className="text-xs font-semibold truncate text-slate-500">

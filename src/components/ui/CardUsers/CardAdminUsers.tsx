@@ -25,7 +25,7 @@ const CardAdminUsers: React.FC<CardAdminUsersProps> = ({
             </span>
           </div>
           <div>
-            <h3 className="font-bold text-gray-900 text-sm line-clamp-1">
+            <h3 className="font-bold text-gray-900 text-sm line-clamp-1 capitalize">
               {user.full_name || "Tanpa Nama"}
             </h3>
             <p className="font-bold text-gray-500 text-xs capitalize">
@@ -78,7 +78,7 @@ const CardAdminUsers: React.FC<CardAdminUsersProps> = ({
               rel="noopener noreferrer"
               className="hover:text-green-600 flex items-center gap-1 transition-colors"
             >
-              <span>+62 {user.phone.replace(/^0/, "")}</span>
+              <span>{user.phone}</span>
             </a>
           ) : (
             <span>-</span>
