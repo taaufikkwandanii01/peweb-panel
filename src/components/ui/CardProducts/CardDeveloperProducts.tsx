@@ -131,7 +131,7 @@ const CardDeveloperProducts: React.FC<CardDeveloperProductsProps> = ({
             >
               <div className="flex items-center justify-center">
                 <span className="text-[11px] font-black flex flex-col items-center leading-tight">
-                  Lihat Detail
+                  Show Details
                   {/* Pesan kecil tetap menggunakan logika hasAdminNotes Anda */}
                   {hasAdminNotes && (
                     <span className="text-[8px] font-medium normal-case opacity-90 flex items-center gap-1 mt-0.5">
@@ -146,7 +146,7 @@ const CardDeveloperProducts: React.FC<CardDeveloperProductsProps> = ({
 
             <button
               onClick={() => window.open(product.href, "_blank")}
-              className="flex-1 flex justify-center items-center bg-white text-gray-400 hover:text-indigo-600 rounded-xl transition-all border border-gray-200 hover:border-indigo-200"
+              className="flex-1 flex justify-center items-center bg-white text-gray-400 hover:text-indigo-600 rounded-xl transition-all border border-gray-200 hover:border-indigo-200 cursor-pointer"
             >
               <FiExternalLink size={16} />
             </button>
@@ -156,18 +156,18 @@ const CardDeveloperProducts: React.FC<CardDeveloperProductsProps> = ({
             <Button
               onClick={() => onEdit(product)}
               variant="primary"
-              size="sm"
-              className="flex-1 py-2 text-[11px] font-bold rounded-xl"
+              size="md"
+              className="flex-1 py-2 text-[11px] font-bold rounded-xl cursor-pointer"
             >
-              Edit
+              Update
             </Button>
             <Button
               onClick={() => onDelete(product)}
               variant="danger"
-              size="sm"
-              className="flex-1 py-2 text-[11px] font-bold rounded-xl"
+              size="md"
+              className="flex-1 py-2 text-[11px] font-bold rounded-xl cursor-pointer"
             >
-              Hapus
+              Delete
             </Button>
           </div>
         </div>

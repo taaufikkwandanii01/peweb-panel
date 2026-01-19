@@ -160,22 +160,15 @@ const CardProductsUpdate: React.FC<CardProductsUpdateProps> = ({
   return (
     <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
       <div className="bg-white rounded-xl w-full max-w-2xl max-h-[90vh] overflow-hidden shadow-2xl">
-        <div className="p-4 md:p-6 flex justify-between items-center bg-amber-50">
+        <div className="p-4 md:p-6 flex items-center bg-amber-50">
           <div className="min-w-0 flex-1 mr-2">
-            <h2 className="text-lg md:text-xl font-bold text-amber-900 truncate">
-              Form Edit
+            <h2 className="text-lg md:text-xl font-bold text-amber-900">
+              Form Update
             </h2>
             <p className="text-xs md:text-sm text-amber-700 truncate capitalize">
               {product.title}
             </p>
           </div>
-          <button
-            onClick={onClose}
-            className="p-2 hover:bg-amber-100 rounded-full transition-colors flex-shrink-0"
-            disabled={isLoading}
-          >
-            <FiX size={20} />
-          </button>
         </div>
 
         <form onSubmit={handleSubmit}>
@@ -287,7 +280,7 @@ const CardProductsUpdate: React.FC<CardProductsUpdateProps> = ({
                 type="button"
                 onClick={() => fileInputRef.current?.click()}
                 disabled={isUploading}
-                className="w-full p-3 border-2 border-dashed border-gray-300 rounded-lg hover:border-amber-500 hover:bg-amber-50 transition-all flex items-center justify-center gap-2 text-gray-600 hover:text-amber-600 disabled:opacity-50 disabled:cursor-not-allowed"
+                className="w-full p-3 border-2 border-dashed border-gray-300 rounded-lg hover:border-amber-500 hover:bg-amber-50 transition-all flex items-center justify-center gap-2 text-gray-600 hover:text-amber-600 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
               >
                 {isUploading ? (
                   <>
@@ -309,11 +302,11 @@ const CardProductsUpdate: React.FC<CardProductsUpdateProps> = ({
 
             <div className="col-span-full">
               <Input
-                label="Tools/Tech Stack"
+                label="Tools & Tech Stack"
                 name="tools"
                 value={formData.tools}
                 onChange={handleChange}
-                placeholder="React.js, Tailwind CSS"
+                placeholder="React.js, Next.js, Tailwind CSS"
                 helperText="Pisahkan dengan koma untuk multiple tools"
                 fullWidth
               />
@@ -371,8 +364,9 @@ const CardProductsUpdate: React.FC<CardProductsUpdateProps> = ({
               type="button"
               onClick={onClose}
               disabled={isLoading}
+              className="cursor-pointer"
             >
-              Batal
+              Cancel
             </Button>
             <Button
               variant="warning"
@@ -380,6 +374,7 @@ const CardProductsUpdate: React.FC<CardProductsUpdateProps> = ({
               type="submit"
               isLoading={isLoading}
               disabled={isUploading}
+              className="cursor-pointer"
             >
               Update
             </Button>

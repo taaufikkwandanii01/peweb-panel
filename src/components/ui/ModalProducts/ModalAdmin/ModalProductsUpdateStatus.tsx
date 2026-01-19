@@ -1,6 +1,22 @@
 "use client";
 import React, { useState, useEffect } from "react";
-import { FiX, FiCheck, FiAlertCircle } from "react-icons/fi";
+import {
+  FiX,
+  FiCheck,
+  FiAlertCircle,
+  FiClock,
+  FiExternalLink,
+  FiUser,
+  FiMail,
+  FiCpu,
+  FiPhone,
+} from "react-icons/fi";
+import { IconType } from "react-icons";
+import Button from "../../Button";
+import { ToastType } from "../../Toast";
+
+// Type definition
+export type ProductStatus = "pending" | "approved" | "rejected";
 
 export interface AdminProduct {
   id: string;
@@ -16,7 +32,7 @@ export interface AdminProduct {
   developer_id: string;
   description: string;
   tools: string[];
-  status: "pending" | "approved" | "rejected";
+  status: ProductStatus;
   admin_notes: string | null;
   created_at?: string;
   updated_at?: string;
@@ -27,37 +43,79 @@ interface CardAdminProductStatusProps {
   onClose: () => void;
   product: AdminProduct;
   onStatusUpdated: () => void;
+  showToast: (message: string, type: ToastType) => void;
 }
+
+// Configuration for status UI
+interface StatusConfig {
+  label: string;
+  icon: IconType;
+  bgColor: string;
+  borderColor: string;
+  textColor: string;
+  accentColor: string;
+}
+
+const statusConfigs: Record<ProductStatus, StatusConfig> = {
+  pending: {
+    label: "Pending Review",
+    icon: FiClock,
+    bgColor: "bg-amber-50",
+    borderColor: "border-amber-500",
+    textColor: "text-amber-700",
+    accentColor: "bg-amber-500",
+  },
+  approved: {
+    label: "Approve Product",
+    icon: FiCheck,
+    bgColor: "bg-emerald-50",
+    borderColor: "border-emerald-500",
+    textColor: "text-emerald-700",
+    accentColor: "bg-emerald-500",
+  },
+  rejected: {
+    label: "Reject Product",
+    icon: FiAlertCircle,
+    bgColor: "bg-rose-50",
+    borderColor: "border-rose-500",
+    textColor: "text-rose-700",
+    accentColor: "bg-rose-500",
+  },
+};
 
 const CardAdminProductStatus: React.FC<CardAdminProductStatusProps> = ({
   isOpen,
   onClose,
   product,
   onStatusUpdated,
+  showToast,
 }) => {
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [status, setStatus] = useState<"pending" | "approved" | "rejected">(
-    product.status,
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [status, setStatus] = useState<ProductStatus>(product.status);
+  const [adminNotes, setAdminNotes] = useState<string>(
+    product.admin_notes || "",
   );
-  const [adminNotes, setAdminNotes] = useState(product.admin_notes || "");
 
   useEffect(() => {
     setStatus(product.status);
     setAdminNotes(product.admin_notes || "");
   }, [product]);
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+
+    // Validasi: Jika reject, catatan harus diisi
+    if (status === "rejected" && !adminNotes.trim()) {
+      showToast("Mohon berikan alasan penolakan", "error");
+      return;
+    }
+
     setIsLoading(true);
-    setError(null);
 
     try {
       const response = await fetch("/api/admin/products/update-status", {
         method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           id: product.id,
           status,
@@ -65,16 +123,17 @@ const CardAdminProductStatus: React.FC<CardAdminProductStatusProps> = ({
         }),
       });
 
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || "Gagal mengupdate status");
-      }
+      const result = await response.json();
 
-      onClose();
-      onStatusUpdated();
-    } catch (err) {
-      console.error("Error updating status:", err);
-      setError(err instanceof Error ? err.message : "Gagal mengupdate status");
+      if (response.ok) {
+        showToast("Product status updated successfully", "success");
+        onStatusUpdated();
+        onClose();
+      } else {
+        showToast(result.error || "Failed to update status", "error");
+      }
+    } catch (err: unknown) {
+      showToast("An unexpected error occurred", "error");
     } finally {
       setIsLoading(false);
     }
@@ -82,292 +141,284 @@ const CardAdminProductStatus: React.FC<CardAdminProductStatusProps> = ({
 
   if (!isOpen) return null;
 
-  const getStatusColor = (s: string) => {
-    switch (s) {
-      case "approved":
-        return "bg-green-500";
-      case "rejected":
-        return "bg-red-500";
-      default:
-        return "bg-amber-500";
-    }
-  };
-
-  const getStatusBadgeStyle = (s: string) => {
-    switch (s) {
-      case "approved":
-        return "bg-green-50 border-green-200 text-green-700";
-      case "rejected":
-        return "bg-red-50 border-red-200 text-red-700";
-      default:
-        return "bg-amber-50 border-amber-200 text-amber-700";
-    }
+  const formatCurrency = (amount: number): string => {
+    return new Intl.NumberFormat("id-ID", {
+      style: "currency",
+      currency: "IDR",
+      maximumFractionDigits: 0,
+    }).format(amount);
   };
 
   return (
-    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-      <div className="bg-white rounded-xl w-full max-w-3xl max-h-[90vh] overflow-hidden shadow-2xl">
+    <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-md z-50 flex items-center justify-center p-4">
+      <div className="bg-white rounded-2xl w-full max-w-5xl max-h-[95vh] overflow-hidden shadow-2xl flex flex-col transition-all scale-100 uppercase-none">
         {/* Header */}
-        <div className="p-4 md:p-6 flex justify-between items-start bg-gradient-to-r from-indigo-50 to-purple-50 border-b">
-          <div className="flex-1 min-w-0 mr-4">
-            <h2 className="text-lg md:text-xl font-bold text-gray-900 mb-1">
-              Update Status Produk
-            </h2>
-            <p className="text-sm text-gray-600 truncate">{product.title}</p>
+        <div className="px-6 py-4 flex items-center bg-amber-50">
+          <div>
+            <h2 className="text-xl font-bold text-amber-900">Product Review</h2>
           </div>
-          <button
-            onClick={onClose}
-            className="p-2 hover:bg-white/50 rounded-full transition-colors flex-shrink-0"
-            disabled={isLoading}
-          >
-            <FiX size={20} />
-          </button>
         </div>
 
-        <form onSubmit={handleSubmit}>
-          {/* Content */}
-          <div className="p-4 md:p-6 space-y-5 overflow-y-auto max-h-[calc(90vh-200px)]">
-            {error && (
-              <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg text-sm flex items-start gap-2">
-                <FiAlertCircle className="flex-shrink-0 mt-0.5" size={18} />
-                <span>{error}</span>
-              </div>
-            )}
+        <form
+          onSubmit={handleSubmit}
+          className="flex-1 overflow-hidden flex flex-col"
+        >
+          <div className="flex-1 overflow-y-auto p-6">
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+              {/* Product Info Section */}
+              <div className="lg:col-span-7 space-y-6">
+                <div className="relative aspect-video rounded-xl overflow-hidden border border-slate-200 bg-slate-100">
+                  <img
+                    src={product.image}
+                    alt={product.title}
+                    className="w-full h-full object-contain"
+                  />
+                  <a
+                    href={product.href}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="absolute bottom-3 right-3 bg-white/90 backdrop-blur px-4 py-2 rounded-lg text-xs font-bold text-slate-900 flex items-center gap-2 shadow-sm border border-slate-200 hover:bg-white transition-all"
+                  >
+                    <FiExternalLink /> View Demo
+                  </a>
 
-            {/* Product Preview */}
-            <div className="bg-gray-50 rounded-lg p-4 border border-gray-200">
-              <div className="flex gap-4">
-                <img
-                  src={product.image}
-                  alt={product.title}
-                  className="w-24 h-24 md:w-32 md:h-32 object-cover rounded-lg border border-gray-300"
-                />
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-2 mb-2">
-                    <span className="text-xs font-bold text-indigo-600 bg-indigo-50 px-2 py-1 rounded uppercase">
+                  <div className="absolute top-3 left-3 flex items-center gap-2 mb-2">
+                    <span className="bg-indigo-50 text-indigo-600 text-[10px] font-bold px-2 py-0.5 rounded uppercase tracking-wider">
                       {product.category}
                     </span>
-                    <span
-                      className={`text-xs font-bold uppercase px-2 py-1 rounded border ${getStatusBadgeStyle(
-                        product.status,
-                      )}`}
-                    >
-                      {product.status}
-                    </span>
                   </div>
-                  <h3 className="font-bold text-gray-900 text-base md:text-lg line-clamp-2 mb-2">
+
+                  <div className="absolute top-3 right-3">
+                    {product.discount > 0 && (
+                      <div className="bg-rose-500 text-white px-2 py-1.5 rounded-lg flex flex-col items-center">
+                        <span className="text-[8px] font-bold leading-none uppercase">
+                          Disc
+                        </span>
+                        <span className="text-xs font-black">
+                          {product.discount}%
+                        </span>
+                      </div>
+                    )}
+                  </div>
+                </div>
+
+                <div>
+                  <h3 className="text-2xl font-bold text-slate-900 capitalize">
                     {product.title}
                   </h3>
-                  <div className="space-y-1 text-xs md:text-sm text-gray-600">
-                    <p>
-                      <strong>Developer:</strong> {product.developer_name}
+                  <div className="mt-2 flex items-center gap-2">
+                    <span className="text-xl font-bold text-emerald-600">
+                      {formatCurrency(
+                        product.price -
+                          (product.price * product.discount) / 100,
+                      )}
+                    </span>
+                    {product.discount > 0 && (
+                      <span className="text-xs line-through text-slate-400">
+                        {formatCurrency(product.price)}
+                      </span>
+                    )}
+                  </div>
+                </div>
+
+                <div className="space-y-4">
+                  <div>
+                    <h4 className="text-sm font-bold text-slate-700 mb-1">
+                      Description
+                    </h4>
+                    <p className="text-sm text-slate-600 leading-relaxed">
+                      {product.description}
                     </p>
-                    <p>
-                      <strong>Email:</strong> {product.developer_email}
-                    </p>
-                    {product.developer_phone && (
-                      <p>
-                        <strong>Phone:</strong> {product.developer_phone}
+                  </div>
+
+                  <div>
+                    <h4 className="text-sm font-bold text-slate-700 mb-2 flex items-center gap-2">
+                      <FiCpu className="text-slate-400" /> Tools / Tech Stack
+                    </h4>
+                    <div className="flex flex-wrap gap-1.5">
+                      {product.tools.map((tool) => (
+                        <span
+                          key={tool}
+                          className="bg-slate-100 text-slate-600 text-[11px] px-2.5 py-1 rounded-md border border-slate-200 capitalize"
+                        >
+                          {tool}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+
+                {/* Developer Contact Card */}
+                <div className="p-4 bg-slate-50 rounded-xl grid grid-cols-1 md:grid-cols-3 gap-4 border border-slate-100">
+                  <div className="flex items-center gap-3">
+                    <div className="w-8 h-8 shrink-0 rounded-full bg-white flex items-center justify-center text-slate-400 border border-slate-200">
+                      <FiUser size={14} />
+                    </div>
+                    <div className="min-w-0">
+                      <p className="text-[10px] text-slate-400 font-bold uppercase tracking-tight">
+                        Developer
+                      </p>
+                      <p className="text-xs font-semibold truncate text-slate-700">
+                        {product.developer_name}
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center gap-3">
+                    <div className="w-8 h-8 shrink-0 rounded-full bg-white flex items-center justify-center text-slate-400 border border-slate-200">
+                      <FiMail size={14} />
+                    </div>
+                    <div className="min-w-0">
+                      <p className="text-[10px] text-slate-400 font-bold uppercase tracking-tight">
+                        Email Address
+                      </p>
+                      <p className="text-xs font-semibold truncate text-slate-700">
+                        {product.developer_email}
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center gap-3">
+                    <div className="w-8 h-8 shrink-0 rounded-full bg-white flex items-center justify-center text-slate-400 border border-slate-200">
+                      <FiPhone size={14} />
+                    </div>
+                    <div className="min-w-0">
+                      <p className="text-[10px] text-slate-400 font-bold uppercase tracking-tight">
+                        Phone Number
+                      </p>
+                      {product.developer_phone ? (
+                        <a
+                          href={`https://wa.me/${product.developer_phone.replace(/\D/g, "")}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-xs font-semibold truncate text-slate-700 hover:text-indigo-600 transition-all flex items-center gap-1"
+                          title="Chat via WhatsApp"
+                        >
+                          +62 {product.developer_phone}
+                        </a>
+                      ) : (
+                        <p className="text-xs font-semibold truncate text-slate-500">
+                          -
+                        </p>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Admin Control Section */}
+              <div className="lg:col-span-5">
+                <div className="bg-slate-50 p-5 rounded-2xl border border-slate-200 sticky top-0">
+                  <div className="space-y-3 mb-6">
+                    {(Object.keys(statusConfigs) as ProductStatus[]).map(
+                      (key) => {
+                        const config = statusConfigs[key];
+                        const Icon = config.icon;
+                        const isSelected = status === key;
+
+                        return (
+                          <button
+                            key={key}
+                            type="button"
+                            onClick={() => setStatus(key)}
+                            className={`w-full flex items-center gap-4 p-4 rounded-xl border-2 transition-all cursor-pointer ${
+                              isSelected
+                                ? `${config.borderColor} ${config.bgColor} shadow-sm`
+                                : "border-white bg-white hover:border-slate-200"
+                            }`}
+                          >
+                            <div
+                              className={`p-2 rounded-lg ${isSelected ? `${config.accentColor} text-white` : "bg-slate-100 text-slate-400"}`}
+                            >
+                              <Icon size={18} />
+                            </div>
+                            <span
+                              className={`text-sm font-bold flex-1 text-left ${isSelected ? config.textColor : "text-slate-500"}`}
+                            >
+                              {config.label}
+                            </span>
+                            {isSelected && (
+                              <FiCheck className={config.textColor} />
+                            )}
+                          </button>
+                        );
+                      },
+                    )}
+                  </div>
+
+                  <div className="space-y-3">
+                    <div className="flex justify-between items-end">
+                      <label className="text-xs font-bold text-slate-500 uppercase tracking-wider">
+                        Internal Notes / Feedback
+                      </label>
+                      {status === "approved" && (
+                        <span className="text-[10px] font-medium text-emerald-600 animate-pulse">
+                          Quick Actions Available
+                        </span>
+                      )}
+                    </div>
+
+                    {status === "approved" && (
+                      <div className="flex flex-wrap gap-2 mb-2">
+                        {[
+                          "Produk sangat bagus, disetujui!",
+                          "Siap dipublikasikan.",
+                        ].map((msg) => (
+                          <button
+                            key={msg}
+                            type="button"
+                            onClick={() => setAdminNotes(msg)}
+                            className="text-[10px] px-2 py-1 bg-emerald-50 text-emerald-700 border border-emerald-200 rounded-md hover:bg-emerald-100 transition-colors cursor-pointer"
+                          >
+                            + {msg}
+                          </button>
+                        ))}
+                      </div>
+                    )}
+
+                    <textarea
+                      value={adminNotes}
+                      onChange={(e) => setAdminNotes(e.target.value)}
+                      className="w-full p-4 text-sm border border-slate-200 rounded-xl focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 outline-none resize-none bg-white min-h-[120px] transition-all"
+                      placeholder={
+                        status === "rejected"
+                          ? "Jelaskan alasan penolakan agar developer bisa memperbaiki..."
+                          : "Berikan catatan untuk developer..."
+                      }
+                    />
+
+                    {status === "rejected" && !adminNotes.trim() && (
+                      <p className="text-[10px] text-rose-500 font-medium">
+                        * Mohon berikan alasan jika menolak produk.
                       </p>
                     )}
                   </div>
                 </div>
               </div>
-
-              {/* Description */}
-              <div className="mt-4 pt-4 border-t border-gray-300">
-                <p className="text-sm text-gray-700 font-medium mb-2">
-                  Deskripsi:
-                </p>
-                <p className="text-xs md:text-sm text-gray-600 leading-relaxed">
-                  {product.description}
-                </p>
-              </div>
-
-              {/* Tools */}
-              {product.tools.length > 0 && (
-                <div className="mt-3">
-                  <p className="text-sm text-gray-700 font-medium mb-2">
-                    Tech Stack:
-                  </p>
-                  <div className="flex flex-wrap gap-2">
-                    {product.tools.map((tool, idx) => (
-                      <span
-                        key={idx}
-                        className="text-xs bg-blue-50 text-blue-700 px-2 py-1 rounded border border-blue-200"
-                      >
-                        {tool}
-                      </span>
-                    ))}
-                  </div>
-                </div>
-              )}
-
-              {/* Price */}
-              <div className="mt-3 flex items-center gap-3">
-                <p className="text-sm text-gray-700 font-medium">Harga:</p>
-                <div className="flex items-baseline gap-2">
-                  <span className="text-lg font-black text-emerald-600">
-                    {new Intl.NumberFormat("id-ID", {
-                      style: "currency",
-                      currency: "IDR",
-                      maximumFractionDigits: 0,
-                    }).format(
-                      product.price - product.price * (product.discount / 100),
-                    )}
-                  </span>
-                  {product.discount > 0 && (
-                    <>
-                      <span className="text-xs line-through text-gray-400">
-                        {new Intl.NumberFormat("id-ID", {
-                          style: "currency",
-                          currency: "IDR",
-                          maximumFractionDigits: 0,
-                        }).format(product.price)}
-                      </span>
-                      <span className="text-xs font-bold text-rose-500 bg-rose-50 px-1.5 py-0.5 rounded">
-                        -{product.discount}%
-                      </span>
-                    </>
-                  )}
-                </div>
-              </div>
-
-              {/* Link */}
-              <div className="mt-3">
-                <p className="text-sm text-gray-700 font-medium mb-1">Link:</p>
-                <a
-                  href={product.href}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-xs md:text-sm text-blue-600 hover:text-blue-800 underline break-all"
-                >
-                  {product.href}
-                </a>
-              </div>
             </div>
-
-            {/* Status Selection */}
-            <div className="space-y-2">
-              <label className="text-sm font-bold text-gray-700 flex items-center gap-2">
-                <FiCheck size={16} />
-                Status Produk <span className="text-red-500">*</span>
-              </label>
-              <div className="grid grid-cols-3 gap-3">
-                <button
-                  type="button"
-                  onClick={() => setStatus("pending")}
-                  className={`p-3 rounded-lg border-2 transition-all ${
-                    status === "pending"
-                      ? "border-amber-500 bg-amber-50 text-amber-700 font-bold"
-                      : "border-gray-200 hover:border-amber-300 text-gray-600"
-                  }`}
-                >
-                  <div className="flex flex-col items-center gap-2">
-                    <div
-                      className={`w-4 h-4 rounded-full ${status === "pending" ? "bg-amber-500" : "bg-gray-300"}`}
-                    ></div>
-                    <span className="text-xs md:text-sm font-semibold">
-                      Pending
-                    </span>
-                  </div>
-                </button>
-
-                <button
-                  type="button"
-                  onClick={() => setStatus("approved")}
-                  className={`p-3 rounded-lg border-2 transition-all ${
-                    status === "approved"
-                      ? "border-green-500 bg-green-50 text-green-700 font-bold"
-                      : "border-gray-200 hover:border-green-300 text-gray-600"
-                  }`}
-                >
-                  <div className="flex flex-col items-center gap-2">
-                    <div
-                      className={`w-4 h-4 rounded-full ${status === "approved" ? "bg-green-500" : "bg-gray-300"}`}
-                    ></div>
-                    <span className="text-xs md:text-sm font-semibold">
-                      Approved
-                    </span>
-                  </div>
-                </button>
-
-                <button
-                  type="button"
-                  onClick={() => setStatus("rejected")}
-                  className={`p-3 rounded-lg border-2 transition-all ${
-                    status === "rejected"
-                      ? "border-red-500 bg-red-50 text-red-700 font-bold"
-                      : "border-gray-200 hover:border-red-300 text-gray-600"
-                  }`}
-                >
-                  <div className="flex flex-col items-center gap-2">
-                    <div
-                      className={`w-4 h-4 rounded-full ${status === "rejected" ? "bg-red-500" : "bg-gray-300"}`}
-                    ></div>
-                    <span className="text-xs md:text-sm font-semibold">
-                      Rejected
-                    </span>
-                  </div>
-                </button>
-              </div>
-            </div>
-
-            {/* Admin Notes */}
-            <div className="space-y-2">
-              <label className="text-sm font-bold text-gray-700">
-                Catatan Admin
-              </label>
-              <textarea
-                value={adminNotes}
-                onChange={(e) => setAdminNotes(e.target.value)}
-                className="w-full p-3 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent outline-none resize-none"
-                rows={4}
-                placeholder="Tambahkan catatan untuk developer (opsional)..."
-              ></textarea>
-              <p className="text-xs text-gray-500">
-                Catatan ini akan terlihat oleh developer sebagai feedback untuk
-                produk mereka.
-              </p>
-            </div>
-
-            {/* Current Admin Notes (if exists) */}
-            {product.admin_notes && (
-              <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-                <p className="text-sm font-bold text-blue-900 mb-2">
-                  Catatan Admin Sebelumnya:
-                </p>
-                <p className="text-sm text-blue-800">{product.admin_notes}</p>
-              </div>
-            )}
           </div>
 
-          {/* Footer */}
-          <div className="p-4 md:p-6 bg-gray-50 border-t flex flex-col-reverse sm:flex-row justify-end gap-2 sm:gap-3">
-            <button
+          {/* Bottom Bar */}
+          <div className="px-6 py-4 bg-amber-50 flex justify-end gap-3">
+            <Button
+              variant="secondary"
+              size="md"
               type="button"
               onClick={onClose}
-              className="px-5 py-2.5 text-sm font-semibold border border-gray-300 rounded-lg hover:bg-gray-100 transition-colors"
               disabled={isLoading}
+              className="cursor-pointer"
             >
-              Batal
-            </button>
-            <button
+              Cancel
+            </Button>
+            <Button
+              variant="warning"
+              size="md"
               type="submit"
-              className="px-5 py-2.5 bg-indigo-600 text-white rounded-lg font-semibold hover:bg-indigo-700 transition-all disabled:opacity-50 disabled:cursor-not-allowed text-sm flex items-center justify-center gap-2"
-              disabled={isLoading}
+              isLoading={isLoading}
+              className="cursor-pointer"
             >
-              {isLoading ? (
-                <>
-                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
-                  Menyimpan...
-                </>
-              ) : (
-                <>
-                  <FiCheck size={16} /> Simpan Perubahan
-                </>
-              )}
-            </button>
+              Update
+            </Button>
           </div>
         </form>
       </div>

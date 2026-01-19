@@ -76,9 +76,9 @@ const Navbar: React.FC<NavbarProps> = ({
             <div className="relative">
               <button
                 onClick={() => setIsProfileOpen(!isProfileOpen)}
-                className="flex items-center gap-2 p-2 rounded-lg hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="flex items-center gap-2 p-2 rounded-lg hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 cursor-pointer"
               >
-                <div className="w-8 h-8 bg-linear-to-br from-purple-500 to-pink-500 rounded-full flex items-center justify-center">
+                <div className="w-8 h-8 bg-linear-to-br from-blue-500 to-slate-100 rounded-full flex items-center justify-center">
                   <span className="text-white font-semibold text-sm">
                     {userName.charAt(0).toUpperCase()}
                   </span>
@@ -112,7 +112,7 @@ const Navbar: React.FC<NavbarProps> = ({
                     <hr className="my-0.5 border-gray-200" />
                     <button
                       onClick={handleLogout}
-                      className="flex items-center gap-2 w-full px-4 py-2 text-sm text-red-600 hover:bg-red-50"
+                      className="flex items-center gap-2 w-full px-4 py-2 text-sm text-red-600 hover:bg-red-50 cursor-pointer"
                     >
                       <FaSignOutAlt className="w-4 h-4" />
                       Logout

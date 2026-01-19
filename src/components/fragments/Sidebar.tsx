@@ -53,7 +53,7 @@ const Sidebar: React.FC<SidebarProps> = ({
   ];
 
   const filteredMenuItems = menuItems.filter(
-    (item) => !item.adminOnly || userRole === "admin"
+    (item) => !item.adminOnly || userRole === "admin",
   );
 
   const isActive = (href: string) => {
@@ -78,14 +78,21 @@ const Sidebar: React.FC<SidebarProps> = ({
       >
         <div className="flex flex-col h-full">
           {/* Sidebar Header */}
-          <div className="p-4 border-b border-gray-200">
+          <div className="p-4 border-b border-gray-200 group">
             <div className="flex items-center justify-between">
-              <h2 className="text-lg font-semibold text-gray-800 capitalize">
-                {userRole} Panel
-              </h2>
+              <div className="flex items-center gap-2 overflow-hidden">
+                {/* Animasi pada Ikon/Bullet: Muncul dengan slide-in saat sidebar terbuka */}
+                <div className="w-2 h-6 bg-blue-600 rounded-full transform transition-transform duration-500 ease-out group-hover:scale-y-125"></div>
+
+                <h2 className="text-lg font-bold text-gray-800 capitalize">
+                  {userRole} <span className="text-blue-600">Panel</span>
+                </h2>
+              </div>
+
               <button
                 onClick={onClose}
-                className="lg:hidden p-1 rounded-md text-gray-600 hover:text-gray-900 hover:bg-gray-100"
+                className="lg:hidden p-1.5 rounded-full text-gray-500 transition-all duration-200 
+                 hover:text-red-600 hover:bg-red-50 hover:rotate-90 active:scale-90"
               >
                 <FaTimes className="w-5 h-5" />
               </button>
@@ -141,13 +148,13 @@ const Sidebar: React.FC<SidebarProps> = ({
                     onClick={() => {
                       // Option 1: Show alert (temporary)
                       // alert("Support feature coming soon!");
-                      
+
                       // Option 2: Open external docs
                       // window.open('https://your-docs-url.com', '_blank');
-                      
+
                       // Option 3: Navigate to internal docs (if exists)
                       // window.location.href = '/support';
-                      
+
                       alert("Documentation and support features coming soon!");
                     }}
                     className="text-xs text-blue-600 hover:text-blue-700 font-medium inline-flex items-center gap-1 cursor-pointer"

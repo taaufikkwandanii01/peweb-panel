@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { createClient } from "@/lib/supabase-server";
+import { createClient, createAdminClient } from "@/lib/supabase-server";
 
 // POST - Change password
 export async function POST(request: NextRequest) {
@@ -15,29 +15,16 @@ export async function POST(request: NextRequest) {
     if (authError || !user) {
       return NextResponse.json(
         { error: "Unauthorized - Authentication required" },
-        { status: 401 }
-      );
-    }
-
-    // Get profile to check role
-    const { data: profile, error: profileError } = await supabase
-      .from("profiles")
-      .select("role")
-      .eq("id", user.id)
-      .single();
-
-    if (profileError || !profile) {
-      return NextResponse.json(
-        { error: "Profile not found" },
-        { status: 404 }
+        { status: 401 },
       );
     }
 
     // Check if user is developer
-    if (profile.role !== "developer") {
+    const userMetadata = user.user_metadata;
+    if (userMetadata.role !== "developer") {
       return NextResponse.json(
         { error: "Forbidden - Developer access required" },
-        { status: 403 }
+        { status: 403 },
       );
     }
 
@@ -49,7 +36,7 @@ export async function POST(request: NextRequest) {
     if (!currentPassword || !newPassword || !confirmPassword) {
       return NextResponse.json(
         { error: "All password fields are required" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -57,15 +44,15 @@ export async function POST(request: NextRequest) {
     if (newPassword !== confirmPassword) {
       return NextResponse.json(
         { error: "New password and confirmation do not match" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
     // Validate password length
-    if (newPassword.length < 8) {
+    if (newPassword.length < 6) {
       return NextResponse.json(
-        { error: "Password must be at least 8 characters" },
-        { status: 400 }
+        { error: "Password must be at least 6 characters" },
+        { status: 400 },
       );
     }
 
@@ -78,7 +65,7 @@ export async function POST(request: NextRequest) {
     if (signInError) {
       return NextResponse.json(
         { error: "Current password is incorrect" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -91,22 +78,22 @@ export async function POST(request: NextRequest) {
       console.error("Error updating password:", updateError);
       return NextResponse.json(
         { error: "Failed to update password" },
-        { status: 500 }
+        { status: 500 },
       );
     }
 
     return NextResponse.json(
       { message: "Password changed successfully" },
-      { status: 200 }
+      { status: 200 },
     );
   } catch (error) {
     console.error(
       "Unexpected error in POST /api/developer/profile/change-password:",
-      error
+      error,
     );
     return NextResponse.json(
       { error: "Internal server error" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

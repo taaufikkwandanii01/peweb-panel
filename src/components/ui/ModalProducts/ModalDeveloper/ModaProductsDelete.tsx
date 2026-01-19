@@ -50,23 +50,13 @@ const CardProductsDelete: React.FC<CardProductsDeleteProps> = ({
   return (
     <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
       <div className="bg-white rounded-xl w-full max-w-md shadow-2xl overflow-hidden">
-        <div className="flex justify-end p-2">
-          <button
-            onClick={onClose}
-            className="p-2 hover:bg-gray-100 rounded-full transition-colors"
-            disabled={isLoading}
-          >
-            <FiX size={20} />
-          </button>
-        </div>
-
-        <div className="px-6 pb-6 pt-2 text-center space-y-4">
+        <div className="px-6 pb-6 p-5 text-center space-y-4">
           <div className="w-16 h-16 bg-rose-100 text-rose-600 rounded-full flex items-center justify-center mx-auto">
             <FiAlertTriangle size={32} />
           </div>
 
           <div>
-            <h3 className="text-xl font-bold text-gray-900">Hapus</h3>
+            <h3 className="text-xl font-bold text-gray-900">Delete</h3>
             <p className="text-gray-600 mt-2 text-sm">
               Apakah Anda yakin ingin menghapus <b>{product.title}</b>?
             </p>
@@ -122,19 +112,19 @@ const CardProductsDelete: React.FC<CardProductsDeleteProps> = ({
               variant="secondary"
               size="md"
               onClick={onClose}
-              className="flex-1"
               disabled={isLoading}
+              className="flex-1 cursor-pointer"
             >
-              Batal
+              Cancel
             </Button>
             <Button
               variant="danger"
               size="md"
               onClick={handleDelete}
-              className="flex-1"
               isLoading={isLoading}
+              className="flex-1 cursor-pointer"
             >
-              Hapus
+              Delete
             </Button>
           </div>
         </div>

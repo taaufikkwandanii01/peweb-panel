@@ -37,6 +37,7 @@ export interface Product {
   status: "pending" | "approved" | "rejected";
   admin_notes?: string;
   created_at?: string;
+  updated_at?: string;
 }
 
 const DeveloperProducts: React.FC = () => {
@@ -122,14 +123,15 @@ const DeveloperProducts: React.FC = () => {
     startIndex + itemsPerPage,
   );
 
-  if (isLoading) {
-    return (
-      <div className="flex flex-col items-center justify-center min-h-screen">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600"></div>
-        <p className="mt-4 text-gray-600">Loading products...</p>
-      </div>
-    );
-  }
+  // Statistics
+  const stats = useMemo(() => {
+    return {
+      total: products.length,
+      pending: products.filter((p) => p.status === "pending").length,
+      approved: products.filter((p) => p.status === "approved").length,
+      rejected: products.filter((p) => p.status === "rejected").length,
+    };
+  }, [products]);
 
   return (
     <div className="space-y-6">
@@ -139,35 +141,95 @@ const DeveloperProducts: React.FC = () => {
           <h1 className="text-xl font-bold text-gray-900 sm:text-2xl">
             Products Management
           </h1>
-          <p className="text-xs text-gray-500 sm:text-sm">
-            Total {products.length} system products.
-          </p>
         </div>
         <div className="flex gap-2">
           <Button
             variant="outline"
             size="sm"
-            className="flex-1 sm:flex-none"
             onClick={fetchProducts}
+            disabled={isLoading}
+            className="flex items-center justify-center gap-2 cursor-pointer"
           >
-            Refresh
+            <FiRefreshCw
+              className={isLoading ? "animate-spin" : ""}
+              size={16}
+            />
+            {isLoading ? "Loading" : "Refresh"}
           </Button>
           <Button
             onClick={() => setIsAddOpen(true)}
-            className="flex-1 sm:flex-none px-4 py-2 text-sm font-semibold bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-all shadow-sm flex items-center justify-center gap-2"
+            className="flex-1 sm:flex-none px-4 py-2 text-sm font-semibold bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-all shadow-sm flex items-center justify-center gap-2 cursor-pointer"
           >
             {" "}
-            <FiPlus size={16} /> Tambah Produk
+            <FiPlus size={16} /> Add New Product
           </Button>
         </div>
       </div>
+
+      {/* Statistics Cards */}
+      {isLoading ? (
+        <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
+          {[...Array(4)].map((_, i) => (
+            <div
+              key={i}
+              className="h-20 bg-gray-100 animate-pulse rounded-xl"
+            />
+          ))}
+        </div>
+      ) : (
+        <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
+          <div className="bg-white border border-gray-200 rounded-xl p-4 shadow-sm">
+            <div className="flex items-center justify-between mb-2">
+              <span className="text-xs font-semibold text-gray-500 uppercase">
+                Total
+              </span>
+              <FiPackage className="text-gray-400" size={18} />
+            </div>
+            <p className="text-2xl font-black text-gray-900">{stats.total}</p>
+          </div>
+
+          <div className="bg-amber-50 border border-amber-200 rounded-xl p-4 shadow-sm">
+            <div className="flex items-center justify-between mb-2">
+              <span className="text-xs font-semibold text-amber-700 uppercase">
+                Pending
+              </span>
+              <div className="w-3 h-3 rounded-full bg-amber-500"></div>
+            </div>
+            <p className="text-2xl font-black text-amber-700">
+              {stats.pending}
+            </p>
+          </div>
+
+          <div className="bg-green-50 border border-green-200 rounded-xl p-4 shadow-sm">
+            <div className="flex items-center justify-between mb-2">
+              <span className="text-xs font-semibold text-green-700 uppercase">
+                Approved
+              </span>
+              <div className="w-3 h-3 rounded-full bg-green-500"></div>
+            </div>
+            <p className="text-2xl font-black text-green-700">
+              {stats.approved}
+            </p>
+          </div>
+
+          <div className="bg-red-50 border border-red-200 rounded-xl p-4 shadow-sm">
+            <div className="flex items-center justify-between mb-2">
+              <span className="text-xs font-semibold text-red-700 uppercase">
+                Rejected
+              </span>
+              <div className="w-3 h-3 rounded-full bg-red-500"></div>
+            </div>
+            <p className="text-2xl font-black text-red-700">{stats.rejected}</p>
+          </div>
+        </div>
+      )}
 
       {/* Filter Bar */}
       <div className="grid grid-cols-1 gap-3 md:grid-cols-4 lg:grid-cols-5">
         <div className="md:col-span-2 lg:col-span-3 relative">
           <input
             type="text"
-            placeholder="Cari nama produk..."
+            placeholder="Search product by name..."
             value={searchTerm}
             className="w-full pl-9 pr-4 py-2 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-indigo-500/20 outline-none"
             onChange={(e) => setSearchTerm(e.target.value)}
@@ -198,29 +260,42 @@ const DeveloperProducts: React.FC = () => {
       </div>
 
       {/* Grid Cards Section */}
-      <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
-        {paginatedProducts.length === 0 ? (
-          <div className="col-span-full py-16 text-center bg-white border border-dashed border-gray-300 rounded-2xl">
-            <FiPackage className="mx-auto h-12 w-12 text-gray-300 mb-3" />
-            <p className="text-gray-500 font-medium">Produk tidak ditemukan</p>
-          </div>
-        ) : (
-          paginatedProducts.map((product) => (
-            <CardDeveloperProducts
-              key={product.id}
-              product={product}
-              onEdit={(p) => {
-                setSelectedProduct(p);
-                setIsUpdateOpen(true);
-              }}
-              onDelete={(p) => {
-                setSelectedProduct(p);
-                setIsDeleteOpen(true);
-              }}
+      {isLoading ? (
+        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+          {[...Array(9)].map((_, i) => (
+            <div
+              key={i}
+              className="h-62 bg-gray-100 animate-pulse rounded-xl"
             />
-          ))
-        )}
-      </div>
+          ))}
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+          {paginatedProducts.length === 0 ? (
+            <div className="col-span-full py-16 text-center bg-white border border-dashed border-gray-300 rounded-2xl">
+              <FiPackage className="mx-auto h-12 w-12 text-gray-300 mb-3" />
+              <p className="text-gray-500 font-medium">
+                Produk tidak ditemukan
+              </p>
+            </div>
+          ) : (
+            paginatedProducts.map((product) => (
+              <CardDeveloperProducts
+                key={product.id}
+                product={product}
+                onEdit={(p) => {
+                  setSelectedProduct(p);
+                  setIsUpdateOpen(true);
+                }}
+                onDelete={(p) => {
+                  setSelectedProduct(p);
+                  setIsDeleteOpen(true);
+                }}
+              />
+            ))
+          )}
+        </div>
+      )}
 
       {/* Pagination (Gaya visual identik dengan menu Users) */}
       <div className="mt-6 px-1 flex items-center justify-between">

@@ -15,7 +15,7 @@ export async function POST(request: NextRequest) {
     if (authError || !user) {
       return NextResponse.json(
         { error: "Unauthorized - Authentication required" },
-        { status: 401 }
+        { status: 401 },
       );
     }
 
@@ -24,7 +24,7 @@ export async function POST(request: NextRequest) {
     if (userMetadata.role !== "admin") {
       return NextResponse.json(
         { error: "Forbidden - Admin access required" },
-        { status: 403 }
+        { status: 403 },
       );
     }
 
@@ -36,7 +36,7 @@ export async function POST(request: NextRequest) {
     if (!currentPassword || !newPassword || !confirmPassword) {
       return NextResponse.json(
         { error: "All password fields are required" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -44,15 +44,15 @@ export async function POST(request: NextRequest) {
     if (newPassword !== confirmPassword) {
       return NextResponse.json(
         { error: "New password and confirmation do not match" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
     // Validate password length
-    if (newPassword.length < 8) {
+    if (newPassword.length < 6) {
       return NextResponse.json(
-        { error: "Password must be at least 8 characters" },
-        { status: 400 }
+        { error: "Password must be at least 6 characters" },
+        { status: 400 },
       );
     }
 
@@ -65,7 +65,7 @@ export async function POST(request: NextRequest) {
     if (signInError) {
       return NextResponse.json(
         { error: "Current password is incorrect" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -78,19 +78,22 @@ export async function POST(request: NextRequest) {
       console.error("Error updating password:", updateError);
       return NextResponse.json(
         { error: "Failed to update password" },
-        { status: 500 }
+        { status: 500 },
       );
     }
 
     return NextResponse.json(
       { message: "Password changed successfully" },
-      { status: 200 }
+      { status: 200 },
     );
   } catch (error) {
-    console.error("Unexpected error in POST /api/admin/profile/change-password:", error);
+    console.error(
+      "Unexpected error in POST /api/admin/profile/change-password:",
+      error,
+    );
     return NextResponse.json(
       { error: "Internal server error" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

@@ -13,6 +13,7 @@ import {
 import { adminService, ApiUser } from "@/services/adminService";
 import { ToastType } from "@/components/ui/Toast";
 import Button from "../Button";
+import { FaBriefcase } from "react-icons/fa";
 
 interface ModalUsersDeleteProps {
   isOpen: boolean;
@@ -62,9 +63,9 @@ const ModalUsersDelete: React.FC<ModalUsersDeleteProps> = ({
           </div>
 
           <div>
-            <h3 className="text-xl font-bold text-gray-900">Hapus</h3>
+            <h3 className="text-xl font-bold text-gray-900">Delete</h3>
             <p className="text-gray-600 mt-2 text-sm">
-              Apakah Anda yakin ingin menghapus <b>{user.full_name}</b>?
+              Are you sure you want to delete <b>{user.full_name}</b>?
             </p>
           </div>
           <div className="bg-gray-50 p-4 rounded-lg space-y-2 border border-gray-100">
@@ -73,7 +74,7 @@ const ModalUsersDelete: React.FC<ModalUsersDeleteProps> = ({
               <span className="font-semibold">{user.full_name || "N/A"}</span>
             </div>
             <div className="flex items-center text-sm text-gray-600 capitalize">
-              <FiDroplet className="mr-2 text-red-500" />
+              <FaBriefcase className="mr-2 text-red-500" />
               <span>{user.role}</span>
             </div>
             <div className="flex items-center text-sm text-gray-600">
@@ -96,16 +97,18 @@ const ModalUsersDelete: React.FC<ModalUsersDeleteProps> = ({
               fullWidth
               onClick={onClose}
               disabled={isLoading}
+              className="cursor-pointer"
             >
-              Batal
+              Cancel
             </Button>
             <Button
               variant="danger"
               fullWidth
               onClick={handleDelete}
               isLoading={isLoading}
+              className="cursor-pointer"
             >
-              Hapus
+              Delete
             </Button>
           </div>
         </div>

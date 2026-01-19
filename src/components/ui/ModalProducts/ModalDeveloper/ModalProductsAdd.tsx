@@ -150,17 +150,10 @@ const CardProductsAdd: React.FC<CardProductsAddProps> = ({
   return (
     <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
       <div className="bg-white rounded-xl w-full max-w-2xl max-h-[90vh] overflow-hidden shadow-2xl">
-        <div className="p-4 md:p-6 flex justify-between items-center bg-indigo-50">
+        <div className="p-4 md:p-6 flex items-center bg-indigo-50">
           <h2 className="text-lg md:text-xl font-bold text-indigo-900">
-            Form Tambah
+            Form Add New Products
           </h2>
-          <button
-            onClick={onClose}
-            className="p-2 hover:bg-indigo-100 rounded-full transition-colors"
-            disabled={isLoading}
-          >
-            <FiX size={20} />
-          </button>
         </div>
 
         <form onSubmit={handleSubmit}>
@@ -236,8 +229,20 @@ const CardProductsAdd: React.FC<CardProductsAddProps> = ({
             />
 
             <div className="col-span-full space-y-2">
-              <label className="text-xs md:text-sm font-semibold text-gray-700">
-                Product Image <span className="text-red-500">*</span>
+              <label className="text-xs md:text-sm font-semibold text-gray-700 flex items-center gap-1">
+                Product Image
+                <span className="text-red-500" aria-hidden="true">
+                  *
+                </span>
+                <a
+                  href="https://www.canva.com/design/DAG8nfKrrWs/b_GGyLsE67VIwdFSmgJBtg/edit"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="ml-1 text-blue-600 hover:text-blue-800 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 rounded"
+                  aria-label="Link Asset Image"
+                >
+                  (Link Asset Image)
+                </a>
               </label>
 
               {imagePreview && (
@@ -295,11 +300,11 @@ const CardProductsAdd: React.FC<CardProductsAddProps> = ({
 
             <div className="col-span-full">
               <Input
-                label="Tools/Tech Stack"
+                label="Tools & Tech Stack"
                 name="tools"
                 value={formData.tools}
                 onChange={handleChange}
-                placeholder="React.js, Tailwind CSS, Next.js"
+                placeholder="React.js, Next.js, Tailwind CSS"
                 helperText="Pisahkan dengan koma untuk multiple tools"
                 fullWidth
               />
@@ -328,8 +333,9 @@ const CardProductsAdd: React.FC<CardProductsAddProps> = ({
               type="button"
               onClick={onClose}
               disabled={isLoading}
+              className="cursor-pointer"
             >
-              Batal
+              Cancel
             </Button>
 
             <Button
@@ -338,8 +344,9 @@ const CardProductsAdd: React.FC<CardProductsAddProps> = ({
               type="submit"
               isLoading={isLoading}
               disabled={isUploading}
+              className="cursor-pointer"
             >
-              Simpan
+              Save
             </Button>
           </div>
         </form>

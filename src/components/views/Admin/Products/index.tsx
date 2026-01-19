@@ -8,6 +8,13 @@ import CardAdminProductStatus from "@/components/ui/ModalProducts/ModalAdmin/Mod
 import { AdminProduct } from "@/components/ui/ModalProducts/ModalAdmin/ModalProductsUpdateStatus";
 import CardAdminProducts from "@/components/ui/CardProducts/CardAdminProducts";
 import Button from "@/components/ui/Button";
+import Toast, { ToastType } from "@/components/ui/Toast";
+
+interface ToastState {
+  isVisible: boolean;
+  message: string;
+  type: ToastType;
+}
 
 const AdminProducts: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState("");
@@ -26,6 +33,17 @@ const AdminProducts: React.FC = () => {
   );
   const [products, setProducts] = useState<AdminProduct[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+
+  // State Toast
+  const [toast, setToast] = useState<ToastState>({
+    isVisible: false,
+    message: "",
+    type: "success",
+  });
+
+  const showToast = (message: string, type: ToastType): void => {
+    setToast({ isVisible: true, message, type });
+  };
 
   const fetchProducts = async () => {
     setIsLoading(true);
@@ -186,7 +204,7 @@ const AdminProducts: React.FC = () => {
         <div className="lg:col-span-2 relative">
           <input
             type="text"
-            placeholder="Cari produk atau developer..."
+            placeholder="Search product by name or developer..."
             value={searchTerm}
             className="w-full pl-9 pr-4 py-2 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-indigo-500/20 outline-none"
             onChange={(e) => setSearchTerm(e.target.value)}
@@ -295,6 +313,17 @@ const AdminProducts: React.FC = () => {
           onClose={() => setIsUpdateStatusOpen(false)}
           product={selectedProduct}
           onStatusUpdated={fetchProducts}
+          showToast={showToast}
+        />
+      )}
+
+      {/* Toast Notification */}
+      {toast.isVisible && (
+        <Toast
+          message={toast.message}
+          type={toast.type}
+          isVisible={toast.isVisible}
+          onClose={() => setToast((prev) => ({ ...prev, isVisible: false }))}
         />
       )}
     </div>

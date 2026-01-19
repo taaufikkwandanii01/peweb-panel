@@ -87,7 +87,7 @@ const CardAdminUsers: React.FC<CardAdminUsersProps> = ({
         <div className="flex items-center text-xs text-gray-600 gap-2">
           <FiCalendar className="shrink-0 text-gray-400" />
           <span>
-            Registered:{" "}
+            Joined{" "}
             {user.created_at
               ? new Date(user.created_at).toLocaleDateString("id-ID")
               : "-"}

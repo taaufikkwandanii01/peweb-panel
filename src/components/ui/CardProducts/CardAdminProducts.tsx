@@ -58,7 +58,7 @@ const CardAdminProducts: React.FC<CardAdminProductsProps> = ({
         <div className="flex gap-1">
           <button
             onClick={() => onEdit(product)}
-            className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+            className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors cursor-pointer"
             title="Update Status"
           >
             <FiEdit2 size={16} />
@@ -67,7 +67,7 @@ const CardAdminProducts: React.FC<CardAdminProductsProps> = ({
             href={product.href}
             target="_blank"
             rel="noopener noreferrer"
-            className="p-2 text-gray-600 hover:bg-gray-50 rounded-lg transition-colors"
+            className="p-2 text-gray-600 hover:bg-gray-50 rounded-lg transition-colors cursor-pointer"
             title="Lihat Demo"
           >
             <FiExternalLink size={16} />
@@ -105,9 +105,18 @@ const CardAdminProducts: React.FC<CardAdminProductsProps> = ({
         <div className="flex items-center text-xs text-gray-600 gap-2">
           <FiCalendar className="shrink-0 text-gray-400" />
           <span>
-            Created at:{" "}
+            Created at{" "}
             {product.created_at
               ? new Date(product.created_at).toLocaleDateString("id-ID")
+              : "-"}
+          </span>
+        </div>
+        <div className="flex items-center text-xs text-gray-600 gap-2">
+          <FiCalendar className="shrink-0 text-gray-400" />
+          <span>
+            Updated at{" "}
+            {product.updated_at
+              ? new Date(product.updated_at).toLocaleDateString("id-ID")
               : "-"}
           </span>
         </div>

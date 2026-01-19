@@ -12,6 +12,7 @@ import {
 import { adminService, ApiUser } from "@/services/adminService";
 import { ToastType } from "@/components/ui/Toast";
 import Button from "../Button";
+import { FaBriefcase } from "react-icons/fa";
 
 interface ModalUsersUpdateStatusProps {
   isOpen: boolean;
@@ -71,7 +72,9 @@ const ModalUsersUpdateStatus: React.FC<ModalUsersUpdateStatusProps> = ({
     <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
       <div className="bg-white rounded-xl w-full max-w-md overflow-hidden shadow-2xl animate-in fade-in zoom-in duration-200">
         <div className="p-4 md:p-6 flex justify-start items-center bg-amber-50">
-          <h2 className="text-lg font-bold text-amber-900">Form Edit</h2>
+          <h2 className="text-lg font-bold text-amber-900">
+            Form Update Status Account
+          </h2>
         </div>
 
         <div className="p-6 space-y-4">
@@ -81,7 +84,7 @@ const ModalUsersUpdateStatus: React.FC<ModalUsersUpdateStatusProps> = ({
               <span className="font-semibold">{user.full_name || "N/A"}</span>
             </div>
             <div className="flex items-center text-sm text-gray-600 capitalize">
-              <FiDroplet className="mr-2 text-amber-500" />
+              <FaBriefcase className="mr-2 text-amber-500" />
               <span>{user.role}</span>
             </div>
             <div className="flex items-center text-sm text-gray-600">
@@ -121,6 +124,7 @@ const ModalUsersUpdateStatus: React.FC<ModalUsersUpdateStatusProps> = ({
               fullWidth
               onClick={onClose}
               disabled={isLoading}
+              className="cursor-pointer"
             >
               Batal
             </Button>
@@ -129,6 +133,7 @@ const ModalUsersUpdateStatus: React.FC<ModalUsersUpdateStatusProps> = ({
               fullWidth
               onClick={handleUpdate}
               isLoading={isLoading}
+              className="cursor-pointer"
             >
               Update
             </Button>

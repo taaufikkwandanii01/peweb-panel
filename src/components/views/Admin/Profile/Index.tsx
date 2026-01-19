@@ -1,15 +1,16 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
-import Input from "@/components/ui/Input";
 import Button from "@/components/ui/Button";
+import React, { useState, useEffect } from "react";
 import {
   FaBriefcase,
   FaCalendarAlt,
-  FaLinkedin,
   FaCheckCircle,
   FaExclamationCircle,
+  FaGithubSquare,
 } from "react-icons/fa";
+import { SiGmail, SiLinkedin } from "react-icons/si";
+import { TbBrandWhatsappFilled } from "react-icons/tb";
 
 interface ProfileData {
   id: string;
@@ -52,12 +53,10 @@ const AdminProfile: React.FC = () => {
     confirmPassword: "",
   });
 
-  // Fetch profile data on mount
   useEffect(() => {
     fetchProfile();
   }, []);
 
-  // Clear message after 5 seconds
   useEffect(() => {
     if (message) {
       const timer = setTimeout(() => {
@@ -91,7 +90,7 @@ const AdminProfile: React.FC = () => {
   };
 
   const handleInputChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
   ) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
@@ -133,7 +132,6 @@ const AdminProfile: React.FC = () => {
       });
       setIsEditing(false);
 
-      // Update form data with response
       if (data.profile) {
         setFormData((prev) => ({ ...prev, ...data.profile }));
       }
@@ -149,7 +147,7 @@ const AdminProfile: React.FC = () => {
     }
   };
 
-  const handleChangePassword = async (e: React.FormEvent) => {
+  const handleChangePassword = async (e: React.MouseEvent) => {
     e.preventDefault();
     setIsLoading(true);
     setMessage(null);
@@ -200,14 +198,6 @@ const AdminProfile: React.FC = () => {
     });
   };
 
-  if (isFetchingProfile) {
-    return (
-      <div className="flex items-center justify-center min-h-[400px]">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
-      </div>
-    );
-  }
-
   return (
     <div className="space-y-6">
       {/* Header */}
@@ -238,220 +228,346 @@ const AdminProfile: React.FC = () => {
         </div>
       )}
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Profile Card */}
-        <div className="lg:col-span-1">
-          <div className="bg-white rounded-xl shadow-md p-6">
-            <div className="flex flex-col items-center">
-              <div className="relative">
-                <div className="w-32 h-32 bg-gradient-to-br from-blue-500 to-purple-500 rounded-full flex items-center justify-center shadow-lg">
-                  <span className="text-white font-bold text-4xl">
-                    {formData.full_name
-                      ? formData.full_name
-                          .split(" ")
-                          .map((n) => n[0])
-                          .join("")
-                          .toUpperCase()
-                      : "AD"}
-                  </span>
+      {/* Main Content - Conditional Rendering */}
+      {isFetchingProfile ? (
+        // LOADING STATE - Skeleton
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          {/* Profile Card Skeleton */}
+          <div className="lg:col-span-1">
+            <div className="bg-white rounded-xl shadow-md p-6">
+              <div className="flex flex-col items-center">
+                {/* Avatar Skeleton */}
+                <div className="w-32 h-32 bg-gray-200 rounded-full animate-pulse"></div>
+
+                {/* Name Skeleton */}
+                <div className="w-40 h-6 bg-gray-200 rounded mt-4 animate-pulse"></div>
+
+                {/* Email Skeleton */}
+                <div className="w-48 h-4 bg-gray-200 rounded mt-2 animate-pulse"></div>
+
+                {/* Info Section Skeleton */}
+                <div className="w-full mt-6 pt-6 border-t border-gray-200 space-y-3">
+                  {[...Array(2)].map((_, i) => (
+                    <div key={i} className="flex items-center gap-2">
+                      <div className="w-5 h-5 bg-gray-200 rounded animate-pulse"></div>
+                      <div className="w-32 h-4 bg-gray-200 rounded animate-pulse"></div>
+                    </div>
+                  ))}
                 </div>
               </div>
+            </div>
+          </div>
 
-              <h2 className="mt-4 text-xl font-bold text-gray-900">
-                {formData.full_name || "Admin User"}
-              </h2>
-              <p className="text-sm text-gray-600">{formData.email}</p>
-
-              <div className="w-full mt-6 pt-6 border-t border-gray-200 space-y-3">
-                <div className="flex items-center gap-2 text-sm">
-                  <FaBriefcase className="w-5 h-5 text-gray-400" />
-                  <span className="text-gray-700 capitalize">
-                    {formData.role}
-                  </span>
-                </div>
-                <div className="flex items-center gap-2 text-sm">
-                  <FaCalendarAlt className="w-5 h-5 text-gray-400" />
-                  <span className="text-gray-700">
-                    Joined {formatDate(formData.created_at)}
-                  </span>
-                </div>
+          {/* Forms Skeleton */}
+          <div className="lg:col-span-2 space-y-6">
+            {/* Personal Information Skeleton */}
+            <div className="bg-white rounded-xl shadow-md p-6">
+              <div className="flex items-center justify-between mb-6">
+                <div className="w-48 h-6 bg-gray-200 rounded animate-pulse"></div>
+                <div className="w-32 h-10 bg-gray-200 rounded-lg animate-pulse"></div>
               </div>
 
-              {formData.linkedin && (
-                <div className="w-full mt-6 pt-6 border-t border-gray-200">
-                  <h3 className="text-sm font-semibold text-gray-900 mb-3">
-                    Connect
-                  </h3>
-                  <div className="space-y-3">
-                    <a
-                      href={
-                        formData.linkedin.startsWith("http")
-                          ? formData.linkedin
-                          : `https://${formData.linkedin}`
-                      }
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="flex items-center gap-2 text-sm text-gray-700 hover:text-purple-600 transition-colors"
-                    >
-                      <FaLinkedin className="w-5 h-5 text-gray-400" />
-                      LinkedIn
-                    </a>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {[...Array(6)].map((_, i) => (
+                  <div key={i} className={i >= 4 ? "md:col-span-2" : ""}>
+                    <div className="w-24 h-4 bg-gray-200 rounded mb-2 animate-pulse"></div>
+                    <div
+                      className={`w-full ${i === 5 ? "h-24" : "h-10"} bg-gray-200 rounded-lg animate-pulse`}
+                    ></div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Change Password Skeleton */}
+            <div className="bg-white rounded-xl shadow-md p-6">
+              <div className="w-40 h-6 bg-gray-200 rounded mb-6 animate-pulse"></div>
+              <div className="space-y-4">
+                {[...Array(3)].map((_, i) => (
+                  <div key={i}>
+                    <div className="w-32 h-4 bg-gray-200 rounded mb-2 animate-pulse"></div>
+                    <div className="w-full h-10 bg-gray-200 rounded-lg animate-pulse"></div>
+                  </div>
+                ))}
+                <div className="w-40 h-10 bg-gray-200 rounded-lg animate-pulse"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      ) : (
+        // SUCCESS STATE - Actual Content
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          {/* Profile Card */}
+          <div className="lg:col-span-1">
+            <div className="bg-white rounded-xl shadow-md p-6">
+              <div className="flex flex-col items-center">
+                <div className="relative">
+                  <div className="w-32 h-32 bg-gradient-to-br from-blue-500 to-purple-500 rounded-full flex items-center justify-center shadow-lg">
+                    <span className="text-white font-bold text-4xl">
+                      {formData.full_name
+                        ? formData.full_name
+                            .split(" ")
+                            .map((n) => n[0])
+                            .join("")
+                            .toUpperCase()
+                        : "AD"}
+                    </span>
                   </div>
                 </div>
-              )}
+
+                <h2 className="mt-4 text-xl font-bold text-gray-900">
+                  {formData.full_name || "Admin User"}
+                </h2>
+                <a
+                  href={`mailto:${formData.email}`}
+                  className="text-sm text-gray-600 hover:text-indigo-600 transition-all flex items-center gap-2"
+                >
+                  {formData.email}
+                </a>
+
+                {/* Social Links */}
+                <div className="flex items-center justify-center">
+                  {" "}
+                  {(formData.phone || formData.linkedin) && (
+                    <div className="w-full pt-3">
+                      <div className="flex flex-row items-center justify-center gap-4">
+                        {formData.phone && (
+                          <a
+                            href={`https://wa.me/${formData.phone.replace(/\D/g, "")}`} // Perbaikan link WhatsApp
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="p-2 rounded-full bg-gray-50 text-gray-400 hover:text-green-500 hover:bg-green-50 transition-all"
+                            title="Chat via WhatsApp"
+                          >
+                            <TbBrandWhatsappFilled className="w-6 h-6" />
+                          </a>
+                        )}
+
+                        {formData.linkedin && (
+                          <a
+                            href={
+                              formData.linkedin.startsWith("http")
+                                ? formData.linkedin
+                                : `https://${formData.linkedin}`
+                            }
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="p-2 rounded-full bg-gray-50 text-gray-400 hover:text-blue-600 hover:bg-blue-50 transition-all"
+                            title="LinkedIn Profile"
+                          >
+                            <SiLinkedin className="w-6 h-6" />
+                          </a>
+                        )}
+                      </div>
+                    </div>
+                  )}
+                </div>
+
+                <div className="w-full mt-6 pt-6 border-t border-gray-200 space-y-3">
+                  <div className="flex items-center gap-2 text-sm">
+                    <FaBriefcase className="w-5 h-5 text-gray-400" />
+                    <span className="text-gray-700 capitalize">
+                      {formData.role}
+                    </span>
+                  </div>
+                  <div className="flex items-center gap-2 text-sm">
+                    <FaCalendarAlt className="w-5 h-5 text-gray-400" />
+                    <span className="text-gray-700">
+                      Joined {formatDate(formData.created_at)}
+                    </span>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
-        </div>
 
-        {/* Profile Information & Password */}
-        <div className="lg:col-span-2 space-y-6">
-          {/* Personal Information */}
-          <div className="bg-white rounded-xl shadow-md p-6">
-            <div className="flex items-center justify-between mb-6">
-              <h2 className="text-lg font-semibold text-gray-900">
-                Personal Information
+          {/* Profile Information & Password */}
+          <div className="lg:col-span-2 space-y-6">
+            {/* Personal Information */}
+            <div className="bg-white rounded-xl shadow-md p-6">
+              <div className="flex items-center justify-between mb-6">
+                <h2 className="text-lg font-semibold text-gray-900">
+                  Personal Information
+                </h2>
+                {!isEditing && (
+                  <button
+                    onClick={() => setIsEditing(true)}
+                    className="px-4 py-2 text-sm font-medium text-blue-600 border border-blue-600 rounded-lg hover:bg-blue-50 transition-colors cursor-pointer"
+                  >
+                    Update Profile
+                  </button>
+                )}
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Full Name
+                  </label>
+                  <input
+                    name="full_name"
+                    value={formData.full_name}
+                    onChange={handleInputChange}
+                    disabled={!isEditing}
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 disabled:bg-gray-100 disabled:cursor-not-allowed"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Email Address
+                  </label>
+                  <input
+                    name="email"
+                    type="email"
+                    value={formData.email}
+                    onChange={handleInputChange}
+                    disabled={true}
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 disabled:bg-gray-100 disabled:cursor-not-allowed"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Phone Number
+                  </label>
+                  <input
+                    name="phone"
+                    value={formData.phone || ""}
+                    onChange={handleInputChange}
+                    disabled={!isEditing}
+                    placeholder="+1 234 567 8900"
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 disabled:bg-gray-100 disabled:cursor-not-allowed"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    LinkedIn
+                  </label>
+                  <input
+                    name="linkedin"
+                    value={formData.linkedin || ""}
+                    onChange={handleInputChange}
+                    disabled={!isEditing}
+                    placeholder="linkedin.com/in/username"
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 disabled:bg-gray-100 disabled:cursor-not-allowed"
+                  />
+                </div>
+                <div className="md:col-span-2">
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Location
+                  </label>
+                  <input
+                    name="location"
+                    value={formData.location || ""}
+                    onChange={handleInputChange}
+                    disabled={!isEditing}
+                    placeholder="City, Country"
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 disabled:bg-gray-100 disabled:cursor-not-allowed"
+                  />
+                </div>
+                <div className="md:col-span-2">
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Bio
+                  </label>
+                  <textarea
+                    name="bio"
+                    value={formData.bio || ""}
+                    onChange={handleInputChange}
+                    disabled={!isEditing}
+                    rows={4}
+                    placeholder="Tell us about yourself..."
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 disabled:bg-gray-100 disabled:cursor-not-allowed resize-none"
+                  />
+                </div>
+              </div>
+
+              {isEditing && (
+                <div className="flex gap-3 mt-6">
+                  <Button
+                    onClick={handleSaveProfile}
+                    isLoading={isLoading}
+                    disabled={isLoading}
+                    variant="primary"
+                    className="px-6 py-2 cursor-pointer"
+                  >
+                    Save Changes
+                  </Button>
+                  <Button
+                    variant="secondary"
+                    onClick={() => {
+                      setIsEditing(false);
+                      fetchProfile();
+                    }}
+                    disabled={isLoading}
+                    className="px-6 py-2 cursor-pointer"
+                  >
+                    Cancel
+                  </Button>
+                </div>
+              )}
+            </div>
+
+            {/* Change Password */}
+            <div className="bg-white rounded-xl shadow-md p-6">
+              <h2 className="text-lg font-semibold text-gray-900 mb-6">
+                Change Password
               </h2>
-              {!isEditing && (
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Current Password
+                  </label>
+                  <input
+                    name="currentPassword"
+                    type="password"
+                    value={passwordData.currentPassword}
+                    onChange={handlePasswordChange}
+                    placeholder="Enter current password"
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    New Password
+                  </label>
+                  <input
+                    name="newPassword"
+                    type="password"
+                    value={passwordData.newPassword}
+                    onChange={handlePasswordChange}
+                    placeholder="Enter new password"
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  />
+                  <p className="mt-1 text-sm text-gray-500">
+                    Must be at least 6 characters
+                  </p>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Confirm New Password
+                  </label>
+                  <input
+                    name="confirmPassword"
+                    type="password"
+                    value={passwordData.confirmPassword}
+                    onChange={handlePasswordChange}
+                    placeholder="Confirm new password"
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  />
+                </div>
                 <Button
-                  onClick={() => setIsEditing(true)}
-                  variant="outline"
-                  size="sm"
-                >
-                  Edit Profile
-                </Button>
-              )}
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <Input
-                label="Full Name"
-                name="full_name"
-                value={formData.full_name}
-                onChange={handleInputChange}
-                disabled={!isEditing}
-                fullWidth
-              />
-              <Input
-                label="Email Address"
-                name="email"
-                type="email"
-                value={formData.email}
-                onChange={handleInputChange}
-                disabled={true}
-                fullWidth
-              />
-              <Input
-                label="Phone Number"
-                name="phone"
-                value={formData.phone || ""}
-                onChange={handleInputChange}
-                disabled={!isEditing}
-                fullWidth
-                placeholder="+1 234 567 8900"
-              />
-              <Input
-                label="LinkedIn"
-                name="linkedin"
-                value={formData.linkedin || ""}
-                onChange={handleInputChange}
-                disabled={!isEditing}
-                fullWidth
-                placeholder="linkedin.com/in/username"
-              />
-              <div className="md:col-span-2">
-                <Input
-                  label="Location"
-                  name="location"
-                  value={formData.location || ""}
-                  onChange={handleInputChange}
-                  disabled={!isEditing}
-                  fullWidth
-                  placeholder="City, Country"
-                />
-              </div>
-              <div className="md:col-span-2">
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Bio
-                </label>
-                <textarea
-                  name="bio"
-                  value={formData.bio || ""}
-                  onChange={handleInputChange}
-                  disabled={!isEditing}
-                  rows={4}
-                  placeholder="Tell us about yourself..."
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 disabled:bg-gray-100 disabled:cursor-not-allowed resize-none"
-                />
-              </div>
-            </div>
-
-            {isEditing && (
-              <div className="flex gap-3 mt-6">
-                <Button
-                  onClick={handleSaveProfile}
                   variant="primary"
+                  onClick={handleChangePassword}
                   isLoading={isLoading}
-                >
-                  Save Changes
-                </Button>
-                <Button
-                  onClick={() => {
-                    setIsEditing(false);
-                    fetchProfile(); // Reset to original data
-                  }}
-                  variant="outline"
                   disabled={isLoading}
+                  className="px-6 py-2 cursor-pointer"
                 >
-                  Cancel
+                  Update Password
                 </Button>
               </div>
-            )}
-          </div>
-
-          {/* Change Password */}
-          <div className="bg-white rounded-xl shadow-md p-6">
-            <h2 className="text-lg font-semibold text-gray-900 mb-6">
-              Change Password
-            </h2>
-            <form onSubmit={handleChangePassword} className="space-y-4">
-              <Input
-                label="Current Password"
-                name="currentPassword"
-                type="password"
-                value={passwordData.currentPassword}
-                onChange={handlePasswordChange}
-                required
-                fullWidth
-                placeholder="Enter current password"
-              />
-              <Input
-                label="New Password"
-                name="newPassword"
-                type="password"
-                value={passwordData.newPassword}
-                onChange={handlePasswordChange}
-                required
-                fullWidth
-                helperText="Must be at least 8 characters"
-                placeholder="Enter new password"
-              />
-              <Input
-                label="Confirm New Password"
-                name="confirmPassword"
-                type="password"
-                value={passwordData.confirmPassword}
-                onChange={handlePasswordChange}
-                required
-                fullWidth
-                placeholder="Confirm new password"
-              />
-              <Button type="submit" variant="primary" isLoading={isLoading}>
-                Update Password
-              </Button>
-            </form>
+            </div>
           </div>
         </div>
-      </div>
+      )}
     </div>
   );
 };

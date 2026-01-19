@@ -2,51 +2,66 @@
 
 import { useRequireAuth } from "@/hooks/useRequireAuth";
 import MainLayouts from "@/components/layouts/MainLayouts";
-import { IconType } from "react-icons";
-import {
-  FiUsers,
-  FiClock,
-  FiCheckCircle,
-  FiXCircle,
-  FiGlobe,
-  FiLayout,
-  FiActivity,
-} from "react-icons/fi";
+import { useState, useEffect } from "react";
 
-export default function AdminDashboard() {
-  const { user, loading, isAuthorized } = useRequireAuth(["admin"]);
+interface ProfileData {
+  full_name: string;
+}
 
-  if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
-        <div className="text-center">
-          <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600"></div>
-          <p className="mt-4 text-gray-600 font-medium">Memuat Dashboard...</p>
-        </div>
-      </div>
-    );
-  }
+const AdminDashboard: React.FC = () => {
+  const { user, isAuthorized } = useRequireAuth(["admin"]);
+  const [profileData, setProfileData] = useState<ProfileData | null>(null);
+  const [isLoadingProfile, setIsLoadingProfile] = useState(true);
+
+  useEffect(() => {
+    const fetchProfile = async () => {
+      try {
+        setIsLoadingProfile(true);
+        const response = await fetch("/api/admin/profile");
+
+        if (!response.ok) {
+          throw new Error("Failed to fetch profile");
+        }
+
+        const data = await response.json();
+        setProfileData(data);
+      } catch (error) {
+        console.error("Error fetching profile:", error);
+      } finally {
+        setIsLoadingProfile(false);
+      }
+    };
+
+    if (isAuthorized) {
+      fetchProfile();
+    }
+  }, [isAuthorized]);
 
   if (!isAuthorized) return null;
 
   return (
     <MainLayouts userRole="admin">
       <div className="max-w-7xl mx-auto space-y-8 pb-10">
-        {/* Header Section - Minimalist Version */}
         <div className="flex flex-col border-b border-gray-200 pb-6 mb-2">
           <div>
             <h1 className="text-2xl font-bold text-gray-900 tracking-tight">
-              Admin Dashboard
+              Dashboard
             </h1>
-            <p className="text-gray-500 mt-1">
-              Selamat datang{" "}
-              <span className="font-medium text-indigo-600 capitalize">
-                {user?.user_metadata?.full_name || "Admin"}
-              </span>
-            </p>
+            {isLoadingProfile ? (
+              <span className="inline-block w-40 h-7 bg-gray-200 rounded animate-pulse"></span>
+            ) : (
+              <p className="text-gray-500 mt-1">
+                Selamat datang{" "}
+                <span className="font-medium text-indigo-600 capitalize">
+                  {profileData?.full_name || "Admin"}
+                </span>
+              </p>
+            )}
           </div>
         </div>
       </div>
     </MainLayouts>
   );
-}
+};
+
+export default AdminDashboard;
