@@ -9,6 +9,10 @@ import {
   FaCheckCircle,
   FaExclamationCircle,
   FaGithubSquare,
+  FaWhatsapp,
+  FaGithub,
+  FaLinkedin,
+  FaUserEdit,
 } from "react-icons/fa";
 import { IoLogoWhatsapp } from "react-icons/io";
 import { SiGmail, SiLinkedin } from "react-icons/si";
@@ -341,13 +345,13 @@ const DeveloperProfile: React.FC = () => {
                       <div className="flex flex-row items-center justify-center gap-4">
                         {formData.phone && (
                           <a
-                            href={`https://wa.me/${formData.phone.replace(/\D/g, "")}`} // Perbaikan link WhatsApp
+                            href={`https://wa.me/${formData.phone.replace(/^0/, "62").replace(/\D/g, "")}`}
                             target="_blank"
                             rel="noopener noreferrer"
                             className="p-2 rounded-full bg-gray-50 text-gray-400 hover:text-green-500 hover:bg-green-50 transition-all"
                             title="Chat via WhatsApp"
                           >
-                            <TbBrandWhatsappFilled className="w-6 h-6" />
+                            <FaWhatsapp className="w-6 h-6" />
                           </a>
                         )}
 
@@ -363,7 +367,7 @@ const DeveloperProfile: React.FC = () => {
                             className="p-2 rounded-full bg-gray-50 text-gray-400 hover:text-gray-900 hover:bg-gray-200 transition-all"
                             title="GitHub Profile"
                           >
-                            <FaGithubSquare className="w-6 h-6" />
+                            <FaGithub className="w-6 h-6" />
                           </a>
                         )}
 
@@ -379,7 +383,7 @@ const DeveloperProfile: React.FC = () => {
                             className="p-2 rounded-full bg-gray-50 text-gray-400 hover:text-blue-600 hover:bg-blue-50 transition-all"
                             title="LinkedIn Profile"
                           >
-                            <SiLinkedin className="w-6 h-6" />
+                            <FaLinkedin className="w-6 h-6" />
                           </a>
                         )}
                       </div>
@@ -426,7 +430,7 @@ const DeveloperProfile: React.FC = () => {
                     onClick={() => setIsEditing(true)}
                     className="px-4 py-2 text-sm font-medium text-purple-600 border border-purple-600 rounded-lg hover:bg-purple-50 transition-colors cursor-pointer"
                   >
-                    Update Profile
+                    <FaUserEdit className="w-5 h-5" />
                   </button>
                 )}
               </div>

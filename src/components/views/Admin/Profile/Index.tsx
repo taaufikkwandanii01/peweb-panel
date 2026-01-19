@@ -8,7 +8,11 @@ import {
   FaCheckCircle,
   FaExclamationCircle,
   FaGithubSquare,
+  FaLinkedin,
+  FaUserEdit,
+  FaWhatsapp,
 } from "react-icons/fa";
+import { FiEdit, FiEdit2 } from "react-icons/fi";
 import { SiGmail, SiLinkedin } from "react-icons/si";
 import { TbBrandWhatsappFilled } from "react-icons/tb";
 
@@ -333,13 +337,13 @@ const AdminProfile: React.FC = () => {
                       <div className="flex flex-row items-center justify-center gap-4">
                         {formData.phone && (
                           <a
-                            href={`https://wa.me/${formData.phone.replace(/\D/g, "")}`} // Perbaikan link WhatsApp
+                            href={`https://wa.me/${formData.phone.replace(/^0/, "62").replace(/\D/g, "")}`}
                             target="_blank"
                             rel="noopener noreferrer"
                             className="p-2 rounded-full bg-gray-50 text-gray-400 hover:text-green-500 hover:bg-green-50 transition-all"
                             title="Chat via WhatsApp"
                           >
-                            <TbBrandWhatsappFilled className="w-6 h-6" />
+                            <FaWhatsapp className="w-6 h-6" />
                           </a>
                         )}
 
@@ -355,7 +359,7 @@ const AdminProfile: React.FC = () => {
                             className="p-2 rounded-full bg-gray-50 text-gray-400 hover:text-blue-600 hover:bg-blue-50 transition-all"
                             title="LinkedIn Profile"
                           >
-                            <SiLinkedin className="w-6 h-6" />
+                            <FaLinkedin className="w-6 h-6" />
                           </a>
                         )}
                       </div>
@@ -394,7 +398,7 @@ const AdminProfile: React.FC = () => {
                     onClick={() => setIsEditing(true)}
                     className="px-4 py-2 text-sm font-medium text-blue-600 border border-blue-600 rounded-lg hover:bg-blue-50 transition-colors cursor-pointer"
                   >
-                    Update Profile
+                    <FaUserEdit className="w-5 h-5" />
                   </button>
                 )}
               </div>

@@ -288,7 +288,7 @@ const CardAdminProductStatus: React.FC<CardAdminProductStatusProps> = ({
                       </p>
                       {product.developer_phone ? (
                         <a
-                          href={`https://wa.me/${product.developer_phone.replace(/\D/g, "")}`}
+                          href={`https://wa.me/${product.developer_phone.replace(/^0/, "62").replace(/\D/g, "")}`}
                           target="_blank"
                           rel="noopener noreferrer"
                           className="text-xs font-semibold truncate text-slate-700 hover:text-indigo-600 transition-all flex items-center gap-1"
