@@ -79,7 +79,7 @@ export const adminService = {
    * Update user status (approve/reject)
    */
   async updateUserStatus(
-    data: UpdateUserStatusData
+    data: UpdateUserStatusData,
   ): Promise<AuthResponse<null>> {
     try {
       const {
@@ -181,7 +181,7 @@ export const adminService = {
       }
 
       const pendingUsers = result.data.filter(
-        (user) => user.status === "pending"
+        (user) => user.status === "pending",
       );
 
       return {

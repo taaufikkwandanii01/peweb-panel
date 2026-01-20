@@ -1,18 +1,7 @@
 "use client";
 
 import React, { useState, useMemo, useEffect } from "react";
-import {
-  FiSearch,
-  FiPlus,
-  FiEdit2,
-  FiTrash2,
-  FiRefreshCw,
-  FiPackage,
-  FiExternalLink,
-  FiLayers,
-  FiEye,
-} from "react-icons/fi";
-import Link from "next/link";
+import { FiSearch, FiPlus, FiRefreshCw, FiPackage } from "react-icons/fi";
 
 // Import Modal Components
 import CardProductsAdd from "@/components/ui/ModalProducts/ModalDeveloper/ModalProductsAdd";
@@ -20,6 +9,7 @@ import CardProductsDelete from "@/components/ui/ModalProducts/ModalDeveloper/Mod
 import CardProductsUpdate from "@/components/ui/ModalProducts/ModalDeveloper/ModalProductsUpdate";
 import Button from "@/components/ui/Button";
 import CardDeveloperProducts from "@/components/ui/CardProducts/CardDeveloperProducts";
+import Toast, { ToastType } from "@/components/ui/Toast"; // TAMBAHAN: Import Toast
 
 // Interface Product
 export interface Product {
@@ -40,12 +30,19 @@ export interface Product {
   updated_at?: string;
 }
 
+// TAMBAHAN: Toast State Interface
+interface ToastState {
+  isVisible: boolean;
+  message: string;
+  type: ToastType;
+}
+
 const DeveloperProducts: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategory, setSelectedCategory] = useState<string>("all");
   const [selectedStatus, setSelectedStatus] = useState<string>("all");
 
-  // State untuk Pagination (Mengikuti pola menu Users)
+  // State untuk Pagination
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 6;
 
@@ -57,6 +54,18 @@ const DeveloperProducts: React.FC = () => {
   const [products, setProducts] = useState<Product[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
+  // TAMBAHAN: State Toast
+  const [toast, setToast] = useState<ToastState>({
+    isVisible: false,
+    message: "",
+    type: "success",
+  });
+
+  // TAMBAHAN: Show Toast Function
+  const showToast = (message: string, type: ToastType): void => {
+    setToast({ isVisible: true, message, type });
+  };
+
   const fetchProducts = async () => {
     setIsLoading(true);
     try {
@@ -66,6 +75,7 @@ const DeveloperProducts: React.FC = () => {
       setProducts(data);
     } catch (err) {
       console.error(err);
+      showToast("Gagal memuat data products", "error"); // TAMBAHAN
     } finally {
       setIsLoading(false);
     }
@@ -79,27 +89,6 @@ const DeveloperProducts: React.FC = () => {
   useEffect(() => {
     setCurrentPage(1);
   }, [searchTerm, selectedCategory, selectedStatus]);
-
-  // Helper Formatting
-  const formatIDR = (n: number) =>
-    new Intl.NumberFormat("id-ID", {
-      style: "currency",
-      currency: "IDR",
-      maximumFractionDigits: 0,
-    }).format(n);
-
-  const getFinalPrice = (p: number, d: number) => p - p * (d / 100);
-
-  const getStatusStyle = (status: string) => {
-    switch (status?.toLowerCase()) {
-      case "approved":
-        return "bg-green-50 border-green-200 text-green-700";
-      case "rejected":
-        return "bg-red-50 border-red-200 text-red-700";
-      default:
-        return "bg-amber-50 border-amber-200 text-amber-700";
-    }
-  };
 
   // Filter Logic
   const filteredData = useMemo(() => {
@@ -115,7 +104,7 @@ const DeveloperProducts: React.FC = () => {
     });
   }, [products, searchTerm, selectedCategory, selectedStatus]);
 
-  // Pagination Logic (Sesuai dengan implementasi menu Users)
+  // Pagination Logic
   const totalPages = Math.ceil(filteredData.length / itemsPerPage);
   const startIndex = (currentPage - 1) * itemsPerPage;
   const paginatedProducts = filteredData.slice(
@@ -160,7 +149,6 @@ const DeveloperProducts: React.FC = () => {
             onClick={() => setIsAddOpen(true)}
             className="flex-1 sm:flex-none px-4 py-2 text-sm font-semibold bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-all shadow-sm flex items-center justify-center gap-2 cursor-pointer"
           >
-            {" "}
             <FiPlus size={16} /> Add New Product
           </Button>
         </div>
@@ -297,7 +285,7 @@ const DeveloperProducts: React.FC = () => {
         </div>
       )}
 
-      {/* Pagination (Gaya visual identik dengan menu Users) */}
+      {/* Pagination */}
       <div className="mt-6 px-1 flex items-center justify-between">
         <p className="text-[11px] text-gray-500 font-medium">
           Page {currentPage} of {totalPages || 1}
@@ -320,11 +308,14 @@ const DeveloperProducts: React.FC = () => {
         </div>
       </div>
 
-      {/* Modals */}
+      {/* Modals - PERBAIKAN: Tambahkan callback untuk show toast */}
       <CardProductsAdd
         isOpen={isAddOpen}
         onClose={() => setIsAddOpen(false)}
-        onProductAdded={fetchProducts}
+        onProductAdded={() => {
+          fetchProducts();
+          showToast("Product successfully added.", "success");
+        }}
       />
       {selectedProduct && (
         <>
@@ -332,15 +323,31 @@ const DeveloperProducts: React.FC = () => {
             isOpen={isUpdateOpen}
             onClose={() => setIsUpdateOpen(false)}
             product={selectedProduct}
-            onProductUpdated={fetchProducts}
+            onProductUpdated={() => {
+              fetchProducts();
+              showToast("Product successfully updated.", "success");
+            }}
           />
           <CardProductsDelete
             isOpen={isDeleteOpen}
             onClose={() => setIsDeleteOpen(false)}
             product={selectedProduct}
-            onProductDeleted={fetchProducts}
+            onProductDeleted={() => {
+              fetchProducts();
+              showToast("Product successfully deleted!", "success");
+            }}
           />
         </>
+      )}
+
+      {/* TAMBAHAN: Toast Notification */}
+      {toast.isVisible && (
+        <Toast
+          message={toast.message}
+          type={toast.type}
+          isVisible={toast.isVisible}
+          onClose={() => setToast((prev) => ({ ...prev, isVisible: false }))}
+        />
       )}
     </div>
   );

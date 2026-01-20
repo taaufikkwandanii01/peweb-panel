@@ -14,7 +14,7 @@ export async function POST(request: NextRequest) {
     if (authError || !user) {
       return NextResponse.json(
         { error: "Unauthorized - Authentication required" },
-        { status: 401 }
+        { status: 401 },
       );
     }
 
@@ -23,7 +23,7 @@ export async function POST(request: NextRequest) {
     if (userMetadata.role !== "admin") {
       return NextResponse.json(
         { error: "Forbidden - Admin access required" },
-        { status: 403 }
+        { status: 403 },
       );
     }
 
@@ -34,14 +34,14 @@ export async function POST(request: NextRequest) {
     if (!userId || !status) {
       return NextResponse.json(
         { error: "Missing required fields: userId and status" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
     if (!["pending", "approved", "rejected"].includes(status)) {
       return NextResponse.json(
         { error: "Invalid status. Must be: pending, approved, or rejected" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -54,10 +54,7 @@ export async function POST(request: NextRequest) {
 
     if (getUserError || !targetUser.user) {
       console.error("Error getting user:", getUserError);
-      return NextResponse.json(
-        { error: "User not found" },
-        { status: 404 }
-      );
+      return NextResponse.json({ error: "User not found" }, { status: 404 });
     }
 
     // Update user metadata using Admin API
@@ -70,14 +67,14 @@ export async function POST(request: NextRequest) {
       console.error("Error updating user status:", updateError);
       return NextResponse.json(
         { error: "Failed to update user status" },
-        { status: 500 }
+        { status: 500 },
       );
     }
 
     // ============ CRITICAL FIX: Create usersProfiles entry when approved ============
     if (status === "approved" && updatedUser.user) {
       const userMetadata = updatedUser.user.user_metadata;
-      
+
       // Check if profile already exists
       const { data: existingProfile } = await supabase
         .from("usersProfiles")
@@ -110,7 +107,7 @@ export async function POST(request: NextRequest) {
           // Just log the error
           console.warn(
             `User ${userId} approved but profile creation failed:`,
-            profileError
+            profileError,
           );
         } else {
           console.log(`✅ Profile created for user ${userId}`);
@@ -126,16 +123,16 @@ export async function POST(request: NextRequest) {
         message: `User ${status} successfully`,
         user: updatedUser,
       },
-      { status: 200 }
+      { status: 200 },
     );
   } catch (error) {
     console.error(
       "Unexpected error in POST /api/admin/users/update-user-status:",
-      error
+      error,
     );
     return NextResponse.json(
       { error: "Internal server error" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

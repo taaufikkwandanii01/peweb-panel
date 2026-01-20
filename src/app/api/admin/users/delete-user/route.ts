@@ -14,7 +14,7 @@ export async function DELETE(request: NextRequest) {
     if (authError || !user) {
       return NextResponse.json(
         { error: "Unauthorized - Authentication required" },
-        { status: 401 }
+        { status: 401 },
       );
     }
 
@@ -23,7 +23,7 @@ export async function DELETE(request: NextRequest) {
     if (userMetadata.role !== "admin") {
       return NextResponse.json(
         { error: "Forbidden - Admin access required" },
-        { status: 403 }
+        { status: 403 },
       );
     }
 
@@ -34,7 +34,7 @@ export async function DELETE(request: NextRequest) {
     if (!userId) {
       return NextResponse.json(
         { error: "Missing required field: userId" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -42,7 +42,7 @@ export async function DELETE(request: NextRequest) {
     if (userId === user.id) {
       return NextResponse.json(
         { error: "Cannot delete your own account" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -50,30 +50,29 @@ export async function DELETE(request: NextRequest) {
     const adminClient = await createAdminClient();
 
     // Delete user using Admin API
-    const { error: deleteError } = await adminClient.auth.admin.deleteUser(
-      userId
-    );
+    const { error: deleteError } =
+      await adminClient.auth.admin.deleteUser(userId);
 
     if (deleteError) {
       console.error("Error deleting user:", deleteError);
       return NextResponse.json(
         { error: "Failed to delete user" },
-        { status: 500 }
+        { status: 500 },
       );
     }
 
     return NextResponse.json(
       { message: "User deleted successfully" },
-      { status: 200 }
+      { status: 200 },
     );
   } catch (error) {
     console.error(
       "Unexpected error in DELETE /api/admin/users/delete-user:",
-      error
+      error,
     );
     return NextResponse.json(
       { error: "Internal server error" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

@@ -149,9 +149,7 @@ export default function RegisterView() {
                 approval before you can log in.
               </p>
             </div>
-            <p className="text-sm text-gray-500">
-              Redirecting to login page in 3 seconds...
-            </p>
+            <p className="text-sm text-gray-500">Redirecting to login page.</p>
           </div>
         </div>
       </div>

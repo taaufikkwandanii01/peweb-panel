@@ -250,7 +250,7 @@ const CardProductsAdd: React.FC<CardProductsAddProps> = ({
                   <img
                     src={imagePreview}
                     alt="Preview"
-                    className="w-full h-full object-containt"
+                    className="w-full h-full object-contain"
                   />
                   <button
                     type="button"

@@ -5,17 +5,15 @@ import { useParams, useRouter } from "next/navigation";
 import {
   FiArrowLeft,
   FiExternalLink,
-  FiCalendar,
   FiTag,
-  FiDollarSign,
   FiPackage,
   FiEdit2,
   FiTrash2,
   FiRefreshCw,
-  FiCheckCircle,
-  FiXCircle,
-  FiClock,
   FiMessageSquare,
+  FiAlertTriangle,
+  FiCheckCircle,
+  FiClock,
 } from "react-icons/fi";
 import { Product } from "./index";
 import CardProductsUpdate from "@/components/ui/ModalProducts/ModalDeveloper/ModalProductsUpdate";
@@ -82,16 +80,36 @@ const ProductDetail: React.FC = () => {
     });
   };
 
+  // IMPROVED: Better status badge dengan icon
   const getStatusBadge = (status: string) => {
     switch (status?.toLowerCase()) {
       case "approved":
-        return <span className="text-green-700">Approved</span>;
+        return (
+          <span className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-emerald-100 text-emerald-700 rounded-lg font-bold text-sm">
+            <FiCheckCircle size={16} />
+            Approved
+          </span>
+        );
       case "rejected":
-        return <span className="text-red-700">Rejected</span>;
+        return (
+          <span className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-rose-100 text-rose-700 rounded-lg font-bold text-sm">
+            <FiAlertTriangle size={16} />
+            Rejected
+          </span>
+        );
       default:
-        return <span className="text-amber-700">Pending</span>;
+        return (
+          <span className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-amber-100 text-amber-700 rounded-lg font-bold text-sm">
+            <FiClock size={16} />
+            Pending Review
+          </span>
+        );
     }
   };
+
+  const hasAdminNotes =
+    product?.admin_notes && product.admin_notes.trim().length > 0;
+  const isRejected = product?.status === "rejected";
 
   return (
     <div className="space-y-6">
@@ -111,7 +129,7 @@ const ProductDetail: React.FC = () => {
             size="sm"
             onClick={fetchProductDetail}
             disabled={isLoading}
-            className="flex-1 items-center justify-center gap-2 cursor-pointer"
+            className="flex items-center justify-center gap-2 cursor-pointer"
           >
             <FiRefreshCw
               className={isLoading ? "animate-spin" : ""}
@@ -139,9 +157,7 @@ const ProductDetail: React.FC = () => {
 
       {/* Main Content - Conditional Rendering */}
       {isLoading ? (
-        // LOADING STATE - Skeleton
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {/* Left Column Skeleton */}
           <div className="lg:col-span-1 space-y-6">
             {[...Array(2)].map((_, i) => (
               <div
@@ -150,14 +166,11 @@ const ProductDetail: React.FC = () => {
               />
             ))}
           </div>
-
-          {/* Right Column Skeleton */}
           <div className="lg:col-span-2 space-y-6">
             <div className="h-96 bg-gray-100 animate-pulse rounded-xl" />
           </div>
         </div>
       ) : error || !product ? (
-        // ERROR STATE - Product tidak ditemukan
         <div className="flex flex-col items-center justify-center min-h-[400px] text-center">
           <FiPackage className="h-16 w-16 text-gray-300 mb-4" />
           <h2 className="text-xl font-bold text-gray-900 mb-2">
@@ -172,13 +185,12 @@ const ProductDetail: React.FC = () => {
           </button>
         </div>
       ) : (
-        // SUCCESS STATE - Tampilkan Product Detail
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {/* Left Column - Image & Quick Info */}
+          {/* Left Column */}
           <div className="lg:col-span-1 space-y-6">
             {/* Product Image */}
             <div className="bg-white rounded-2xl overflow-hidden shadow-sm border border-gray-200">
-              <div className="relative overflow-hidden bg-gray-100">
+              <div className="relative h-64 overflow-hidden bg-white">
                 <img
                   src={product.image}
                   alt={product.title}
@@ -189,19 +201,16 @@ const ProductDetail: React.FC = () => {
                     {product.category}
                   </span>
                 </div>
-
-                <div className="absolute top-3 right-3">
-                  {product.discount > 0 && (
-                    <div className="bg-rose-500 text-white px-2 py-1.5 rounded-lg flex flex-col items-center">
-                      <span className="text-[8px] font-bold leading-none uppercase">
-                        Disc
-                      </span>
-                      <span className="text-xs font-black">
-                        {product.discount}%
-                      </span>
-                    </div>
-                  )}
-                </div>
+                {product.discount > 0 && (
+                  <div className="absolute top-3 right-3 bg-rose-500 text-white px-2 py-1.5 rounded-lg flex flex-col items-center">
+                    <span className="text-[8px] font-bold leading-none uppercase">
+                      Disc
+                    </span>
+                    <span className="text-xs font-black">
+                      {product.discount}%
+                    </span>
+                  </div>
+                )}
               </div>
               <div className="p-4">
                 <a
@@ -211,69 +220,107 @@ const ProductDetail: React.FC = () => {
                   className="flex items-center justify-center gap-2 px-4 py-2.5 bg-indigo-50 text-indigo-600 rounded-lg hover:bg-indigo-600 hover:text-white transition-all font-semibold text-sm"
                 >
                   <FiExternalLink size={16} />
-                  Preview
+                  Live Preview
                 </a>
               </div>
             </div>
 
-            {/* Status Card */}
-            <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
-              {/* Header Section - Status */}
+            {/* IMPROVED: Status & Notes Card */}
+            <div className="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
               <div className="p-6">
-                <div className="flex items-center justify-between">
-                  <h3 className="text-xs font-bold text-gray-800 uppercase tracking-widest flex items-center gap-1">
-                    <FiTag className="text-blue-500" size={16} />
-                    Status Products {getStatusBadge(product.status)}
+                <div className="flex items-center justify-between mb-4">
+                  <h3 className="text-xs font-bold text-gray-500 uppercase tracking-widest flex items-center gap-2">
+                    <FiTag size={16} />
+                    Product Status
                   </h3>
-                  {/* Dot indikator kecil */}
-                  <span className="flex h-2 w-2">
-                    <span className="animate-ping absolute inline-flex h-2 w-2 rounded-full bg-blue-400 opacity-75"></span>
-                    <span className="relative inline-flex rounded-full h-2 w-2 bg-blue-500"></span>
-                  </span>
+                </div>
+                <div className="flex justify-center">
+                  {getStatusBadge(product.status)}
                 </div>
               </div>
 
-              {/* Admin Notes Section */}
-              <div className="bg-gray-50/50 border-t border-gray-100 p-6">
-                <h3 className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-4 flex items-center gap-2">
-                  <FiMessageSquare className="text-gray-400" size={16} />
-                  Notes
-                </h3>
-
-                {product.admin_notes ? (
-                  <div className="relative">
-                    {/* Quote Icon Background */}
-                    <div className="absolute right-2 top-2 opacity-5 text-gray-900">
-                      <FiMessageSquare size={40} />
+              {/* IMPROVED: Admin Notes dengan Alert Style */}
+              {hasAdminNotes && (
+                <div
+                  className={`border-t p-6 ${
+                    isRejected
+                      ? "bg-rose-50/50 border-rose-100"
+                      : "bg-blue-50/50 border-blue-100"
+                  }`}
+                >
+                  <div
+                    className={`p-4 rounded-xl border-2 ${
+                      isRejected
+                        ? "bg-rose-50 border-rose-200"
+                        : "bg-blue-50 border-blue-200"
+                    }`}
+                  >
+                    <div className="flex items-start gap-3 mb-3">
+                      {isRejected ? (
+                        <FiAlertTriangle
+                          className="text-rose-600 mt-0.5 flex-shrink-0"
+                          size={20}
+                        />
+                      ) : (
+                        <FiMessageSquare
+                          className="text-blue-600 mt-0.5 flex-shrink-0"
+                          size={20}
+                        />
+                      )}
+                      <div className="flex-1">
+                        <h4
+                          className={`text-sm font-bold mb-1 ${
+                            isRejected ? "text-rose-900" : "text-blue-900"
+                          }`}
+                        >
+                          {isRejected
+                            ? "Catatan Penolakan - Perlu Diperbaiki"
+                            : "Pesan dari Admin"}
+                        </h4>
+                        <p
+                          className={`text-sm leading-relaxed ${
+                            isRejected ? "text-rose-700" : "text-blue-700"
+                          }`}
+                        >
+                          {product.admin_notes}
+                        </p>
+                      </div>
                     </div>
-                    <p className="text-gray-700 text-sm leading-relaxed relative z-10 font-medium">
-                      {product.admin_notes}
+                    {isRejected && (
+                      <div className="mt-4 pt-4 border-t border-rose-200">
+                        <p className="text-xs text-rose-600 font-medium">
+                          Silakan update produk Anda sesuai catatan di atas,
+                          lalu submit kembali untuk review *
+                        </p>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              )}
+
+              {!hasAdminNotes && (
+                <div className="border-t bg-gray-50/50 border-gray-100 p-6">
+                  <div className="flex flex-col items-center py-4 opacity-60">
+                    <FiMessageSquare className="text-gray-300 mb-2" size={24} />
+                    <p className="text-gray-400 text-sm italic text-center">
+                      Belum ada catatan dari admin
                     </p>
                   </div>
-                ) : (
-                  <div className="flex flex-col items-center py-2 opacity-60">
-                    <p className="text-gray-400 text-sm italic">
-                      No additional instructions
-                    </p>
-                  </div>
-                )}
-              </div>
+                </div>
+              )}
             </div>
           </div>
 
           {/* Right Column - Product Details */}
           <div className="lg:col-span-2 space-y-6">
-            {/* Product Info Card */}
             <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-200">
               <div className="space-y-4">
-                {/* Title & Category */}
                 <div>
                   <h1 className="text-2xl md:text-3xl font-bold text-gray-900 capitalize">
                     {product.title}
                   </h1>
                 </div>
 
-                {/* Price Section */}
                 <div className="flex flex-row items-center gap-2 py-4 border-t border-b border-gray-100">
                   <div className="flex items-baseline gap-3">
                     <span className="text-3xl font-black text-indigo-600">
@@ -289,7 +336,6 @@ const ProductDetail: React.FC = () => {
                   )}
                 </div>
 
-                {/* Description */}
                 <div>
                   <h3 className="text-sm font-bold text-gray-500 uppercase mb-2">
                     Description
@@ -299,7 +345,6 @@ const ProductDetail: React.FC = () => {
                   </p>
                 </div>
 
-                {/* Tools/Tech Stack */}
                 <div className="col-span-full">
                   <div className="flex items-center mb-3">
                     <h4 className="text-sm font-bold text-gray-500">
@@ -324,7 +369,6 @@ const ProductDetail: React.FC = () => {
                   </div>
                 </div>
 
-                {/* Created At */}
                 <div>
                   <div className="flex items-center mb-2">
                     <h4 className="text-sm font-bold text-gray-500">
@@ -336,7 +380,6 @@ const ProductDetail: React.FC = () => {
                   </p>
                 </div>
 
-                {/* Updated At */}
                 <div>
                   <div className="flex items-center mb-2">
                     <h4 className="text-sm font-bold text-gray-500">
@@ -353,7 +396,7 @@ const ProductDetail: React.FC = () => {
         </div>
       )}
 
-      {/* Modals - Hanya render jika product ada */}
+      {/* Modals */}
       {product && (
         <>
           <CardProductsUpdate

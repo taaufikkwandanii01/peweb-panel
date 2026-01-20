@@ -85,7 +85,7 @@ const Sidebar: React.FC<SidebarProps> = ({
                 <div className="w-2 h-6 bg-blue-600 rounded-full transform transition-transform duration-500 ease-out group-hover:scale-y-125"></div>
 
                 <h2 className="text-lg font-bold text-gray-800 capitalize">
-                  {userRole} <span className="text-blue-600">Panel</span>
+                  {userRole}
                 </h2>
               </div>
 

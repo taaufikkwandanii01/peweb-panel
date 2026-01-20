@@ -4,10 +4,8 @@ import React from "react";
 import {
   FiExternalLink,
   FiLayers,
-  FiEye,
-  FiEdit2,
-  FiTrash2,
   FiMessageSquare,
+  FiAlertCircle,
 } from "react-icons/fi";
 import Link from "next/link";
 import Button from "@/components/ui/Button";
@@ -44,21 +42,21 @@ const CardDeveloperProducts: React.FC<CardDeveloperProductsProps> = ({
     }
   };
 
-  // Logika pengecekan admin notes
+  // IMPROVED: Better admin notes detection
   const hasAdminNotes =
-    product.status === "rejected" ||
-    product.status === "pending" ||
-    product.status === "approved" ||
-    (product.admin_notes && product.admin_notes.length > 0);
+    product.admin_notes && product.admin_notes.trim().length > 0;
+  const isRejected = product.status === "rejected";
+  const isPending = product.status === "pending";
+  const isApproved = product.status === "approved";
 
   return (
     <div className="group bg-white border border-gray-200 rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col h-full">
       {/* Thumbnail Section */}
-      <div className="relative h-48 overflow-hidden bg-gray-100">
+      <div className="relative h-48 overflow-hidden bg-white">
         <img
           src={product.image}
           alt={product.title}
-          className="w-full h-full object-containt group-hover:scale-105 transition-transform duration-300"
+          className="w-full h-full object-contain group-hover:scale-105 transition-transform duration-300"
         />
         <div className="absolute top-3 left-3 flex gap-2">
           <span className="px-2.5 py-1 rounded-lg text-[10px] font-black uppercase bg-white/90 backdrop-blur-sm text-indigo-600 shadow-sm border border-indigo-100">
@@ -119,27 +117,25 @@ const CardDeveloperProducts: React.FC<CardDeveloperProductsProps> = ({
           <div className="flex gap-2">
             <Link
               href={`/developer/products/${product.id}`}
-              className={`flex-[2] flex justify-center items-center py-2 rounded-xl transition-all shadow-lg uppercase tracking-wide ${
-                product.status === "rejected"
-                  ? "bg-red-600 hover:bg-red-700 text-white border-red-800 shadow-rose-100"
-                  : product.status === "pending"
+              className={`flex-[2] flex justify-center items-center py-2.5 rounded-xl transition-all shadow-lg uppercase tracking-wide ${
+                isRejected
+                  ? "bg-rose-600 hover:bg-rose-700 text-white border-rose-800 shadow-rose-100"
+                  : isPending
                     ? "bg-amber-500 hover:bg-amber-600 text-white border-amber-700 shadow-amber-100"
-                    : product.status === "approved"
-                      ? "bg-green-500 hover:bg-green-600 text-white border-green-700 shadow-green-100"
+                    : isApproved
+                      ? "bg-emerald-500 hover:bg-emerald-600 text-white border-emerald-700 shadow-emerald-100"
                       : "bg-gray-900 hover:bg-indigo-600 text-white border-gray-950 shadow-gray-200"
               }`}
             >
-              <div className="flex items-center justify-center">
+              <div className="flex items-center justify-center gap-1.5">
                 <span className="text-[11px] font-black flex flex-col items-center leading-tight">
-                  Show Details
-                  {/* Pesan kecil tetap menggunakan logika hasAdminNotes Anda */}
-                  {hasAdminNotes && (
-                    <span className="text-[8px] font-medium normal-case opacity-90 flex items-center gap-1 mt-0.5">
-                      {product.status === "rejected" && "Perlu Revisi"}
-                      {product.status === "pending" && "Menunggu Review"}
-                      {product.status === "approved" && "Disetujui"}
-                    </span>
-                  )}
+                  {hasAdminNotes ? "Show Details & Notes" : "Show Details"}
+                  <span className="text-[8px] font-medium normal-case opacity-90 flex items-center gap-1 mt-0.5">
+                    {isRejected && "Perlu Diperbaiki"}
+                    {isPending && hasAdminNotes && "Ada Pesan"}
+                    {isPending && !hasAdminNotes && "Menunggu Review"}
+                    {isApproved && "Disetujui"}
+                  </span>
                 </span>
               </div>
             </Link>
