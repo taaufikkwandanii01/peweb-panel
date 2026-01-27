@@ -1,3 +1,5 @@
+// src/app/api/admin/users/update-user-status/route.ts
+
 import { NextRequest, NextResponse } from "next/server";
 import { createClient, createAdminClient } from "@/lib/supabase-server";
 
@@ -71,18 +73,16 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // ============ CRITICAL FIX: Create usersProfiles entry when approved ============
+    // Create usersProfiles entry when approved
     if (status === "approved" && updatedUser.user) {
       const userMetadata = updatedUser.user.user_metadata;
 
-      // Check if profile already exists
       const { data: existingProfile } = await supabase
         .from("usersProfiles")
         .select("id")
         .eq("id", userId)
         .single();
 
-      // Only create if profile doesn't exist
       if (!existingProfile) {
         const { error: profileError } = await supabase
           .from("usersProfiles")
@@ -92,6 +92,7 @@ export async function POST(request: NextRequest) {
             full_name: userMetadata.full_name || "",
             phone: userMetadata.phone || null,
             role: userMetadata.role || "developer",
+            status: status,
             location: null,
             bio: null,
             github: null,
@@ -103,8 +104,6 @@ export async function POST(request: NextRequest) {
 
         if (profileError) {
           console.error("Error creating user profile:", profileError);
-          // Don't fail the approval if profile creation fails
-          // Just log the error
           console.warn(
             `User ${userId} approved but profile creation failed:`,
             profileError,
@@ -116,7 +115,34 @@ export async function POST(request: NextRequest) {
         console.log(`ℹ️ Profile already exists for user ${userId}`);
       }
     }
-    // ============ END OF FIX ============
+
+    // ============ NEW: Auto-pending products when user rejected ============
+    if (status === "rejected") {
+      // Update products to pending
+      const { data: productsUpdated, error: productsError } = await supabase
+        .from("products")
+        .update({
+          status: "pending",
+          updated_at: new Date().toISOString(),
+        })
+        .eq("developer_id", userId)
+        .select();
+
+      if (productsError) {
+        console.error("Error auto-pending products:", productsError);
+        // Don't fail the rejection if products update fails
+        console.warn(
+          `User ${userId} rejected but products update failed:`,
+          productsError,
+        );
+      } else {
+        const count = productsUpdated?.length || 0;
+        console.log(
+          `✅ Auto-pending ${count} products for rejected user ${userId}`,
+        );
+      }
+    }
+    // ============ END OF NEW FEATURE ============
 
     return NextResponse.json(
       {

@@ -216,7 +216,7 @@ const AdminUsers: React.FC = () => {
             <div className="col-span-full py-20 text-center bg-white border border-dashed border-gray-300 rounded-2xl">
               <FiUsers className="mx-auto h-12 w-12 text-gray-300 mb-3" />
               <p className="text-gray-500 font-medium">
-                Pengguna tidak ditemukan
+                Users (developer) not found
               </p>
             </div>
           ) : (

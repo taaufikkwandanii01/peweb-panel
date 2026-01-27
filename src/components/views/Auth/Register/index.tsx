@@ -181,7 +181,7 @@ export default function RegisterView() {
               label="Full Name"
               type="text"
               name="fullName"
-              placeholder="Lionel Messi"
+              placeholder="Uilliam Bandros"
               value={formData.fullName}
               onChange={handleChange}
               required
@@ -189,7 +189,7 @@ export default function RegisterView() {
             />
 
             <Input
-              label="Email Address"
+              label="Email"
               type="email"
               name="email"
               placeholder="your@gmail.com"

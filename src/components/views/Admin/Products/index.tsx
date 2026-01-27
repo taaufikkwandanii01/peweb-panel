@@ -126,7 +126,7 @@ const AdminProducts: React.FC = () => {
             Products Management
           </h1>
           <p className="text-xs text-gray-500 sm:text-sm">
-            Kelola dan review products dari developer
+            Manage and review products from developers
           </p>
         </div>
         <Button
@@ -204,7 +204,7 @@ const AdminProducts: React.FC = () => {
         <div className="lg:col-span-2 relative">
           <input
             type="text"
-            placeholder="Search product by name or developer..."
+            placeholder="Search product by title or developer name..."
             value={searchTerm}
             className="w-full pl-9 pr-4 py-2 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-indigo-500/20 outline-none"
             onChange={(e) => setSearchTerm(e.target.value)}
@@ -262,9 +262,7 @@ const AdminProducts: React.FC = () => {
           {paginatedProducts.length === 0 ? (
             <div className="col-span-full py-20 text-center bg-white border border-dashed border-gray-300 rounded-2xl">
               <FiPackage className="mx-auto h-12 w-12 text-gray-300 mb-3" />
-              <p className="text-gray-500 font-medium">
-                Produk tidak ditemukan
-              </p>
+              <p className="text-gray-500 font-medium">Products not found</p>
             </div>
           ) : (
             paginatedProducts.map((product) => (

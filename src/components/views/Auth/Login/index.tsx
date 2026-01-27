@@ -133,7 +133,7 @@ export default function LoginView() {
           {/* Form */}
           <form onSubmit={handleSubmit} className="space-y-6">
             <Input
-              label="Email Address"
+              label="Email"
               type="email"
               name="email"
               placeholder="your@gmail.com"

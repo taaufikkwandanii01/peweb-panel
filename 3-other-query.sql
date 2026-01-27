@@ -206,3 +206,62 @@ BEFORE UPDATE ON public."usersProfiles"
 FOR EACH ROW
 EXECUTE FUNCTION public.update_updated_at_column();
 
+CREATE OR REPLACE FUNCTION public.current_user_role()
+RETURNS text
+LANGUAGE sql
+STABLE
+SECURITY DEFINER
+SET search_path = public, auth
+AS $$
+  SELECT raw_user_meta_data->>'role'
+  FROM auth.users
+  WHERE id = auth.uid();
+$$;
+
+
+CREATE OR REPLACE FUNCTION public.is_admin()
+RETURNS boolean
+LANGUAGE sql
+STABLE
+SECURITY DEFINER
+AS $$
+  SELECT public.current_user_role() = 'admin';
+$$;
+
+
+CREATE OR REPLACE FUNCTION public.is_developer()
+RETURNS boolean
+LANGUAGE sql
+STABLE
+SECURITY DEFINER
+AS $$
+  SELECT public.current_user_role() = 'developer';
+$$;
+
+
+CREATE OR REPLACE FUNCTION public.sync_user_profile()
+RETURNS TRIGGER
+LANGUAGE plpgsql
+SECURITY DEFINER
+AS $$
+BEGIN
+  UPDATE public."usersProfiles"
+  SET
+    email = NEW.email,
+    role = COALESCE(NEW.raw_user_meta_data->>'role', role),
+    status = COALESCE(NEW.raw_user_meta_data->>'status', status),
+    updated_at = now()
+  WHERE id = NEW.id;
+
+  RETURN NEW;
+END;
+$$;
+
+
+CREATE POLICY "Admin can view all products"
+ON public.products
+FOR SELECT
+TO authenticated
+USING (
+  public.is_admin()
+);

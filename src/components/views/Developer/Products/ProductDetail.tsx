@@ -231,7 +231,7 @@ const ProductDetail: React.FC = () => {
                 <div className="flex items-center justify-between mb-4">
                   <h3 className="text-xs font-bold text-gray-500 uppercase tracking-widest flex items-center gap-2">
                     <FiTag size={16} />
-                    Product Status
+                    Status
                   </h3>
                 </div>
                 <div className="flex justify-center">
@@ -242,40 +242,27 @@ const ProductDetail: React.FC = () => {
               {/* IMPROVED: Admin Notes dengan Alert Style */}
               {hasAdminNotes && (
                 <div
-                  className={`border-t p-6 ${
+                  className={`border-t p-0 ${
                     isRejected
                       ? "bg-rose-50/50 border-rose-100"
                       : "bg-blue-50/50 border-blue-100"
                   }`}
                 >
                   <div
-                    className={`p-4 rounded-xl border-2 ${
+                    className={`p-4 ${
                       isRejected
                         ? "bg-rose-50 border-rose-200"
                         : "bg-blue-50 border-blue-200"
                     }`}
                   >
                     <div className="flex items-start gap-3 mb-3">
-                      {isRejected ? (
-                        <FiAlertTriangle
-                          className="text-rose-600 mt-0.5 flex-shrink-0"
-                          size={20}
-                        />
-                      ) : (
-                        <FiMessageSquare
-                          className="text-blue-600 mt-0.5 flex-shrink-0"
-                          size={20}
-                        />
-                      )}
                       <div className="flex-1">
                         <h4
                           className={`text-sm font-bold mb-1 ${
                             isRejected ? "text-rose-900" : "text-blue-900"
                           }`}
                         >
-                          {isRejected
-                            ? "Catatan Penolakan - Perlu Diperbaiki"
-                            : "Pesan dari Admin"}
+                          {isRejected ? "Perlu Diperbaiki" : "Pesan dari Admin"}
                         </h4>
                         <p
                           className={`text-sm leading-relaxed ${

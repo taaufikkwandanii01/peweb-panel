@@ -217,7 +217,7 @@ const DeveloperProducts: React.FC = () => {
         <div className="md:col-span-2 lg:col-span-3 relative">
           <input
             type="text"
-            placeholder="Search product by name..."
+            placeholder="Search product by title..."
             value={searchTerm}
             className="w-full pl-9 pr-4 py-2 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-indigo-500/20 outline-none"
             onChange={(e) => setSearchTerm(e.target.value)}

@@ -51,7 +51,7 @@ const AdminDashboard: React.FC = () => {
               <span className="inline-block w-40 h-7 bg-gray-200 rounded animate-pulse"></span>
             ) : (
               <p className="text-gray-500 mt-1">
-                Selamat datang{" "}
+                Wilujeung Sumping{" "}
                 <span className="font-medium text-indigo-600 capitalize">
                   {profileData?.full_name || "Admin"}
                 </span>
