@@ -56,10 +56,11 @@ export const authService = {
   async login(data: LoginData): Promise<AuthResponse<{ user: User; session: Session }>> {
     try {
       // Step 1: Login dengan email & password
-      const { data: authData, error: authError } = await supabase.auth.signInWithPassword({
-        email: data.email,
-        password: data.password,
-      });
+      const { data: authData, error: authError } =
+        await supabase.auth.signInWithPassword({
+          email: data.email,
+          password: data.password,
+        });
 
       if (authError) {
         throw authError;
@@ -76,30 +77,40 @@ export const authService = {
       const userRole = userMetadata.role;
       if (!userRole) {
         await supabase.auth.signOut();
-        throw new Error("User role is not defined. Please contact administrator.");
+        throw new Error(
+          "User role is not defined. Please contact administrator.",
+        );
       }
 
       if (userRole !== data.role) {
         await supabase.auth.signOut();
-        throw new Error(`This account is registered as ${userRole}, not ${data.role}. Please select the correct role.`);
+        throw new Error(
+          `This account is registered as ${userRole}, not ${data.role}. Please select the correct role.`,
+        );
       }
 
       // Step 4: Validasi status approval - INI YANG PALING PENTING!
       const userStatus = userMetadata.status;
-      
+
       if (!userStatus || userStatus === "pending") {
         await supabase.auth.signOut();
-        throw new Error("Your account is pending approval. Please wait for admin to approve your account before you can login.");
+        throw new Error(
+          "Your account is pending approval. Please wait for admin to approve your account before you can login.",
+        );
       }
 
       if (userStatus === "rejected") {
         await supabase.auth.signOut();
-        throw new Error("Your account has been rejected. Please contact administrator for more information.");
+        throw new Error(
+          "Your account has been rejected. Please contact administrator for more information.",
+        );
       }
 
       if (userStatus !== "approved") {
         await supabase.auth.signOut();
-        throw new Error("Your account status is invalid. Please contact administrator.");
+        throw new Error(
+          "Your account status is invalid. Please contact administrator.",
+        );
       }
 
       // Step 5: Login berhasil - session sudah di-set oleh Supabase
@@ -113,9 +124,22 @@ export const authService = {
       const authError = error as AuthError;
       console.error("LOGIN ERROR:", authError);
 
+      // Custom error message
+      let errorMessage = authError.message || "Login failed";
+
+      // Ganti pesan invalid credentials
+      if (
+        authError.message
+          ?.toLowerCase()
+          .includes("invalid login credentials") ||
+        authError.message?.toLowerCase().includes("invalid credentials")
+      ) {
+        errorMessage = "Email or password is incorrect";
+      }
+
       return {
         success: false,
-        message: authError.message || "Login failed",
+        message: errorMessage,
         error: authError,
       };
     }
