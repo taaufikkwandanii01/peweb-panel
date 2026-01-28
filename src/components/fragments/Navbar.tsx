@@ -128,7 +128,7 @@ const Navbar: React.FC<NavbarProps> = ({
 
                 <div className="hidden md:flex flex-col items-start leading-none">
                   <span className="text-sm font-bold text-gray-800 line-clamp-1 capitalize">
-                    {loading ? "Loading" : userName}
+                    {loading ? "User" : userName}
                   </span>
                   <span className="text-[10px] font-medium text-gray-500 uppercase tracking-tighter mt-1">
                     {userRole}
