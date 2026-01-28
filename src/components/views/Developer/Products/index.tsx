@@ -262,9 +262,7 @@ const DeveloperProducts: React.FC = () => {
           {paginatedProducts.length === 0 ? (
             <div className="col-span-full py-16 text-center bg-white border border-dashed border-gray-300 rounded-2xl">
               <FiPackage className="mx-auto h-12 w-12 text-gray-300 mb-3" />
-              <p className="text-gray-500 font-medium">
-                Produk tidak ditemukan
-              </p>
+              <p className="text-gray-500 font-medium">Products not found</p>
             </div>
           ) : (
             paginatedProducts.map((product) => (
