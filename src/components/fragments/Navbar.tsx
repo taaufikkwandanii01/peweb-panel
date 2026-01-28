@@ -29,6 +29,7 @@ const Navbar: React.FC<NavbarProps> = ({
   const [userName, setUserName] = useState("User");
   const [loading, setLoading] = useState(true);
   const [scrolled, setScrolled] = useState(false);
+  const [isLoggingOut, setIsLoggingOut] = useState(false);
 
   // Efek shadow saat scroll
   useEffect(() => {
@@ -70,123 +71,147 @@ const Navbar: React.FC<NavbarProps> = ({
     fetchUserProfile();
   }, []);
 
+  const handleLogout = async () => {
+    setIsLoggingOut(true);
+    setIsProfileOpen(false);
+    if (onLogout) {
+      await onLogout();
+    }
+    // setIsLoggingOut akan tetap true karena halaman akan redirect
+  };
+
   return (
-    <nav
-      className={`fixed w-full top-0 z-50 transition-all duration-300 ${
-        scrolled ? "bg-white/80 backdrop-blur-md shadow-sm" : "bg-white"
-      }`}
-    >
-      <div className="px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-16">
-          {/* Left Section */}
-          <div className="flex items-center gap-4">
-            <button
-              onClick={onToggleSidebar}
-              className="lg:hidden p-2 rounded-xl text-gray-600 hover:bg-gray-100 transition-colors active:scale-95"
-            >
-              <FaBars className="w-5 h-5" />
-            </button>
-
-            <Link
-              href={`/${userRole}/dashboard`}
-              className="flex items-center gap-3 group"
-            >
-              <div className="hidden md:inline-flex  w-9 h-9 bg-linear-to-tr from-indigo-600 to-blue-500 rounded-xl  items-center justify-center shadow-lg shadow-indigo-200 group-hover:rotate-6 transition-transform duration-300">
-                <span className="text-white font-bold text-lg italic">P</span>
-              </div>
-              <div className="flex flex-col leading-none">
-                <span className="text-lg font-black tracking-tighter text-gray-900 group-hover:text-indigo-600 transition-colors">
-                  PeWeb<span className="text-indigo-600">.</span>
-                </span>
-                <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">
-                  Panel
-                </span>
-              </div>
-            </Link>
+    <>
+      {/* Backdrop Blur saat Logout */}
+      {isLoggingOut && (
+        <div className="fixed inset-0 bg-white/30 backdrop-blur-md z-[60] flex items-center justify-center">
+          <div className="flex flex-col items-center gap-3">
+            <div className="w-12 h-12 border-4 border-indigo-200 border-t-indigo-600 rounded-full animate-spin"></div>
+            <p className="text-sm font-semibold text-gray-700">
+              Logging out...
+            </p>
           </div>
+        </div>
+      )}
 
-          {/* Right Section */}
-          <div className="flex items-center gap-3">
-            {/* Profile Section */}
-            <div className="relative">
+      <nav
+        className={`fixed w-full top-0 z-50 transition-all duration-300 ${
+          scrolled ? "bg-white/80 backdrop-blur-md shadow-sm" : "bg-white"
+        }`}
+      >
+        <div className="px-4 sm:px-6 lg:px-8">
+          <div className="flex items-center justify-between h-16">
+            {/* Left Section */}
+            <div className="flex items-center gap-4">
               <button
-                onClick={() => setIsProfileOpen(!isProfileOpen)}
-                className={`flex items-center gap-3 p-1.5 pr-3 rounded-2xl transition-all duration-200 cursor-pointer ${
-                  isProfileOpen
-                    ? "bg-gray-100 ring-1 ring-gray-200"
-                    : "hover:bg-gray-50"
-                }`}
+                onClick={onToggleSidebar}
+                className="lg:hidden p-2 rounded-xl text-gray-600 hover:bg-gray-100 transition-colors active:scale-95"
               >
-                <div className="relative">
-                  <div className="w-8 h-8 bg-gradient-to-br from-indigo-500 to-purple-500 rounded-xl flex items-center justify-center shadow-sm">
-                    <span className="text-white font-bold text-xs uppercase">
-                      {loading ? "" : userName.charAt(0)}
-                    </span>
-                  </div>
-                  <div className="absolute -bottom-0.5 -right-0.5 w-3 h-3 bg-green-500 border-2 border-white rounded-full"></div>
-                </div>
-
-                <div className="hidden md:flex flex-col items-start leading-none">
-                  <span className="text-sm font-bold text-gray-800 line-clamp-1 capitalize">
-                    {loading ? "User" : userName}
-                  </span>
-                  <span className="text-[10px] font-medium text-gray-500 uppercase tracking-tighter mt-1">
-                    {userRole}
-                  </span>
-                </div>
-
-                <FaChevronDown
-                  className={`w-3 h-3 text-gray-400 transition-transform duration-300 ${isProfileOpen ? "rotate-180" : ""}`}
-                />
+                <FaBars className="w-5 h-5" />
               </button>
 
-              {/* Enhanced Dropdown Menu */}
-              {isProfileOpen && (
-                <>
-                  <div
-                    className="fixed inset-0 z-10"
-                    onClick={() => setIsProfileOpen(false)}
-                  ></div>
-                  <div className="absolute right-0 mt-3 w-56 bg-white rounded-2xl shadow-xl shadow-gray-200/50 py-2 z-20 border border-gray-100 animate-in fade-in zoom-in duration-200 origin-top-right">
-                    <div className="px-4 py-2 border-b border-gray-50 mb-1">
-                      <p className="text-xs font-bold text-gray-400 uppercase tracking-widest">
-                        Signed in as
-                      </p>
-                      <p className="text-sm font-bold text-gray-800 truncate capitalize">
-                        {userName}
-                      </p>
-                    </div>
+              <Link
+                href={`/${userRole}/dashboard`}
+                className="flex items-center gap-3 group"
+              >
+                <div className="hidden md:inline-flex  w-9 h-9 bg-linear-to-tr from-indigo-600 to-blue-500 rounded-xl  items-center justify-center shadow-lg shadow-indigo-200 group-hover:rotate-6 transition-transform duration-300">
+                  <span className="text-white font-bold text-lg italic">P</span>
+                </div>
+                <div className="flex flex-col leading-none">
+                  <span className="text-lg font-black tracking-tighter text-gray-900 group-hover:text-indigo-600 transition-colors">
+                    PeWeb<span className="text-indigo-600">.</span>
+                  </span>
+                  <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">
+                    Panel
+                  </span>
+                </div>
+              </Link>
+            </div>
 
-                    <Link
-                      href={`/${userRole}/profile`}
-                      className="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-600 hover:text-indigo-600 hover:bg-indigo-50 transition-colors"
-                      onClick={() => setIsProfileOpen(false)}
-                    >
-                      <div className="w-8 h-8 rounded-lg bg-gray-100 flex items-center justify-center group-hover:bg-white">
-                        <FaUser className="w-3.5 h-3.5" />
-                      </div>
-                      My Profile
-                    </Link>
-
-                    <div className="border-t border-gray-50">
-                      <button
-                        onClick={onLogout}
-                        className="flex items-center gap-3 w-full px-4 py-2.5 text-sm font-bold text-red-500 hover:bg-red-50 transition-colors cursor-pointer"
-                      >
-                        <div className="w-8 h-8 rounded-lg bg-red-100 flex items-center justify-center">
-                          <FaSignOutAlt className="w-3.5 h-3.5" />
-                        </div>
-                        Logout
-                      </button>
+            {/* Right Section */}
+            <div className="flex items-center gap-3">
+              {/* Profile Section */}
+              <div className="relative">
+                <button
+                  onClick={() => setIsProfileOpen(!isProfileOpen)}
+                  className={`flex items-center gap-3 p-1.5 pr-3 rounded-2xl transition-all duration-200 cursor-pointer ${
+                    isProfileOpen
+                      ? "bg-gray-100 ring-1 ring-gray-200"
+                      : "hover:bg-gray-50"
+                  }`}
+                >
+                  <div className="relative">
+                    <div className="w-8 h-8 bg-gradient-to-br from-indigo-500 to-purple-500 rounded-xl flex items-center justify-center shadow-sm">
+                      <span className="text-white font-bold text-xs uppercase">
+                        {loading ? "" : userName.charAt(0)}
+                      </span>
                     </div>
+                    <div className="absolute -bottom-0.5 -right-0.5 w-3 h-3 bg-green-500 border-2 border-white rounded-full"></div>
                   </div>
-                </>
-              )}
+
+                  <div className="hidden md:flex flex-col items-start leading-none">
+                    <span className="text-sm font-bold text-gray-800 line-clamp-1 capitalize">
+                      {loading ? "User" : userName}
+                    </span>
+                    <span className="text-[10px] font-medium text-gray-500 uppercase tracking-tighter mt-1">
+                      {userRole}
+                    </span>
+                  </div>
+
+                  <FaChevronDown
+                    className={`w-3 h-3 text-gray-400 transition-transform duration-300 ${isProfileOpen ? "rotate-180" : ""}`}
+                  />
+                </button>
+
+                {/* Enhanced Dropdown Menu */}
+                {isProfileOpen && (
+                  <>
+                    <div
+                      className="fixed inset-0 z-10"
+                      onClick={() => setIsProfileOpen(false)}
+                    ></div>
+                    <div className="absolute right-0 mt-3 w-56 bg-white rounded-2xl shadow-xl shadow-gray-200/50 py-2 z-20 border border-gray-100 animate-in fade-in zoom-in duration-200 origin-top-right">
+                      <div className="px-4 py-2 border-b border-gray-50 mb-1">
+                        <p className="text-xs font-bold text-gray-400 uppercase tracking-widest">
+                          Signed in as
+                        </p>
+                        <p className="text-sm font-bold text-gray-800 truncate capitalize">
+                          {userName}
+                        </p>
+                      </div>
+
+                      <Link
+                        href={`/${userRole}/profile`}
+                        className="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-600 hover:text-indigo-600 hover:bg-indigo-50 transition-colors"
+                        onClick={() => setIsProfileOpen(false)}
+                      >
+                        <div className="w-8 h-8 rounded-lg bg-gray-100 flex items-center justify-center group-hover:bg-white">
+                          <FaUser className="w-3.5 h-3.5" />
+                        </div>
+                        My Profile
+                      </Link>
+
+                      <div className="border-t border-gray-50">
+                        <button
+                          onClick={handleLogout}
+                          disabled={isLoggingOut}
+                          className="flex items-center gap-3 w-full px-4 py-2.5 text-sm font-bold text-red-500 hover:bg-red-50 transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+                        >
+                          <div className="w-8 h-8 rounded-lg bg-red-100 flex items-center justify-center">
+                            <FaSignOutAlt className="w-3.5 h-3.5" />
+                          </div>
+                          Logout
+                        </button>
+                      </div>
+                    </div>
+                  </>
+                )}
+              </div>
             </div>
           </div>
         </div>
-      </div>
-    </nav>
+      </nav>
+    </>
   );
 };
 
