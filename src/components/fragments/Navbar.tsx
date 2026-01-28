@@ -87,9 +87,7 @@ const Navbar: React.FC<NavbarProps> = ({
         <div className="fixed inset-0 bg-white/30 backdrop-blur-md z-[60] flex items-center justify-center">
           <div className="flex flex-col items-center gap-3">
             <div className="w-12 h-12 border-4 border-indigo-200 border-t-indigo-600 rounded-full animate-spin"></div>
-            <p className="text-sm font-semibold text-gray-700">
-              Logging out...
-            </p>
+            <p className="text-sm font-semibold text-gray-700">Logging out</p>
           </div>
         </div>
       )}
