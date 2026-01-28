@@ -47,16 +47,16 @@ const DeveloperDashboard: React.FC = () => {
             <h1 className="text-2xl font-bold text-gray-900 tracking-tight">
               Dashboard
             </h1>
-            {isLoadingProfile ? (
-              <span className="inline-block w-40 h-7 bg-gray-200 rounded animate-pulse"></span>
-            ) : (
-              <p className="text-gray-500 mt-1">
-                Wilujeung Sumping{" "}
-                <span className="font-medium text-indigo-600 capitalize">
-                  {profileData?.full_name || "Developer"}
-                </span>
-              </p>
-            )}
+            <p
+              className={`text-gray-500 mt-1 transition-opacity duration-300 ${isLoadingProfile ? "opacity-50" : "opacity-100"}`}
+            >
+              Wilujeung Sumping{" "}
+              <span className="font-medium text-indigo-600 capitalize">
+                {isLoadingProfile
+                  ? "User"
+                  : profileData?.full_name || "Developer"}
+              </span>
+            </p>
           </div>
         </div>
       </div>
